@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{B83C4D02-113F-4AEA-814C-07069A028BA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample", "Sample\Sample.csproj", "{AF8C4368-DD39-42AB-8A04-AC417242D225}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Forms.Platforms.Xna", "Xamarin.Forms.Platforms.Xna\Xamarin.Forms.Platforms.Xna.csproj", "{798E1F06-4BCA-4893-BB99-C25CC4E82F15}"
 EndProject
 Global
@@ -15,8 +19,15 @@ Global
 		{798E1F06-4BCA-4893-BB99-C25CC4E82F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{798E1F06-4BCA-4893-BB99-C25CC4E82F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{798E1F06-4BCA-4893-BB99-C25CC4E82F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF8C4368-DD39-42AB-8A04-AC417242D225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8C4368-DD39-42AB-8A04-AC417242D225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8C4368-DD39-42AB-8A04-AC417242D225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8C4368-DD39-42AB-8A04-AC417242D225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AF8C4368-DD39-42AB-8A04-AC417242D225} = {B83C4D02-113F-4AEA-814C-07069A028BA6}
 	EndGlobalSection
 EndGlobal
