@@ -7,17 +7,9 @@ namespace Xamarin.Forms.Platforms.Xna.Context
 
     public static class AnimationExtensions
     {
-        public static ContextOperation<TimeSpan> Animate(this IGameContext context, TimeSpan duration, float startValue, float endValue, Action<float> valueStep, CancellationToken cancellationToken = default(CancellationToken)
-			#if !DISABLE_TWEENER
-            , XNATweener.TweeningFunction easingFunction = null
-			#endif
-        )
+        public static ContextOperation<TimeSpan> Animate(this IGameContext context, TimeSpan duration, float startValue, float endValue, Action<float> valueStep, CancellationToken cancellationToken = default(CancellationToken), Easing easing = null)
         {
-            var info = new FloatAnimation(duration, startValue, endValue, valueStep
-				#if !DISABLE_TWEENER
-				, easingFunction
-				#endif
-                       );
+            var info = new FloatAnimation(duration, startValue, endValue, valueStep, easing);
 
             if (cancellationToken != default(CancellationToken))
                 cancellationToken.Register(info.Cancel);
@@ -25,11 +17,7 @@ namespace Xamarin.Forms.Platforms.Xna.Context
             return context.Run(info);
         }
 
-        public static ContextOperation<TimeSpan> Animate(this IGameContext context, TimeSpan duration, Reference<Color> color, Color endColor, CancellationToken cancellationToken = default(CancellationToken)
-			#if !DISABLE_TWEENER
-            , XNATweener.TweeningFunction easingFunction = null
-			#endif
-        )
+        public static ContextOperation<TimeSpan> Animate(this IGameContext context, TimeSpan duration, Reference<Color> color, Color endColor, CancellationToken cancellationToken = default(CancellationToken), Easing easing = null)
         {
             if (color == null)
                 throw new ArgumentNullException("color");
@@ -37,28 +25,17 @@ namespace Xamarin.Forms.Platforms.Xna.Context
             return Animate(context, duration, color.Value, endColor, c =>
             {
                 color.Value = c;
-            }, cancellationToken
-				#if !DISABLE_TWEENER
-				, easingFunction
-				#endif
-            );
+            }, cancellationToken,
+            easing);
         }
 
-        public static ContextOperation<TimeSpan> Animate(this IGameContext context, TimeSpan duration, Color startColor, Color endColor, Action<Color> colorStep, CancellationToken cancellationToken = default(CancellationToken)
-			#if !DISABLE_TWEENER
-            , XNATweener.TweeningFunction easingFunction = null
-			#endif
-        )
+        public static ContextOperation<TimeSpan> Animate(this IGameContext context, TimeSpan duration, Color startColor, Color endColor, Action<Color> colorStep, CancellationToken cancellationToken = default(CancellationToken), Easing easing = null)
         {
             if (colorStep == null)
                 throw new ArgumentNullException("colorStep");
 
             var info = new FloatAnimation(duration, 0, 1, value =>
-            colorStep(Color.Lerp(startColor, endColor, value))
-				#if !DISABLE_TWEENER
-				, easingFunction
-				#endif
-                       );
+            colorStep(Color.Lerp(startColor, endColor, value)), easing);
 
             if (cancellationToken != default(CancellationToken))
                 cancellationToken.Register(info.Cancel);

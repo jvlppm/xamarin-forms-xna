@@ -4,10 +4,6 @@ namespace Xamarin.Forms.Platforms.Xna.Context
     using System;
     using Microsoft.Xna.Framework;
 
-    #if !DISABLE_TWEENER
-    using XNATweener;
-    #endif
-
     public class FloatAnimation : GameOperation<TimeSpan>
     {
         #region Attributes
@@ -16,9 +12,7 @@ namespace Xamarin.Forms.Platforms.Xna.Context
         public readonly Action<float> ValueStep;
         public readonly float StartValue;
         public readonly float EndValue;
-        #if !DISABLE_TWEENER
-        public readonly TweeningFunction EasingFunction;
-        #endif
+        public readonly Easing Easing;
         #endregion
 
         #region Properties
@@ -29,11 +23,7 @@ namespace Xamarin.Forms.Platforms.Xna.Context
 
         #region Constructors
 
-        public FloatAnimation(TimeSpan duration, float startValue, float endValue, Action<float> valueStep
-			#if !DISABLE_TWEENER
-			, TweeningFunction easingFunction = null
-			#endif
-        )
+        public FloatAnimation(TimeSpan duration, float startValue, float endValue, Action<float> valueStep, Easing easing = null)
         {
             if (duration <= TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException("duration", "Duration must be greater than zero");
@@ -46,9 +36,7 @@ namespace Xamarin.Forms.Platforms.Xna.Context
             StartValue = startValue;
             EndValue = endValue;
             ValueStep = valueStep;
-            #if !DISABLE_TWEENER
-            EasingFunction = easingFunction;
-            #endif
+            Easing = easing;
 
             NotifyValue();
         }
@@ -85,13 +73,13 @@ namespace Xamarin.Forms.Platforms.Xna.Context
         {
             float curDuration = MathHelper.Clamp((float)CurrentDuration.TotalMilliseconds, 0, (float)Duration.TotalMilliseconds);
 
-            #if !DISABLE_TWEENER
-            if (EasingFunction != null)
-                return EasingFunction(curDuration, StartValue, EndValue - StartValue, (float)Duration.TotalMilliseconds);
-            #endif
-
             var curValue = curDuration / (float)Duration.TotalMilliseconds;
-            return MathHelper.Lerp(StartValue, EndValue, MathHelper.Clamp(curValue, 0, 1));
+            var lerp = MathHelper.Lerp(StartValue, EndValue, MathHelper.Clamp(curValue, 0, 1));
+
+            if (Easing != null)
+                return (float)Easing.Ease(lerp);
+
+            return lerp;
         }
 
         #endregion

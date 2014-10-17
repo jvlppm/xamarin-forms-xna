@@ -93,25 +93,9 @@
     <Compile Include="PropertyTracker.cs" />
     <Compile Include="Platforms\Xna\Renderers\VisualElementRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Back.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Bounce.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Circular.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Cubic.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Elastic.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Exponential.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Linear.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Quadratic.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Quartic.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Quintic.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Sinusoidal.cs" />
-    <Compile Include="Platforms\Xna\XNATweener\Tweener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Platforms\Xna\XNATweener\LICENSE.txt" />
-    <Content Include="Platforms\Xna\XNATweener\README.txt" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
