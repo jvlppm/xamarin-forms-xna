@@ -12,7 +12,6 @@
         IVisualElementRenderer Parent { get; set; }
         IEnumerable<IVisualElementRenderer> Children { get; }
 
-
         SizeRequest Measure(Size availableSize);
         void Layout(Xamarin.Forms.Rectangle bounds);
 
@@ -24,5 +23,7 @@
 
         void InvalidateTransformations();
         void InvalidateAlpha();
+
+        bool Handle(RoutedEvent routedEvent);
     }
 }

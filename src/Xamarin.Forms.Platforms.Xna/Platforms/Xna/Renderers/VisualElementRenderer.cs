@@ -410,6 +410,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         }
         #endregion
 
+        #region Events
+
+        public bool Handle(RoutedEvent routedEvent)
+        {
+            return false;
+        }
+        #endregion
+
         #region Protected Methods
         protected void InvalidateMeasure()
         {
