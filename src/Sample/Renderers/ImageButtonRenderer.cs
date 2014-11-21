@@ -5,7 +5,7 @@ namespace Sample.Renderers
 {
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
-    using Sample.Controls;
+    using Controls;
     using System;
     using Xamarin.Forms.Platforms.Xna.Renderers;
 
