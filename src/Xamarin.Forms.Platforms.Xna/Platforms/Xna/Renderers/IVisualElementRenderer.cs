@@ -1,7 +1,11 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Renderers
+﻿using Xamarin.Forms.Platforms.Xna.Input;
+using System.Collections.Immutable;
+
+namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
-    using Microsoft.Xna.Framework;
     using System.Collections.Generic;
+    using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
 
     public interface IVisualElementRenderer : IRegisterable
     {
@@ -10,8 +14,9 @@
         bool IsVisible { get; set; }
 
         IVisualElementRenderer Parent { get; set; }
-        IEnumerable<IVisualElementRenderer> Children { get; }
+        ImmutableList<IVisualElementRenderer> Children { get; }
 
+        BasicEffect Effect { get; }
 
         SizeRequest Measure(Size availableSize);
         void Layout(Xamarin.Forms.Rectangle bounds);
@@ -24,5 +29,15 @@
 
         void InvalidateTransformations();
         void InvalidateAlpha();
+
+        void OnMouseEnter();
+        void OnMouseLeave();
+
+        bool InterceptMouseDown(Mouse.Button button);
+        bool HandleMouseDown(Mouse.Button button);
+        bool InterceptMouseUp(Mouse.Button button);
+        bool HandleMouseUp(Mouse.Button button);
+        bool InterceptClick();
+        bool HandleClick();
     }
 }

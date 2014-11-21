@@ -1,4 +1,8 @@
-﻿namespace Xamarin.Forms.Platforms.Xna
+﻿using System.Collections.Generic;
+using Xamarin.Forms.Platforms.Xna.Renderers;
+using System.Linq;
+
+namespace Xamarin.Forms.Platforms.Xna
 {
     using Microsoft.Xna.Framework;
 
@@ -22,6 +26,32 @@
         public static Xamarin.Forms.Rectangle ToXFormsRectangle(this Rectangle rectangle)
         {
             return new Xamarin.Forms.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
+        public static Plane Transform(this Plane plane, Matrix matrix)
+        {
+            Plane p;
+            Matrix m;
+            Matrix.Invert(ref matrix, out m);
+            float x = plane.Normal.X;
+            float y = plane.Normal.Y;
+            float z = plane.Normal.Z;
+            float d = plane.D;
+
+            p.Normal.X = (x * m.M11) + (y * m.M12) + (z * m.M13) + (d * m.M14);
+            p.Normal.Y = (x * m.M21) + (y * m.M22) + (z * m.M23) + (d * m.M24);
+            p.Normal.Z = (x * m.M31) + (y * m.M32) + (z * m.M33) + (d * m.M34);
+            p.D = (x * m.M41) + (y * m.M42) + (z * m.M43) + (d * m.M44);
+            return p;
+        }
+
+        public static IEnumerable<IVisualElementRenderer> FlattenHierarchy(this IVisualElementRenderer renderer)
+        {
+            yield return renderer;
+
+            foreach (var child in renderer.Children)
+                foreach (var sub in FlattenHierarchy(child))
+                    yield return sub;
         }
     }
 }

@@ -6,9 +6,9 @@
 
     class ContextTicker : Ticker
     {
-        private readonly GameContext _context;
-        private bool _enabled = true;
-        IDictionary<int, ContextOperation> _handles = new Dictionary<int, ContextOperation>();
+        readonly GameContext _context;
+        bool _enabled = true;
+        readonly IDictionary<int, ContextOperation> _handles = new Dictionary<int, ContextOperation>();
         int _nextOperationHandle = 1;
 
         public ContextTicker(GameContext context)
@@ -32,8 +32,13 @@
             {
                 if (!_enabled)
                     return true;
-                var res = timeout((long)g.ElapsedGameTime.TotalMilliseconds);
-                if (res)
+                    bool res;
+                try
+                {
+                    res = timeout((long)g.ElapsedGameTime.TotalMilliseconds);
+                }
+                catch { res = false; }
+                if (!res)
                     _handles.Remove(handle);
                 return !res;
             });

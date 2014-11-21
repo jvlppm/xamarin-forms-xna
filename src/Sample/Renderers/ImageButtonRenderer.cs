@@ -9,10 +9,9 @@ namespace Sample.Renderers
     using System;
     using Xamarin.Forms.Platforms.Xna.Renderers;
 
-    public class ImageButtonRenderer : LabelRenderer, IClickableRenderer
+    public class ImageButtonRenderer : LabelRenderer
     {
         Texture2D _image;
-        bool? _mouseState;
 
         public new ImageButton Model { get { return (ImageButton)base.Model; } }
 
@@ -38,8 +37,8 @@ namespace Sample.Renderers
                     availableSize.Height = _image.Height;
 
                 var scaleFit = Math.Min(
-                    availableSize.Width / (float)_image.Width,
-                    availableSize.Height / (float)_image.Height);
+                                   availableSize.Width / (float)_image.Width,
+                                   availableSize.Height / (float)_image.Height);
 
                 return new Xamarin.Forms.SizeRequest(
                     new Xamarin.Forms.Size(_image.Width * scaleFit, _image.Height * scaleFit),
@@ -48,47 +47,10 @@ namespace Sample.Renderers
             return lblSize;
         }
 
-        public override void Update(GameTime gameTime)
+        public override bool HandleClick()
         {
-            try
-            {
-                var mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
-                var region = this.GetArea();
-                if (Model.IsEnabled && region.Contains(new Xamarin.Forms.Point(mouse.X, mouse.Y)))
-                {
-                    if (mouse.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed && _mouseState == false)
-                    {
-                        if (Model.State != ImageButtonState.Pressed &&
-                            Model.State != ImageButtonState.Pressing)
-                        {
-                            Model.FireClicked();
-                            Model.State = ImageButtonState.Pressed;
-                        }
-                        else
-                        {
-                            Model.State = ImageButtonState.Pressing;
-                            if (Model.ContinuousClick)
-                                Model.FireClicked();
-                        }
-                    }
-                    else
-                    {
-                        Model.State = ImageButtonState.Over;
-                    }
-                }
-                else
-                {
-                    Model.State = ImageButtonState.Normal;
-                }
-
-                _mouseState = mouse.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed;
-            }
-            catch (InvalidOperationException invalidOpEx)
-            {
-                System.Console.WriteLine(invalidOpEx.Message);
-            }
-
-            base.Update(gameTime);
+            Model.FireClicked();
+            return true;
         }
 
         protected override void LocalDraw(GameTime gameTime)
@@ -99,11 +61,6 @@ namespace Sample.Renderers
                 SpriteBatch.Draw(_image, drawArea, new Color(Color.White, Model.ImageOpacity));
             }
             base.LocalDraw(gameTime);
-        }
-
-        public override void Disappeared()
-        {
-            _mouseState = null;
         }
     }
 }

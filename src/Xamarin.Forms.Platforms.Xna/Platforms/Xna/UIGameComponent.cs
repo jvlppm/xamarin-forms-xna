@@ -1,9 +1,13 @@
-﻿namespace Xamarin.Forms.Platforms.Xna
+﻿using System.Linq;
+using Xamarin.Forms.Platforms.Xna.Input;
+
+namespace Xamarin.Forms.Platforms.Xna
 {
     using System;
     using Xamarin.Forms;
     using Xamarin.Forms.Platforms.Xna.Renderers;
     using GameTime = Microsoft.Xna.Framework.GameTime;
+    using MouseState = Microsoft.Xna.Framework.Input.MouseState;
 
     public class UIGameComponent : Microsoft.Xna.Framework.DrawableGameComponent, IPlatform
     {
@@ -11,7 +15,7 @@
         IVisualElementRenderer _renderer;
         object _bindingContext;
 
-        public Xamarin.Forms.Rectangle? Area;
+        public Rectangle? Area;
 
         public UIGameComponent()
             : base(Forms.Game)
@@ -31,7 +35,10 @@
         public override void Update(GameTime gameTime)
         {
             if (_renderer != null)
+            {
                 _renderer.Update(gameTime);
+                Mouse.Update(_renderer);
+            }
             base.Update(gameTime);
         }
 

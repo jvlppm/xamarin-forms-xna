@@ -56,9 +56,10 @@ namespace Sample.UI
         async void scaleButton_OnClick(object sender, EventArgs e)
         {
             var btn = (ImageButton)sender;
+            btn.IsEnabled = false;
             await btn.ScaleTo(1.5, easing: Easing.CubicIn);
             await btn.ScaleTo(1, easing: Easing.CubicOut);
-            btn.RotationY = 0;
+            btn.IsEnabled = true;
         }
 
         async void rotateButton_OnClick(object sender, EventArgs e)

@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(Label.TextColorProperty, Handle_TextColor);
             PropertyTracker.AddHandler(Label.FontProperty, Handle_Font);
 
-            PropertyTracker.AddHandler(Label.TextProperty, Handle_ArrangeProperty);
+            PropertyTracker.AddHandler(Label.TextProperty, Handle_MeasureProperty);
             PropertyTracker.AddHandler(Label.XAlignProperty, Handle_ArrangeProperty);
             PropertyTracker.AddHandler(Label.YAlignProperty, Handle_ArrangeProperty);
         }
@@ -99,6 +99,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Handle_ArrangeProperty(BindableProperty property)
         {
+            UpdateAlignment();
+        }
+
+        void Handle_MeasureProperty(BindableProperty property)
+        {
+            InvalidateMeasure();
             UpdateAlignment();
         }
 

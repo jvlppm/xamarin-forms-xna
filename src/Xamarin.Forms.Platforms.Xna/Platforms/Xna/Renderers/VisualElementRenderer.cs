@@ -1,4 +1,7 @@
-﻿[assembly: Xamarin.Forms.Platforms.Xna.ExportRenderer(
+﻿using Xamarin.Forms.Platforms.Xna.Input;
+using System.Linq;
+
+[assembly: Xamarin.Forms.Platforms.Xna.ExportRenderer(
     typeof(Xamarin.Forms.VisualElement),
     typeof(Xamarin.Forms.Platforms.Xna.Renderers.VisualElementRenderer<Xamarin.Forms.VisualElement>))]
 namespace Xamarin.Forms.Platforms.Xna.Renderers
@@ -6,7 +9,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Linq;
     using Xamarin.Forms;
     using Xamarin.Forms.Platforms.Xna;
     using MathHelper = Microsoft.Xna.Framework.MathHelper;
@@ -15,6 +17,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
     using Vector2 = Microsoft.Xna.Framework.Vector2;
     using Vector3 = Microsoft.Xna.Framework.Vector3;
+    using Plane = Microsoft.Xna.Framework.Plane;
+    using MouseState = Microsoft.Xna.Framework.Input.MouseState;
+    using BasicEffect = Microsoft.Xna.Framework.Graphics.BasicEffect;
 
     public class VisualElementRenderer<TModel> : VisualElementRenderer
         where TModel : VisualElement
@@ -49,12 +54,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     public class VisualElementRenderer : IVisualElementRenderer
     {
         #region Static
+
         static BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(VisualElementRenderer), null);
 
         public static IVisualElementRenderer GetRenderer(BindableObject obj)
         {
             return (IVisualElementRenderer)obj.GetValue(RendererProperty);
         }
+
         public static void SetRenderer(Element obj, IVisualElementRenderer renderer)
         {
             obj.SetValue(RendererProperty, renderer);
@@ -77,24 +84,31 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
             return renderer;
         }
+
         #endregion
 
         #region Attributes
+
+        protected readonly PropertyTracker PropertyTracker;
+        protected readonly SpriteBatch SpriteBatch;
+
+        readonly BasicEffect _effect;
+
         Rectangle _transformationBounds;
         Microsoft.Xna.Framework.Rectangle _backgroundArea;
-        Microsoft.Xna.Framework.Graphics.BasicEffect Effect;
+
         VisualElement _model;
-        ImmutableDictionary<Element, IVisualElementRenderer> ChildrenRenderers = ImmutableDictionary<Element, IVisualElementRenderer>.Empty;
         List<Element> _manuallyAddedElements;
         float? _alpha;
         Texture2D _backgroundTexture;
         bool _isVisible;
 
-        protected readonly PropertyTracker PropertyTracker;
-        protected readonly SpriteBatch SpriteBatch;
+        ImmutableDictionary<Element, IVisualElementRenderer> ChildrenRenderers;
+
         #endregion
 
         #region Properties
+
         public VisualElement Model
         {
             get { return _model; }
@@ -119,7 +133,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public IVisualElementRenderer Parent { get; set; }
 
-        public IEnumerable<IVisualElementRenderer> Children { get { return ChildrenRenderers.Values; } }
+        public ImmutableList<IVisualElementRenderer> Children { get; private set; }
 
         public bool IsVisible
         {
@@ -135,17 +149,31 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                     Disappeared();
             }
         }
+
+        public BasicEffect Effect { get { return _effect; } }
+
         #endregion
 
         #region Constructors
+
         public VisualElementRenderer()
         {
             if (!Forms.IsInitialized)
                 throw new InvalidOperationException("Xamarin.Forms not initialized");
 
-            IsVisible = true;
-            SpriteBatch = new SpriteBatch(Forms.Game.GraphicsDevice);
+            _effect = new BasicEffect(Forms.Game.GraphicsDevice)
+            {
+                TextureEnabled = true,
+                VertexColorEnabled = true
+            };
+
+            _manuallyAddedElements = new List<Element>();
+
             PropertyTracker = new PropertyTracker();
+            SpriteBatch = new SpriteBatch(Forms.Game.GraphicsDevice);
+            ChildrenRenderers = ImmutableDictionary<Element, IVisualElementRenderer>.Empty;
+            Children = ImmutableList<IVisualElementRenderer>.Empty;
+            IsVisible = true;
 
             PropertyTracker.AddHandler(VisualElement.AnchorXProperty, Handle_Transformation);
             PropertyTracker.AddHandler(VisualElement.AnchorYProperty, Handle_Transformation);
@@ -155,26 +183,19 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(VisualElement.ScaleProperty, Handle_Transformation);
             PropertyTracker.AddHandler(VisualElement.OpacityProperty, Handle_Opacity);
             PropertyTracker.AddHandler(VisualElement.BackgroundColorProperty, Handle_BackgroundColor);
-
-            Effect = new Microsoft.Xna.Framework.Graphics.BasicEffect(Forms.Game.GraphicsDevice)
-            {
-                TextureEnabled = true,
-                VertexColorEnabled = true
-            };
-
-            _manuallyAddedElements = new List<Element>();
         }
+
         #endregion
 
         #region IRenderer
+
         public virtual SizeRequest Measure(Size availableSize)
         {
-            SizeRequest size = new SizeRequest();
+            var size = new SizeRequest();
 
             foreach (var child in Children)
             {
-                var visualChild = child as IVisualElementRenderer;
-                var c = visualChild != null ? visualChild.Model.GetSizeRequest(availableSize.Width, availableSize.Height)
+                var c = child != null ? child.Model.GetSizeRequest(availableSize.Width, availableSize.Height)
                                             : child.Measure(availableSize);
 
                 size.Minimum = new Size(
@@ -206,7 +227,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void RenderChildren(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            foreach (var childRenderer in ChildrenRenderers.Values)
+            foreach (var childRenderer in Children)
                 childRenderer.Draw(gameTime);
         }
 
@@ -225,11 +246,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             var state = Microsoft.Xna.Framework.Graphics.RasterizerState.CullNone;
             var blendState = new Microsoft.Xna.Framework.Graphics.BlendState
             {
-                    ColorSourceBlend = Microsoft.Xna.Framework.Graphics.Blend.SourceAlpha,
-                    AlphaSourceBlend = Microsoft.Xna.Framework.Graphics.Blend.SourceAlpha,
+                ColorSourceBlend = Microsoft.Xna.Framework.Graphics.Blend.SourceAlpha,
+                AlphaSourceBlend = Microsoft.Xna.Framework.Graphics.Blend.SourceAlpha,
 
-                    ColorDestinationBlend = Microsoft.Xna.Framework.Graphics.Blend.InverseSourceAlpha,
-                    AlphaDestinationBlend = Microsoft.Xna.Framework.Graphics.Blend.InverseSourceAlpha
+                ColorDestinationBlend = Microsoft.Xna.Framework.Graphics.Blend.InverseSourceAlpha,
+                AlphaDestinationBlend = Microsoft.Xna.Framework.Graphics.Blend.InverseSourceAlpha
             };
 
             Effect.Alpha = (_alpha = _alpha ?? GetAlpha()).Value;
@@ -254,24 +275,28 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (!IsVisible)
                 return;
 
-            foreach (var childRenderer in ChildrenRenderers.Values)
+            foreach (var childRenderer in Children)
                 childRenderer.Update(gameTime);
         }
 
         public virtual void Appeared()
         {
+            _isVisible = true;
             foreach (var child in Children)
                 child.Appeared();
         }
 
         public virtual void Disappeared()
         {
+            _isVisible = false;
             foreach (var child in Children)
                 child.Disappeared();
         }
+
         #endregion
 
         #region Property Handlers
+
         void Handle_Transformation(BindableProperty prop)
         {
             InvalidateTransformations();
@@ -284,7 +309,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Handle_BackgroundColor(BindableProperty prop)
         {
-            if (Model.BackgroundColor == default(Xamarin.Forms.Color))
+            if (Model.BackgroundColor == default(Color))
                 _backgroundTexture = null;
             else
             {
@@ -296,12 +321,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         public virtual void InvalidateAlpha()
         {
             _alpha = null;
-            foreach (var child in ChildrenRenderers)
-            {
-                var visualRenderer = child.Value as IVisualElementRenderer;
-                visualRenderer.InvalidateAlpha();
-            }
+            foreach (var childRenderer in Children)
+                childRenderer.InvalidateAlpha();
         }
+
         #endregion
 
         #region 3D Transformations
@@ -309,11 +332,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         public virtual void InvalidateTransformations()
         {
             _transformationBounds = default(Rectangle);
-            foreach (var child in ChildrenRenderers)
-            {
-                var visualRenderer = child.Value as IVisualElementRenderer;
-                visualRenderer.InvalidateTransformations();
-            }
+            foreach (var childRenderer in Children)
+                childRenderer.InvalidateTransformations();
         }
 
         protected virtual void Arrange()
@@ -348,11 +368,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             var viewport = Forms.Game.GraphicsDevice.Viewport;
 
             float dist = (float)Math.Max(viewport.Width, viewport.Height) * 2;
-            var angle = (float)System.Math.Atan(((float)viewport.Height / 2) / dist) * 2;
+            var angle = (float)Math.Atan(((float)viewport.Height / 2) / dist) * 2;
 
             return Matrix.CreateTranslation(-(float)viewport.Width / 2 - 0.5f, -(float)viewport.Height / 2 - 0.5f, -dist)
-                 * Matrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), 0.001f, dist * 2)
-                 * Matrix.CreateScale(1, -1, 1);
+            * Matrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), dist * 0.8f, dist * 2)
+            * Matrix.CreateScale(1, -1, 1);
         }
 
         static Matrix GetControlTransformation(VisualElement element)
@@ -361,36 +381,39 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             var absAnchorY = (float)(element.Bounds.Height * element.AnchorY);
 
             var offset = new Vector2(
-                (float)(element.Bounds.X + element.TranslationX - (absAnchorX * element.Scale - absAnchorX)),
-                (float)(element.Bounds.Y + element.TranslationY - (absAnchorY * element.Scale - absAnchorY))
-            );
+                             (float)(element.Bounds.X + element.TranslationX - (absAnchorX * element.Scale - absAnchorX)),
+                             (float)(element.Bounds.Y + element.TranslationY - (absAnchorY * element.Scale - absAnchorY))
+                         );
 
             return Matrix.CreateTranslation(-absAnchorX, -absAnchorY, 0f)
-                 * Matrix.CreateRotationX(MathHelper.ToRadians((float)element.RotationX))
-                 * Matrix.CreateRotationY(MathHelper.ToRadians((float)element.RotationY))
-                 * Matrix.CreateRotationZ(MathHelper.ToRadians((float)element.Rotation))
-                 * Matrix.CreateScale((float)element.Scale)
-                 * Matrix.CreateTranslation(absAnchorX * (float)element.Scale, absAnchorY * (float)element.Scale, 0f)
-                 * Matrix.CreateTranslation(new Vector3(offset, 0));
+            * Matrix.CreateRotationX(MathHelper.ToRadians((float)element.RotationX))
+            * Matrix.CreateRotationY(MathHelper.ToRadians((float)element.RotationY))
+            * Matrix.CreateRotationZ(MathHelper.ToRadians((float)element.Rotation))
+            * Matrix.CreateScale((float)element.Scale)
+            * Matrix.CreateTranslation(absAnchorX * (float)element.Scale, absAnchorY * (float)element.Scale, 0f)
+            * Matrix.CreateTranslation(new Vector3(offset, 0));
         }
+
         #endregion
 
         #region Child track
+
         void Model_ChildAdded(object sender, ElementEventArgs e)
         {
             var childRenderer = VisualElementRenderer.Create((VisualElement)e.Element);
             childRenderer.Parent = this;
-            ChildrenRenderers = ChildrenRenderers.Add(e.Element, childRenderer);
+            Children = Model.LogicalChildren.Select(c => VisualElementRenderer.GetRenderer(c)).ToImmutableList();
+            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => VisualElementRenderer.GetRenderer(c));
         }
 
         void Model_ChildRemoved(object sender, ElementEventArgs e)
         {
+            Children = Model.LogicalChildren.Select(c => VisualElementRenderer.GetRenderer(c)).ToImmutableList();
+            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => VisualElementRenderer.GetRenderer(c));
+
             IVisualElementRenderer childRenderer;
-            if (ChildrenRenderers.TryGetValue((VisualElement)e.Element, out childRenderer))
-            {
+            if (ChildrenRenderers.TryGetValue(e.Element, out childRenderer))
                 childRenderer.Parent = null;
-                ChildrenRenderers = ChildrenRenderers.Remove(e.Element);
-            }
         }
 
         protected void AddElement(Element element)
@@ -408,9 +431,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (_manuallyAddedElements.Remove(element))
                 Model_ChildRemoved(this, new ElementEventArgs(element));
         }
+
         #endregion
 
         #region Protected Methods
+
         protected void InvalidateMeasure()
         {
             Model.NativeSizeChanged();
@@ -418,18 +443,16 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void OnModelUnload(VisualElement model)
         {
-            ChildrenRenderers = ChildrenRenderers.RemoveRange(
-                ChildrenRenderers.Keys.Where(i => !_manuallyAddedElements.Contains(i)));
-
-            ChildrenRenderers = null;
+            Children = ImmutableList<IVisualElementRenderer>.Empty;
+            ChildrenRenderers = ImmutableDictionary<Element, IVisualElementRenderer>.Empty;
             model.ChildAdded -= Model_ChildAdded;
             model.ChildRemoved -= Model_ChildRemoved;
         }
 
         protected virtual void OnModelLoad(VisualElement model)
         {
-            ChildrenRenderers = ChildrenRenderers.AddRange(
-                model.LogicalChildren.ToDictionary(c => c, c => VisualElementRenderer.Create((VisualElement)c)));
+            Children = model.LogicalChildren.Select(c => VisualElementRenderer.Create((VisualElement)c)).ToImmutableList();
+            ChildrenRenderers = model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
 
             model.ChildAdded += Model_ChildAdded;
             model.ChildRemoved += Model_ChildRemoved;
@@ -449,6 +472,49 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
             return (float)alpha;
         }
+
+        #endregion
+
+        #region Input
+
+        public virtual void OnMouseEnter()
+        {
+        }
+
+        public virtual void OnMouseLeave()
+        {
+        }
+
+        public virtual bool InterceptMouseDown(Mouse.Button button)
+        {
+            return false;
+        }
+
+        public virtual bool HandleMouseDown(Mouse.Button button)
+        {
+            return false;
+        }
+
+        public virtual bool InterceptMouseUp(Mouse.Button button)
+        {
+            return false;
+        }
+
+        public virtual bool HandleMouseUp(Mouse.Button button)
+        {
+            return false;
+        }
+
+        public virtual bool InterceptClick()
+        {
+            return false;
+        }
+
+        public virtual bool HandleClick()
+        {
+            return false;
+        }
+
         #endregion
     }
 }
