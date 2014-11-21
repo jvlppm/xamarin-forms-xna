@@ -7,15 +7,15 @@
 
     public static class RoutedEventManager
     {
-        public static bool HandleRaise(this IVisualElementRenderer renderer, Func<IVisualElementRenderer, bool> previewHandler, Func<IVisualElementRenderer, bool> eventHandler)
+        public static bool HandleRaise(this VisualElementRenderer renderer, Func<VisualElementRenderer, bool> previewHandler, Func<VisualElementRenderer, bool> eventHandler)
         {
             return (previewHandler != null && renderer.RouteToRoot().Reverse().Any(previewHandler)) ||
                    (eventHandler != null && renderer.RouteToRoot().Any(eventHandler));
         }
 
-        static IEnumerable<IVisualElementRenderer> RouteToRoot(this IVisualElementRenderer renderer)
+        static IEnumerable<VisualElementRenderer> RouteToRoot(this VisualElementRenderer renderer)
         {
-            IVisualElementRenderer current = renderer;
+            VisualElementRenderer current = renderer;
             while (current != null)
             {
                 yield return current;

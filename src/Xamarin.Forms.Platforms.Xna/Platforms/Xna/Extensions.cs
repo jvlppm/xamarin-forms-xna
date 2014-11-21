@@ -45,13 +45,22 @@ namespace Xamarin.Forms.Platforms.Xna
             return p;
         }
 
-        public static IEnumerable<IVisualElementRenderer> FlattenHierarchy(this IVisualElementRenderer renderer)
+        public static IEnumerable<VisualElementRenderer> FlattenHierarchy(this VisualElementRenderer renderer)
         {
             yield return renderer;
 
             foreach (var child in renderer.Children)
                 foreach (var sub in FlattenHierarchy(child))
                     yield return sub;
+        }
+
+        public static IEnumerable<VisualElementRenderer> FlattenHierarchyReverse(this VisualElementRenderer renderer)
+        {
+            foreach (var child in renderer.Children.Reverse())
+                foreach (var sub in FlattenHierarchyReverse(child))
+                    yield return sub;
+
+            yield return renderer;
         }
     }
 }

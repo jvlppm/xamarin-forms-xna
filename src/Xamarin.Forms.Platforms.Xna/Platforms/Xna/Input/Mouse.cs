@@ -4,7 +4,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 {
     using System;
     using System.Linq;
-    using Xamarin.Forms.Platforms.Xna.Renderers;
+    using Renderers;
     using XnaMouse = Microsoft.Xna.Framework.Input.Mouse;
     using XnaVector2 = Microsoft.Xna.Framework.Vector2;
     using XnaVector3 = Microsoft.Xna.Framework.Vector3;
@@ -24,8 +24,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             XButton2
         }
 
-        static IVisualElementRenderer Pressing;
-        static IVisualElementRenderer Over;
+        static VisualElementRenderer Pressing;
+        static VisualElementRenderer Over;
 
         static IDictionary<Button, XnaButtonState?> buttonState = new Dictionary<Button, XnaButtonState?>
         {
@@ -36,11 +36,16 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             { Button.XButton2, null },
         };
 
-        public static void Update(IVisualElementRenderer renderer)
+        public static void Update(VisualElementRenderer renderer)
         {
-            var state = XnaMouse.GetState();
+            XnaMouseState state;
+            try
+            {
+                state = XnaMouse.GetState();
+            }
+            catch (InvalidOperationException) { return; }
 
-            var reallyOver = renderer.FlattenHierarchy().Reverse().Select(c =>
+            var reallyOver = renderer.FlattenHierarchyReverse().Select(c =>
                 {
                     var pos = DetectPosition(c, state.X, state.Y);
                     if (pos != null &&
@@ -54,9 +59,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 
             if (newOver != null)
             {
-                for(int i = 0 ; i < 5; i++)
+                foreach(Button button in Enum.GetValues(typeof(Button)))
                 {
-                    var button = (Button)i;
                     XnaButtonState newState;
                     switch (button)
                     {
@@ -102,12 +106,12 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                     Over = newOver;
                 }
 
-                if (Over != null && state.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
+                if (Over != null && state.LeftButton == XnaButtonState.Pressed)
                 {
                     Pressing = Over;
                 }
             }
-            else if(state.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
+            else if(state.LeftButton == XnaButtonState.Released)
             {
                 if (newOver == Pressing)
                 {
@@ -127,7 +131,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             }
         }
 
-        static XnaVector2? DetectPosition(IVisualElementRenderer renderer, float x, float y)
+        static XnaVector2? DetectPosition(VisualElementRenderer renderer, float x, float y)
         {
             var plane = new XnaPlane(new XnaVector3(0, 0, 1), 0);
             plane = plane.Transform(renderer.Effect.World);
@@ -142,7 +146,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             return null;
         }
 
-        static Microsoft.Xna.Framework.Ray GetPickRay(IVisualElementRenderer renderer, float x, float y)
+        static Microsoft.Xna.Framework.Ray GetPickRay(VisualElementRenderer renderer, float x, float y)
         {
             var nearsource = new XnaVector3(x, y, 0f);
             var farsource = new XnaVector3(x, y, 1f);

@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platforms.Xna
     public class UIGameComponent : Microsoft.Xna.Framework.DrawableGameComponent, IPlatform
     {
         Page _page;
-        IVisualElementRenderer _renderer;
+        VisualElementRenderer _renderer;
         object _bindingContext;
 
         public Rectangle? Area;

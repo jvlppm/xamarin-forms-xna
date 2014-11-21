@@ -86,7 +86,6 @@
     <Compile Include="Platforms\Xna\Internal\PlatformServices.cs" />
     <Compile Include="Platforms\Xna\Internal\PlatformTimer.cs" />
     <Compile Include="Platforms\Xna\Renderers\ImageRenderer.cs" />
-    <Compile Include="Platforms\Xna\Renderers\IVisualElementRenderer.cs" />
     <Compile Include="Platforms\Xna\Renderers\LabelRenderer.cs" />
     <Compile Include="Platforms\Xna\Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Platforms\Xna\UIGameComponent.cs" />
@@ -115,7 +114,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Folder Include="Platforms\Xna\Input\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

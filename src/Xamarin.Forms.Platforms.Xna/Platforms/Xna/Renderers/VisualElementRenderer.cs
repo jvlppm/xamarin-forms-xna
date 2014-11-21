@@ -1,5 +1,5 @@
-﻿using Xamarin.Forms.Platforms.Xna.Input;
-using System.Linq;
+﻿using System.Linq;
+using Xamarin.Forms.Platforms.Xna.Input;
 
 [assembly: Xamarin.Forms.Platforms.Xna.ExportRenderer(
     typeof(Xamarin.Forms.VisualElement),
@@ -10,16 +10,15 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Xamarin.Forms;
-    using Xamarin.Forms.Platforms.Xna;
-    using MathHelper = Microsoft.Xna.Framework.MathHelper;
-    using Matrix = Microsoft.Xna.Framework.Matrix;
-    using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
-    using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-    using Vector2 = Microsoft.Xna.Framework.Vector2;
-    using Vector3 = Microsoft.Xna.Framework.Vector3;
-    using Plane = Microsoft.Xna.Framework.Plane;
-    using MouseState = Microsoft.Xna.Framework.Input.MouseState;
-    using BasicEffect = Microsoft.Xna.Framework.Graphics.BasicEffect;
+    using Xna;
+    using XnaBasicEffect = Microsoft.Xna.Framework.Graphics.BasicEffect;
+    using XnaMathHelper = Microsoft.Xna.Framework.MathHelper;
+    using XnaMatrix = Microsoft.Xna.Framework.Matrix;
+    using XnaSpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
+    using XnaTexture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
+    using XnaVector2 = Microsoft.Xna.Framework.Vector2;
+    using XnaVector3 = Microsoft.Xna.Framework.Vector3;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class VisualElementRenderer<TModel> : VisualElementRenderer
         where TModel : VisualElement
@@ -51,23 +50,23 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         }
     }
 
-    public class VisualElementRenderer : IVisualElementRenderer
+    public class VisualElementRenderer : IRegisterable
     {
         #region Static
 
-        static BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(VisualElementRenderer), null);
+        static BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(VisualElementRenderer), typeof(VisualElementRenderer), null);
 
-        public static IVisualElementRenderer GetRenderer(BindableObject obj)
+        public static VisualElementRenderer GetRenderer(BindableObject obj)
         {
-            return (IVisualElementRenderer)obj.GetValue(RendererProperty);
+            return (VisualElementRenderer)obj.GetValue(RendererProperty);
         }
 
-        public static void SetRenderer(Element obj, IVisualElementRenderer renderer)
+        public static void SetRenderer(Element obj, VisualElementRenderer renderer)
         {
             obj.SetValue(RendererProperty, renderer);
         }
 
-        public static IVisualElementRenderer Create(VisualElement element)
+        public static VisualElementRenderer Create(VisualElement element)
         {
             if (!Forms.IsInitialized)
                 throw new InvalidOperationException("Xamarin.Forms not initialized");
@@ -75,7 +74,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (element == null)
                 throw new NotImplementedException();
 
-            var renderer = Registrar.Registered.GetHandler<IVisualElementRenderer>(element.GetType());
+            var renderer = Registrar.Registered.GetHandler<VisualElementRenderer>(element.GetType());
             if (renderer != null)
             {
                 SetRenderer(element, renderer);
@@ -89,21 +88,22 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #region Attributes
 
+        public readonly XnaBasicEffect Effect;
+
         protected readonly PropertyTracker PropertyTracker;
-        protected readonly SpriteBatch SpriteBatch;
+        protected readonly XnaSpriteBatch SpriteBatch;
 
-        readonly BasicEffect _effect;
+        Rectangle _lastArrangeBounds;
 
-        Rectangle _transformationBounds;
-        Microsoft.Xna.Framework.Rectangle _backgroundArea;
+        XnaRectangle _backgroundArea;
+        XnaTexture2D _backgroundTexture;
 
         VisualElement _model;
         List<Element> _manuallyAddedElements;
         float? _alpha;
-        Texture2D _backgroundTexture;
         bool _isVisible;
 
-        ImmutableDictionary<Element, IVisualElementRenderer> ChildrenRenderers;
+        ImmutableDictionary<Element, VisualElementRenderer> ChildrenRenderers;
 
         #endregion
 
@@ -131,9 +131,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
         }
 
-        public IVisualElementRenderer Parent { get; set; }
+        public VisualElementRenderer Parent { get; set; }
 
-        public ImmutableList<IVisualElementRenderer> Children { get; private set; }
+        public ImmutableList<VisualElementRenderer> Children { get; private set; }
 
         public bool IsVisible
         {
@@ -150,8 +150,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
         }
 
-        public BasicEffect Effect { get { return _effect; } }
-
         #endregion
 
         #region Constructors
@@ -161,7 +159,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (!Forms.IsInitialized)
                 throw new InvalidOperationException("Xamarin.Forms not initialized");
 
-            _effect = new BasicEffect(Forms.Game.GraphicsDevice)
+            Effect = new XnaBasicEffect(Forms.Game.GraphicsDevice)
             {
                 TextureEnabled = true,
                 VertexColorEnabled = true
@@ -170,9 +168,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             _manuallyAddedElements = new List<Element>();
 
             PropertyTracker = new PropertyTracker();
-            SpriteBatch = new SpriteBatch(Forms.Game.GraphicsDevice);
-            ChildrenRenderers = ImmutableDictionary<Element, IVisualElementRenderer>.Empty;
-            Children = ImmutableList<IVisualElementRenderer>.Empty;
+            SpriteBatch = new XnaSpriteBatch(Forms.Game.GraphicsDevice);
+            ChildrenRenderers = ImmutableDictionary<Element, VisualElementRenderer>.Empty;
+            Children = ImmutableList<VisualElementRenderer>.Empty;
             IsVisible = true;
 
             PropertyTracker.AddHandler(VisualElement.AnchorXProperty, Handle_Transformation);
@@ -240,7 +238,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void BeginDraw()
         {
-            if (Model.Bounds != _transformationBounds)
+            if (Model.Bounds != _lastArrangeBounds)
                 Arrange();
 
             var state = Microsoft.Xna.Framework.Graphics.RasterizerState.CullNone;
@@ -313,7 +311,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 _backgroundTexture = null;
             else
             {
-                _backgroundTexture = new Texture2D(SpriteBatch.GraphicsDevice, 1, 1);
+                _backgroundTexture = new XnaTexture2D(SpriteBatch.GraphicsDevice, 1, 1);
                 _backgroundTexture.SetData(new[] { Model.BackgroundColor.ToXnaColor() });
             }
         }
@@ -331,7 +329,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public virtual void InvalidateTransformations()
         {
-            _transformationBounds = default(Rectangle);
+            _lastArrangeBounds = default(Rectangle);
             foreach (var childRenderer in Children)
                 childRenderer.InvalidateTransformations();
         }
@@ -340,13 +338,13 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             Effect.World = GetWorldTransformation(Model);
             Effect.Projection = GetProjectionMatrix(Model);
-            _transformationBounds = Model.Bounds;
-            _backgroundArea = new Microsoft.Xna.Framework.Rectangle(0, 0, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
+            _lastArrangeBounds = Model.Bounds;
+            _backgroundArea = new XnaRectangle(0, 0, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
         }
 
-        static Matrix GetWorldTransformation(Element element)
+        static XnaMatrix GetWorldTransformation(Element element)
         {
-            Matrix world = Matrix.Identity;
+            XnaMatrix world = XnaMatrix.Identity;
             var currentElement = element;
             while (currentElement != null)
             {
@@ -360,38 +358,38 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             return world;
         }
 
-        static Matrix GetProjectionMatrix(VisualElement element)
+        static XnaMatrix GetProjectionMatrix(VisualElement element)
         {
             if (element.Bounds.Width <= 0 && element.Bounds.Height <= 0)
-                return Matrix.Identity;
+                return XnaMatrix.Identity;
 
             var viewport = Forms.Game.GraphicsDevice.Viewport;
 
             float dist = (float)Math.Max(viewport.Width, viewport.Height) * 2;
             var angle = (float)Math.Atan(((float)viewport.Height / 2) / dist) * 2;
 
-            return Matrix.CreateTranslation(-(float)viewport.Width / 2 - 0.5f, -(float)viewport.Height / 2 - 0.5f, -dist)
-            * Matrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), dist * 0.8f, dist * 2)
-            * Matrix.CreateScale(1, -1, 1);
+            return XnaMatrix.CreateTranslation(-(float)viewport.Width / 2 - 0.5f, -(float)viewport.Height / 2 - 0.5f, -dist)
+                 * XnaMatrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), dist * 0.8f, dist * 2)
+                 * XnaMatrix.CreateScale(1, -1, 1);
         }
 
-        static Matrix GetControlTransformation(VisualElement element)
+        static XnaMatrix GetControlTransformation(VisualElement element)
         {
             var absAnchorX = (float)(element.Bounds.Width * element.AnchorX);
             var absAnchorY = (float)(element.Bounds.Height * element.AnchorY);
 
-            var offset = new Vector2(
+            var offset = new XnaVector2(
                              (float)(element.Bounds.X + element.TranslationX - (absAnchorX * element.Scale - absAnchorX)),
                              (float)(element.Bounds.Y + element.TranslationY - (absAnchorY * element.Scale - absAnchorY))
                          );
 
-            return Matrix.CreateTranslation(-absAnchorX, -absAnchorY, 0f)
-            * Matrix.CreateRotationX(MathHelper.ToRadians((float)element.RotationX))
-            * Matrix.CreateRotationY(MathHelper.ToRadians((float)element.RotationY))
-            * Matrix.CreateRotationZ(MathHelper.ToRadians((float)element.Rotation))
-            * Matrix.CreateScale((float)element.Scale)
-            * Matrix.CreateTranslation(absAnchorX * (float)element.Scale, absAnchorY * (float)element.Scale, 0f)
-            * Matrix.CreateTranslation(new Vector3(offset, 0));
+            return XnaMatrix.CreateTranslation(-absAnchorX, -absAnchorY, 0f)
+                 * XnaMatrix.CreateRotationX(XnaMathHelper.ToRadians((float)element.RotationX))
+                 * XnaMatrix.CreateRotationY(XnaMathHelper.ToRadians((float)element.RotationY))
+                 * XnaMatrix.CreateRotationZ(XnaMathHelper.ToRadians((float)element.Rotation))
+                 * XnaMatrix.CreateScale((float)element.Scale)
+                 * XnaMatrix.CreateTranslation(absAnchorX * (float)element.Scale, absAnchorY * (float)element.Scale, 0f)
+                 * XnaMatrix.CreateTranslation(new XnaVector3(offset, 0));
         }
 
         #endregion
@@ -400,18 +398,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Model_ChildAdded(object sender, ElementEventArgs e)
         {
-            var childRenderer = VisualElementRenderer.Create((VisualElement)e.Element);
+            var childRenderer = Create((VisualElement)e.Element);
             childRenderer.Parent = this;
-            Children = Model.LogicalChildren.Select(c => VisualElementRenderer.GetRenderer(c)).ToImmutableList();
-            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => VisualElementRenderer.GetRenderer(c));
+            Children = Model.LogicalChildren.Select(c => GetRenderer(c)).ToImmutableList();
+            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
         }
 
         void Model_ChildRemoved(object sender, ElementEventArgs e)
         {
-            Children = Model.LogicalChildren.Select(c => VisualElementRenderer.GetRenderer(c)).ToImmutableList();
-            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => VisualElementRenderer.GetRenderer(c));
+            Children = Model.LogicalChildren.Select(c => GetRenderer(c)).ToImmutableList();
+            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
 
-            IVisualElementRenderer childRenderer;
+            VisualElementRenderer childRenderer;
             if (ChildrenRenderers.TryGetValue(e.Element, out childRenderer))
                 childRenderer.Parent = null;
         }
@@ -443,8 +441,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void OnModelUnload(VisualElement model)
         {
-            Children = ImmutableList<IVisualElementRenderer>.Empty;
-            ChildrenRenderers = ImmutableDictionary<Element, IVisualElementRenderer>.Empty;
+            Children = ImmutableList<VisualElementRenderer>.Empty;
+            ChildrenRenderers = ImmutableDictionary<Element, VisualElementRenderer>.Empty;
             model.ChildAdded -= Model_ChildAdded;
             model.ChildRemoved -= Model_ChildRemoved;
         }
