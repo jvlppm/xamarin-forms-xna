@@ -20,7 +20,27 @@ namespace Xamarin.Forms.Platforms.Xna
 
     public class DefaultImageSourceHandler : IImageSourceHandler
     {
-        public async Task<Texture2D> LoadImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
+        class TextureImageSource : IImageSource
+        {
+            Texture2D _texture;
+
+            public TextureImageSource(Texture2D texture)
+            {
+                _texture = texture;
+            }
+
+            public SizeRequest Measure(Size availableSize)
+            {
+                return new SizeRequest(new Size(_texture.Width, _texture.Height), default(Size));
+            }
+
+            public Texture2D GetImage(Size availableSize)
+            {
+                return _texture;
+            }
+        }
+
+        public async Task<IImageSource> LoadImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
         {
             Task<Stream> getStream = null;
 
@@ -36,7 +56,7 @@ namespace Xamarin.Forms.Platforms.Xna
                 else
 #endif
                 {
-                    return Forms.Game.Content.Load<Texture2D>(fileSource.File);
+                    return new TextureImageSource(Forms.Game.Content.Load<Texture2D>(fileSource.File));
                 }
             }
             if (streamSource != null)
@@ -50,7 +70,7 @@ namespace Xamarin.Forms.Platforms.Xna
                         throw new ArgumentException("Unsupported image source HOST " + uri.Host + ". Did you mean content:///?", "imageSource");
 
                     var asset = uriSource.Uri.PathAndQuery.TrimStart('/');
-                    return Forms.Game.Content.Load<Texture2D>(asset);
+                    return new TextureImageSource(Forms.Game.Content.Load<Texture2D>(asset));
                 }
 
                 getStream = uriSource.GetStreamAsync(cancellationToken);
@@ -59,7 +79,7 @@ namespace Xamarin.Forms.Platforms.Xna
             if (getStream == null)
                 throw new InvalidOperationException("Not supported image source");
 
-            return Texture2D.FromStream(Forms.Game.GraphicsDevice, await getStream);
+            return new TextureImageSource(Texture2D.FromStream(Forms.Game.GraphicsDevice, await getStream));
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 namespace Xamarin.Forms.Platforms.Xna
 {
     using Microsoft.Xna.Framework;
+    using Microsoft.Xna.Framework.Graphics;
 
     public static class Extensions
     {
@@ -61,6 +62,11 @@ namespace Xamarin.Forms.Platforms.Xna
                     yield return sub;
 
             yield return renderer;
+        }
+
+        public static void Draw(this SpriteBatch spriteBatch, NinePatch ninePatch, Rectangle rectangle, Color color)
+        {
+            ninePatch.Draw(spriteBatch, rectangle, color);
         }
     }
 }

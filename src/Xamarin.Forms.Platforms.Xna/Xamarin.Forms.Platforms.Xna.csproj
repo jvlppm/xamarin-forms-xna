@@ -82,6 +82,7 @@
     <Compile Include="Platforms\Xna\Extensions.cs" />
     <Compile Include="Platforms\Xna\IImageSourceHandler.cs" />
     <Compile Include="Platforms\Xna\Internal\ContextTicker.cs" />
+    <Compile Include="Platforms\Xna\NinePatch.cs" />
     <Compile Include="Platforms\Xna\Internal\PlatformEngine.cs" />
     <Compile Include="Platforms\Xna\Internal\PlatformServices.cs" />
     <Compile Include="Platforms\Xna\Internal\PlatformTimer.cs" />

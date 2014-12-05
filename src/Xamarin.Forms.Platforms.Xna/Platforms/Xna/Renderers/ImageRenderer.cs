@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     public class ImageRenderer : VisualElementRenderer<Image>
     {
         CancellationTokenSource _imageLoadCancellation;
+        IImageSource _imageSource;
         Texture2D _image;
         Microsoft.Xna.Framework.Rectangle _renderArea;
 
@@ -23,24 +24,26 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public override SizeRequest Measure(Size availableSize)
         {
-            if (_image == null || !IsVisible)
+            if (_imageSource == null || !IsVisible)
                 return default(SizeRequest);
 
+            SizeRequest measuredSize = _imageSource.Measure(availableSize);
+
             if (double.IsPositiveInfinity(availableSize.Width))
-                availableSize.Width = _image.Width;
+                availableSize.Width = measuredSize.Request.Width;
             if (double.IsPositiveInfinity(availableSize.Height))
-                availableSize.Height = _image.Height;
+                availableSize.Height = measuredSize.Request.Height;
 
             switch (Model.Aspect)
             {
                 case Aspect.Fill:
-                    return new SizeRequest(availableSize, default(Size));
+                    return new SizeRequest(availableSize, measuredSize.Minimum);
                 case Aspect.AspectFit:
-                    var scaleFit = Math.Min(availableSize.Width / (float)_image.Width, availableSize.Height / (float)_image.Height);
-                    return new SizeRequest(new Size(_image.Width * scaleFit, _image.Height * scaleFit), default(Size));
+                    var scaleFit = Math.Min(availableSize.Width / (float)measuredSize.Request.Width, availableSize.Height / (float)measuredSize.Request.Height);
+                    return new SizeRequest(new Size(measuredSize.Request.Width * scaleFit, measuredSize.Request.Height * scaleFit), measuredSize.Minimum);
                 case Aspect.AspectFill:
-                    var scaleFill = Math.Max(availableSize.Width / (float)_image.Width, availableSize.Height / (float)_image.Height);
-                    return new SizeRequest(new Size(_image.Width * scaleFill, _image.Height * scaleFill), default(Size));
+                    var scaleFill = Math.Max(availableSize.Width / (float)measuredSize.Request.Width, availableSize.Height / (float)measuredSize.Request.Height);
+                    return new SizeRequest(new Size(measuredSize.Request.Width * scaleFill, measuredSize.Request.Height * scaleFill), measuredSize.Minimum);
             }
 
             throw new NotImplementedException();
@@ -54,9 +57,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            if (_image == null)
+            if (_imageSource == null)
                 return;
-            SpriteBatch.Draw(_image, _renderArea, Microsoft.Xna.Framework.Color.White);
+            if (_image == null)
+                _image = _imageSource.GetImage(new Size(_renderArea.Width, _renderArea.Height));
+            if (_image != null)
+                SpriteBatch.Draw(_image, _renderArea, Microsoft.Xna.Framework.Color.White);
         }
 
         #region Property Handlers
@@ -72,7 +78,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 Model.IsLoading = true;
                 try
                 {
-                    _image = await handler.LoadImageAsync(Model.Source, _imageLoadCancellation.Token);
+                    _imageSource = await handler.LoadImageAsync(Model.Source, _imageLoadCancellation.Token);
                     _imageLoadCancellation = null;
                     InvalidateMeasure();
                 }
