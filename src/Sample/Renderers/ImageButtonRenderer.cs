@@ -9,6 +9,8 @@ namespace Sample.Renderers
     using System;
     using Xamarin.Forms.Platforms.Xna.Renderers;
     using Xamarin.Forms.Platforms.Xna;
+    using Xamarin.Forms.Platforms.Xna.Input;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class ImageButtonRenderer : LabelRenderer
     {
@@ -65,14 +67,42 @@ namespace Sample.Renderers
             return true;
         }
 
-        protected override void LocalDraw(GameTime gameTime)
+        protected override void LocalDraw(GameTime gameTime, Xamarin.Forms.Rectangle area)
         {
             if (_image != null)
             {
-                var drawArea = new Rectangle(0, 0, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
-                SpriteBatch.Draw(_image, drawArea, new Color(Color.White, Model.ImageOpacity));
+                SpriteBatch.Draw(_image, new XnaRectangle(0, 0, (int)area.Width, (int)area.Height), new Color(Color.White, Model.ImageOpacity));
+                base.LocalDraw(gameTime, new Xamarin.Forms.Rectangle(
+                    area.Left + _image.Content.Horizontal.Start,
+                    area.Top + _image.Content.Vertical.Start,
+                    area.Width - _image.Content.Horizontal.Margin,
+                    area.Height - _image.Content.Vertical.Margin));
             }
-            base.LocalDraw(gameTime);
+            else base.LocalDraw(gameTime, area);
+        }
+
+        public override void OnMouseEnter()
+        {
+            Model.State = ImageButtonState.Over;
+            base.OnMouseEnter();
+        }
+
+        public override bool HandleMouseDown(Mouse.Button button)
+        {
+            Model.State = ImageButtonState.Pressed;
+            return base.HandleMouseDown(button);
+        }
+
+        public override bool HandleMouseUp(Mouse.Button button)
+        {
+            Model.State = ImageButtonState.Over;
+            return base.HandleMouseUp(button);
+        }
+
+        public override void OnMouseLeave()
+        {
+            Model.State = ImageButtonState.Normal;
+            base.OnMouseLeave();
         }
     }
 }

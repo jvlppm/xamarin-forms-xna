@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System.Threading.Tasks;
     using Xamarin.Forms;
     using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class ImageRenderer : VisualElementRenderer<Image>
     {
@@ -55,7 +56,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             _renderArea = new Microsoft.Xna.Framework.Rectangle(0, 0, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
         }
 
-        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime)
+        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, Rectangle area)
         {
             if (_imageSource == null)
                 return;

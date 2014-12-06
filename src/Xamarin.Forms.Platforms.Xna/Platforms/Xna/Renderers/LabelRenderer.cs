@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
     using Color = Microsoft.Xna.Framework.Color;
     using Vector2 = Microsoft.Xna.Framework.Vector2;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class LabelRenderer : VisualElementRenderer<Label>
     {
@@ -22,6 +23,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         Color _textColor;
         Vector2? _textOffset;
         SizeRequest _measuredSize;
+        Rectangle? _lastArea;
 
         public LabelRenderer()
         {
@@ -44,24 +46,25 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             return _measuredSize;
         }
 
-        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime)
+        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, Rectangle area)
         {
             var font = _font ?? DefaultFont;
             if (font == null || Model.Text == null)
                 return;
 
-            if (_textOffset == null)
-                UpdateTextAlignment();
+            if (_textOffset == null || _lastArea != area)
+                UpdateTextAlignment(area);
 
             SpriteBatch.DrawString(font, Model.Text, _textOffset.Value, _textColor, 0, Vector2.Zero, _scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 1);
         }
 
-        void UpdateTextAlignment()
+        void UpdateTextAlignment(Rectangle area)
         {
-            Measure(Model.Bounds.Size);
+            _lastArea = area;
+            Measure(area.Size);
             _textOffset = new Vector2(
-                GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, (float)Model.Bounds.Width),
-                GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, (float)Model.Bounds.Height));
+                (float)area.Left + GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, (float)area.Width),
+                (float)area.Top + GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, (float)area.Height));
         }
 
         #region Property Handlers

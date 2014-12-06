@@ -9,16 +9,18 @@
     {
         public class Range
         {
-            private readonly int _start, _end;
+            private readonly int _start, _end, _limit;
 
-            public Range(int start, int end)
+            public Range(int start, int end, int limit)
             {
                 _start = start;
                 _end = end;
+                _limit = limit;
             }
 
             public int Start { get { return _start; } }
             public int End { get { return _end; } }
+            public int Margin { get { return _start + (_limit - _end); } }
 
             public int Size { get { return _end - _start; } }
         }
@@ -26,14 +28,18 @@
         public class Area
         {
             readonly Range _horizontal, _vertical;
+            readonly Rectangle _rectangle;
             public Area(Range horizontal, Range vertical)
             {
                 _horizontal = horizontal;
                 _vertical = vertical;
+                _rectangle = new Rectangle(_horizontal.Start, _vertical.Start, _horizontal.Size, _vertical.Size);
             }
 
             public Range Horizontal { get { return _horizontal; } }
             public Range Vertical { get { return _vertical; } }
+
+            public Rectangle Rectangle { get { return _rectangle; } }
         }
 
         public readonly Area Stretch;
@@ -67,7 +73,7 @@
 
             _leftTop = new XnaRectangle(1, 1, Stretch.Horizontal.Start, Stretch.Vertical.Start);
             _leftCenter = new XnaRectangle(1, Stretch.Vertical.Start, Stretch.Horizontal.Start, Stretch.Vertical.Size);
-            _leftBottom = new XnaRectangle(1, Stretch.Vertical.End, Stretch.Horizontal.Start, texture.Height - 1 - Stretch.Horizontal.End);
+            _leftBottom = new XnaRectangle(1, Stretch.Vertical.End, Stretch.Horizontal.Start, texture.Height - 1 - Stretch.Vertical.End);
             _centerTop = new XnaRectangle(Stretch.Horizontal.Start, 1, Stretch.Horizontal.Size, Stretch.Vertical.Start);
             _center = new XnaRectangle(Stretch.Horizontal.Start, Stretch.Vertical.Start, Stretch.Horizontal.Size, Stretch.Vertical.Size);
             _centerBottom = new XnaRectangle(Stretch.Horizontal.Start, Stretch.Vertical.End, Stretch.Horizontal.Size, texture.Height - 1 - Stretch.Vertical.End);
@@ -100,7 +106,7 @@
                 else throw new ArgumentException("Invalid 9-patch image " + texture.Name, "texture");
             }
             if (start >= 0)
-                return new Range(start, start + length);
+                return new Range(start, start + length, data.Length);
             return null;
         }
 

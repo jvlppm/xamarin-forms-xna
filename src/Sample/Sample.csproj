@@ -62,10 +62,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\button_blue_normal.9.png">
+    <None Include="Content\button_blue_over.9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\button_blue_over.9.png">
+    <None Include="Content\button_blue_normal.9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\button_blue_pressed.9.png">

@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected void Render(Microsoft.Xna.Framework.GameTime gameTime)
         {
             BeginDraw();
-            LocalDraw(gameTime);
+            LocalDraw(gameTime, new Rectangle(0, 0, Model.Bounds.Size.Width, Model.Bounds.Size.Height));
             EndDraw();
         }
 
@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 SpriteBatch.Draw(_backgroundTexture, _backgroundArea, Microsoft.Xna.Framework.Color.White);
         }
 
-        protected virtual void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime)
+        protected virtual void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, Rectangle area)
         {
 
         }
