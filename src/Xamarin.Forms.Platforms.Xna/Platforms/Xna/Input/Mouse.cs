@@ -45,7 +45,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             }
             catch (InvalidOperationException) { return; }
 
-            var reallyOver = renderer.FlattenHierarchyReverse().Select(c =>
+            var reallyOver = renderer.FlattenHierarchyReverse()
+                .Where(c => !c.Model.InputTransparent && c.Model.IsEnabled)
+                .Select(c =>
                 {
                     var pos = DetectPosition(c, state.X, state.Y);
                     if (pos != null &&

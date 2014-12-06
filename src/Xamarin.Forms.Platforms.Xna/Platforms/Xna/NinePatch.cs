@@ -19,6 +19,8 @@
 
             public int Start { get { return _start; } }
             public int End { get { return _end; } }
+
+            public int Size { get { return _end - _start; } }
         }
 
         public class Area
@@ -64,14 +66,14 @@
             Height = _texture.Height - 2;
 
             _leftTop = new XnaRectangle(1, 1, Stretch.Horizontal.Start, Stretch.Vertical.Start);
-            _leftCenter = new XnaRectangle(1, Stretch.Vertical.Start, Stretch.Horizontal.Start, Stretch.Vertical.End);
-            _leftBottom = new XnaRectangle(1, Stretch.Vertical.End, Stretch.Horizontal.Start, texture.Height - 1);
-            _centerTop = new XnaRectangle(Stretch.Horizontal.Start, 1, Stretch.Horizontal.End, Stretch.Vertical.Start);
-            _center = new XnaRectangle(Stretch.Horizontal.Start, Stretch.Vertical.Start, Stretch.Horizontal.End, Stretch.Vertical.End);
-            _centerBottom = new XnaRectangle(Stretch.Horizontal.Start, Stretch.Vertical.End, Stretch.Horizontal.End, texture.Height - 1);
-            _rightTop = new XnaRectangle(Stretch.Horizontal.End, 1, texture.Width - 1, Stretch.Vertical.Start);
-            _rightCenter = new XnaRectangle(Stretch.Horizontal.End, Stretch.Vertical.Start, texture.Width - 1, Stretch.Vertical.End);
-            _rightBottom = new XnaRectangle(Stretch.Horizontal.End, Stretch.Vertical.End, texture.Width - 1, texture.Height - 1);
+            _leftCenter = new XnaRectangle(1, Stretch.Vertical.Start, Stretch.Horizontal.Start, Stretch.Vertical.Size);
+            _leftBottom = new XnaRectangle(1, Stretch.Vertical.End, Stretch.Horizontal.Start, texture.Height - 1 - Stretch.Horizontal.End);
+            _centerTop = new XnaRectangle(Stretch.Horizontal.Start, 1, Stretch.Horizontal.Size, Stretch.Vertical.Start);
+            _center = new XnaRectangle(Stretch.Horizontal.Start, Stretch.Vertical.Start, Stretch.Horizontal.Size, Stretch.Vertical.Size);
+            _centerBottom = new XnaRectangle(Stretch.Horizontal.Start, Stretch.Vertical.End, Stretch.Horizontal.Size, texture.Height - 1 - Stretch.Vertical.End);
+            _rightTop = new XnaRectangle(Stretch.Horizontal.End, 1, texture.Width - 1 - Stretch.Horizontal.End, Stretch.Vertical.Start);
+            _rightCenter = new XnaRectangle(Stretch.Horizontal.End, Stretch.Vertical.Start, texture.Width - 1 - Stretch.Horizontal.End, Stretch.Vertical.Size);
+            _rightBottom = new XnaRectangle(Stretch.Horizontal.End, Stretch.Vertical.End, texture.Width - 1 - Stretch.Horizontal.End, texture.Height - 1 - Stretch.Vertical.End);
         }
 
         static Range GetLine(Texture2D texture, int dx, int dy, int x, int y)
@@ -110,15 +112,15 @@
 
             int startY = position.Top;
             int rowCenterTop = startY + rowTopHeight;
-            int rowBottomTop = startY + Height - rowBottomHeight;
+            int rowBottomTop = startY + position.Height - rowBottomHeight;
 
             int colLeftWidth = _leftCenter.Width;
             int colRightWidth = _rightCenter.Width;
-            int colCenterWidth = Width - colLeftWidth - colRightWidth;
+            int colCenterWidth = position.Width - colLeftWidth - colRightWidth;
 
             int startX = position.Left;
             int colCenterLeft = startX + colLeftWidth;
-            int colRightLeft = startX + Width - colRightWidth;
+            int colRightLeft = startX + position.Width - colRightWidth;
 
             spriteBatch.Draw(_texture, new XnaRectangle(startX, startY, colLeftWidth, rowTopHeight), _leftTop, color);
             spriteBatch.Draw(_texture, new XnaRectangle(startX, rowCenterTop, colLeftWidth, rowCenterHeight), _leftCenter, color);

@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         SpriteFont _font;
         Color _textColor;
-        Vector2 _textOffset;
+        Vector2? _textOffset;
         SizeRequest _measuredSize;
 
         public LabelRenderer()
@@ -28,9 +28,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(Label.TextColorProperty, Handle_TextColor);
             PropertyTracker.AddHandler(Label.FontProperty, Handle_Font);
 
+            PropertyTracker.AddHandler(Label.FontProperty, Handle_MeasureProperty);
             PropertyTracker.AddHandler(Label.TextProperty, Handle_MeasureProperty);
-            PropertyTracker.AddHandler(Label.XAlignProperty, Handle_ArrangeProperty);
-            PropertyTracker.AddHandler(Label.YAlignProperty, Handle_ArrangeProperty);
         }
 
         public override SizeRequest Measure(Size availableSize)
@@ -51,20 +50,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (font == null || Model.Text == null)
                 return;
 
-            SpriteBatch.DrawString(font, Model.Text, _textOffset, _textColor, 0, Vector2.Zero, _scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 1);
+            if (_textOffset == null)
+                UpdateTextAlignment();
+
+            SpriteBatch.DrawString(font, Model.Text, _textOffset.Value, _textColor, 0, Vector2.Zero, _scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 1);
         }
 
-        protected override void Arrange()
+        void UpdateTextAlignment()
         {
-            UpdateAlignment();
-            base.Arrange();
-        }
-
-        void UpdateAlignment()
-        {
-            _textOffset = new Microsoft.Xna.Framework.Vector2(
-                (float)GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, (float)Model.Bounds.Width),
-                (float)GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, (float)Model.Bounds.Height));
+            Measure(Model.Bounds.Size);
+            _textOffset = new Vector2(
+                GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, (float)Model.Bounds.Width),
+                GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, (float)Model.Bounds.Height));
         }
 
         #region Property Handlers
@@ -75,8 +72,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 _textColor = LabelRenderer.DefaultTextColor;
             else
                 _textColor = Model.TextColor.ToXnaColor();
-
-            UpdateAlignment();
         }
 
         void Handle_Font(BindableProperty property)
@@ -93,19 +88,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 case NamedSize.Medium: _scale = 1f; break;
                 case NamedSize.Large: _scale = 1.5f; break;
             }
-
-            UpdateAlignment();
-        }
-
-        void Handle_ArrangeProperty(BindableProperty property)
-        {
-            UpdateAlignment();
         }
 
         void Handle_MeasureProperty(BindableProperty property)
         {
+            _textOffset = null;
             InvalidateMeasure();
-            UpdateAlignment();
         }
 
         static float GetAlignOffset(TextAlignment alignment, float textSize, float renderSize)

@@ -7,20 +7,27 @@
     public class ButtonImageConverter : IValueConverter
     {
         public string ColorName { get; set; }
-        public bool Wide { get; set; }
 
         public ButtonImageConverter()
         {
-            ColorName = "grey";
-            Wide = true;
+            ColorName = "blue";
         }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string state = (ImageButtonState)value == ImageButtonState.Normal ? "_normal" : "_over";
-            string size = Wide ? "_wide" : "_narrow";
+            string state = GetStateSuffix((ImageButtonState)value);
+            return "button_" + ColorName + state + ".9";
+        }
 
-            return "button_" + ColorName + size + state;
+        string GetStateSuffix(ImageButtonState value)
+        {
+            switch (value)
+            {
+                case ImageButtonState.Over: return "_over";
+                case ImageButtonState.Pressed:
+                case ImageButtonState.Pressing: return "_pressed";
+                default: return "_normal";
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
