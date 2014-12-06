@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platforms.Xna
             {
 #if !PORTABLE
                 if (File.Exists(fileSource.File))
-                    getStream = Task.FromResult((Stream)System.IO.File.OpenRead(fileSource.File));
+                    getStream = Task.FromResult((Stream)File.OpenRead(fileSource.File));
                 else
 #endif
                 {

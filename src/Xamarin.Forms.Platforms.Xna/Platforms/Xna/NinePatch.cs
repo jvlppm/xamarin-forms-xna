@@ -38,8 +38,6 @@
 
             public Range Horizontal { get { return _horizontal; } }
             public Range Vertical { get { return _vertical; } }
-
-            public Rectangle Rectangle { get { return _rectangle; } }
         }
 
         public readonly Area Stretch;
@@ -61,12 +59,14 @@
         public NinePatch(Texture2D texture)
         {
             _texture = texture;
+            XnaColor[] data = new XnaColor[texture.Width * texture.Height];
+            texture.GetData(data);
             Stretch = new Area(
-                vertical: GetLine(texture, 1, 0, 0, 0),
-                horizontal: GetLine(texture, 0, 1, 0, 0));
+                vertical: GetLine(texture, data, 1, 0, 0, 0),
+                horizontal: GetLine(texture, data, 0, 1, 0, 0));
             Content = new Area(
-                vertical: GetLine(texture, 0, 1, _texture.Width - 1, 0),
-                horizontal: GetLine(texture, 1, 0, 0, _texture.Height - 1));
+                vertical: GetLine(texture, data, 0, 1, _texture.Width - 1, 0),
+                horizontal: GetLine(texture, data, 1, 0, 0, _texture.Height - 1));
 
             Width = _texture.Width - 2;
             Height = _texture.Height - 2;
@@ -82,16 +82,14 @@
             _rightBottom = new XnaRectangle(Stretch.Horizontal.End, Stretch.Vertical.End, texture.Width - 1 - Stretch.Horizontal.End, texture.Height - 1 - Stretch.Vertical.End);
         }
 
-        static Range GetLine(Texture2D texture, int dx, int dy, int x, int y)
+        static Range GetLine(Texture2D texture, XnaColor[] data, int dx, int dy, int x, int y)
         {
-            XnaColor[] data = new XnaColor[dx * texture.Width + dy * texture.Height];
-
             int start = -1, length = 0;
-            texture.GetData(0, new XnaRectangle(0, 0, dx == 0 ? 1 : texture.Width, dy == 0 ? 1 : texture.Height), data, 0, data.Length);
 
-            for (int i = 0; i < data.Length; i++)
+            int size = texture.Width * dx + texture.Height * dy;
+            for (int i = 0; i < size; i++)
             {
-                XnaColor color = data[i];
+                XnaColor color = data[(y + i) * dy * texture.Width + (x + i) * dx];
                 if (color == XnaColor.Black)
                 {
                     length++;
@@ -106,7 +104,7 @@
                 else throw new ArgumentException("Invalid 9-patch image " + texture.Name, "texture");
             }
             if (start >= 0)
-                return new Range(start, start + length, data.Length);
+                return new Range(start, start + length, size);
             return null;
         }
 
@@ -137,6 +135,15 @@
             spriteBatch.Draw(_texture, new XnaRectangle(colRightLeft, startY, colRightWidth, rowTopHeight), _rightTop, color);
             spriteBatch.Draw(_texture, new XnaRectangle(colRightLeft, rowCenterTop, colRightWidth, rowCenterHeight), _rightCenter, color);
             spriteBatch.Draw(_texture, new XnaRectangle(colRightLeft, rowBottomTop, colRightWidth, rowBottomHeight), _rightBottom, color);
+        }
+
+        public XnaRectangle GetContentArea(XnaRectangle area)
+        {
+            return new XnaRectangle(
+                area.Left + Content.Horizontal.Start,
+                area.Top + Content.Vertical.Start,
+                area.Width - Content.Horizontal.Margin,
+                area.Height - Content.Vertical.Margin);
         }
     }
 }

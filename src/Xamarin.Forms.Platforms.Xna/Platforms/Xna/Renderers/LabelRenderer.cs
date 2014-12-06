@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         Color _textColor;
         Vector2? _textOffset;
         SizeRequest _measuredSize;
-        Rectangle? _lastArea;
+        XnaRectangle? _lastArea;
 
         public LabelRenderer()
         {
@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             return _measuredSize;
         }
 
-        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, Rectangle area)
+        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, XnaRectangle area)
         {
             var font = _font ?? DefaultFont;
             if (font == null || Model.Text == null)
@@ -58,13 +58,13 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             SpriteBatch.DrawString(font, Model.Text, _textOffset.Value, _textColor, 0, Vector2.Zero, _scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 1);
         }
 
-        void UpdateTextAlignment(Rectangle area)
+        void UpdateTextAlignment(XnaRectangle area)
         {
             _lastArea = area;
-            Measure(area.Size);
+            Measure(new Size(area.Width, area.Height));
             _textOffset = new Vector2(
-                (float)area.Left + GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, (float)area.Width),
-                (float)area.Top + GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, (float)area.Height));
+                area.Left + GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, area.Width),
+                area.Top + GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, area.Height));
         }
 
         #region Property Handlers

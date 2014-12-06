@@ -67,16 +67,12 @@ namespace Sample.Renderers
             return true;
         }
 
-        protected override void LocalDraw(GameTime gameTime, Xamarin.Forms.Rectangle area)
+        protected override void LocalDraw(GameTime gameTime, XnaRectangle area)
         {
             if (_image != null)
             {
-                SpriteBatch.Draw(_image, new XnaRectangle(0, 0, (int)area.Width, (int)area.Height), new Color(Color.White, Model.ImageOpacity));
-                base.LocalDraw(gameTime, new Xamarin.Forms.Rectangle(
-                    area.Left + _image.Content.Horizontal.Start,
-                    area.Top + _image.Content.Vertical.Start,
-                    area.Width - _image.Content.Horizontal.Margin,
-                    area.Height - _image.Content.Vertical.Margin));
+                SpriteBatch.Draw(_image, area, new Color(Color.White, Model.ImageOpacity));
+                base.LocalDraw(gameTime, _image.GetContentArea(area));
             }
             else base.LocalDraw(gameTime, area);
         }

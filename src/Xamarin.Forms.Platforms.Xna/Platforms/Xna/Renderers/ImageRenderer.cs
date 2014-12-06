@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         CancellationTokenSource _imageLoadCancellation;
         IImageSource _imageSource;
         Texture2D _image;
-        Microsoft.Xna.Framework.Rectangle _renderArea;
 
         public ImageRenderer()
         {
@@ -50,20 +49,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             throw new NotImplementedException();
         }
 
-        protected override void Arrange()
-        {
-            base.Arrange();
-            _renderArea = new Microsoft.Xna.Framework.Rectangle(0, 0, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
-        }
-
-        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, Rectangle area)
+        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, XnaRectangle area)
         {
             if (_imageSource == null)
                 return;
             if (_image == null)
-                _image = _imageSource.GetImage(new Size(_renderArea.Width, _renderArea.Height));
+                _image = _imageSource.GetImage(new Size(area.Width, area.Height));
             if (_image != null)
-                SpriteBatch.Draw(_image, _renderArea, Microsoft.Xna.Framework.Color.White);
+                SpriteBatch.Draw(_image, area, Microsoft.Xna.Framework.Color.White);
         }
 
         #region Property Handlers
