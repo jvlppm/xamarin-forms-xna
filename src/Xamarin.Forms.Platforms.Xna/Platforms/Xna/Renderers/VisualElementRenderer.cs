@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Xamarin.Forms.Platforms.Xna.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 [assembly: Xamarin.Forms.Platforms.Xna.ExportRenderer(
     typeof(Xamarin.Forms.VisualElement),
@@ -102,6 +103,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         List<Element> _manuallyAddedElements;
         float? _alpha;
         bool _isVisible;
+        Microsoft.Xna.Framework.Graphics.RenderTarget2D _rendererVisual;
+        bool _validVisual;
 
         ImmutableDictionary<Element, VisualElementRenderer> ChildrenRenderers;
 
@@ -206,12 +209,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
 
             return size;
-        }
-
-        public void Layout(Rectangle bounds)
-        {
-            Model.Layout(bounds);
-        }
+                 }
 
         public void Draw(Microsoft.Xna.Framework.GameTime gameTime)
         {
@@ -232,7 +230,23 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected void Render(Microsoft.Xna.Framework.GameTime gameTime)
         {
             BeginDraw();
-            LocalDraw(gameTime, new XnaRectangle(0, 0, (int)Model.Bounds.Size.Width, (int)Model.Bounds.Size.Height));
+            if (!_validVisual)
+            {
+                if (_rendererVisual == null ||
+                    (_rendererVisual.Width != (int)Model.Bounds.Width ||
+                    _rendererVisual.Height != (int)Model.Bounds.Height))
+                    _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
+
+                SpriteBatch.GraphicsDevice.SetRenderTarget(_rendererVisual);
+                _rendererVisual.
+
+
+                LocalDraw(gameTime, new XnaRectangle(0, 0, (int)Model.Bounds.Size.Width, (int)Model.Bounds.Size.Height));
+            }
+            else
+            {
+                SpriteBatch.Draw(_rendererVisual, XnaVector2.Zero);
+            }
             EndDraw();
         }
 
@@ -260,7 +274,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, XnaRectangle area)
         {
-
         }
 
         protected virtual void EndDraw()
@@ -365,7 +378,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
             var viewport = Forms.Game.GraphicsDevice.Viewport;
 
-            float dist = (float)Math.Max(viewport.Width, viewport.Height) * 2;
+            float dist = (float)Math.Max(viewport.Width, viewport.Height);
             var angle = (float)Math.Atan(((float)viewport.Height / 2) / dist) * 2;
 
             return XnaMatrix.CreateTranslation(-(float)viewport.Width / 2 - 0.5f, -(float)viewport.Height / 2 - 0.5f, -dist)
@@ -437,6 +450,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected void InvalidateMeasure()
         {
             Model.NativeSizeChanged();
+        }
+
+        protected void InvalidateVisual()
+        {
+            _validVisual = false;
         }
 
         protected virtual void OnModelUnload(VisualElement model)

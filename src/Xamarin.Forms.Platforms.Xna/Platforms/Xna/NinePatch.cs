@@ -28,12 +28,12 @@
         public class Area
         {
             readonly Range _horizontal, _vertical;
-            readonly Rectangle _rectangle;
+            //readonly Rectangle _rectangle;
             public Area(Range horizontal, Range vertical)
             {
                 _horizontal = horizontal;
                 _vertical = vertical;
-                _rectangle = new Rectangle(_horizontal.Start, _vertical.Start, _horizontal.Size, _vertical.Size);
+                //_rectangle = new Rectangle(_horizontal.Start, _vertical.Start, _horizontal.Size, _vertical.Size);
             }
 
             public Range Horizontal { get { return _horizontal; } }
