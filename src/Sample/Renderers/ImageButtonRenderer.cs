@@ -21,6 +21,7 @@ namespace Sample.Renderers
         public ImageButtonRenderer()
         {
             PropertyTracker.AddHandler(ImageButton.ImageProperty, HandleImage);
+            PropertyTracker.AddHandler(ImageButton.TextProperty, p => InvalidateVisual());
         }
 
         void HandleImage(Xamarin.Forms.BindableProperty prop)

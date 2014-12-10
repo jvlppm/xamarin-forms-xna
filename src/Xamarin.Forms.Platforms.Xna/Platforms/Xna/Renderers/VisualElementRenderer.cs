@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
 
             return size;
-                 }
+        }
 
         public void Draw(Microsoft.Xna.Framework.GameTime gameTime)
         {
@@ -229,24 +229,28 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected void Render(Microsoft.Xna.Framework.GameTime gameTime)
         {
-            BeginDraw();
             if (!_validVisual)
             {
                 if (_rendererVisual == null ||
                     (_rendererVisual.Width != (int)Model.Bounds.Width ||
                     _rendererVisual.Height != (int)Model.Bounds.Height))
-                    _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height);
+                {
+                    _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height, false, SpriteBatch.GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 1, RenderTargetUsage.PreserveContents);
+                }
 
+                SpriteBatch.GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
                 SpriteBatch.GraphicsDevice.SetRenderTarget(_rendererVisual);
-                _rendererVisual.
-
-
+                SpriteBatch.Begin();
+                SpriteBatch.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
                 LocalDraw(gameTime, new XnaRectangle(0, 0, (int)Model.Bounds.Size.Width, (int)Model.Bounds.Size.Height));
+                SpriteBatch.End();
+                SpriteBatch.GraphicsDevice.SetRenderTarget(null);
+
+                _validVisual = true;
             }
-            else
-            {
-                SpriteBatch.Draw(_rendererVisual, XnaVector2.Zero);
-            }
+
+            BeginDraw();
+            SpriteBatch.Draw(_rendererVisual, XnaVector2.Zero);
             EndDraw();
         }
 
@@ -450,6 +454,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected void InvalidateMeasure()
         {
             Model.NativeSizeChanged();
+            InvalidateVisual();
         }
 
         protected void InvalidateVisual()
