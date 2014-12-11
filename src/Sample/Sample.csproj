@@ -80,9 +80,9 @@
     <Content Include="SDL.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xamarin.Forms.Platforms.Xna\Xamarin.Forms.Platforms.Xna.csproj">
+    <ProjectReference Include="..\flavors\MonoGame.Portable\MonoGame.Portable.csproj">
       <Project>{798e1f06-4bca-4893-bb99-c25cc4e82f15}</Project>
-      <Name>Xamarin.Forms.Platforms.Xna</Name>
+      <Name>MonoGame.Portable</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b0144b80-f44d-49b0-933f-804cc9586dc0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Xamarin.Forms.Platforms.Xna</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Forms.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Async\ContextExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Async\ContextOperationAwaiter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Async\ContextOperationExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Async\ContextTask.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Async\ContextTaskAwaiter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\ContextOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\GameContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\GameOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\IGameContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\IGameOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\AnimationExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\CompleteWhen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\ContextTimer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\DeferredOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\FloatAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\RepeatingTimer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\WhenAllExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\WhenAnyExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\Yield.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Reference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\DefaultImageSourceHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\ExportImageSourceHandlerAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\ExportRendererAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\IImageSourceHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\Mouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\RoutedEventManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\ContextTicker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\IsolatedStorageFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformTimer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\NinePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\ImageRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\LabelRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\NavigationPageRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\VisualElementRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\UIGameComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PropertyTracker.cs" />
+  </ItemGroup>
+</Project>
