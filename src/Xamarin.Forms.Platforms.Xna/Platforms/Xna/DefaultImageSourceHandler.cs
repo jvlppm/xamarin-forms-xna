@@ -17,10 +17,13 @@ namespace Xamarin.Forms.Platforms.Xna
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
+    using XnaColor = Microsoft.Xna.Framework.Color;
+    using System.Text.RegularExpressions;
 
     public class DefaultImageSourceHandler : IImageSourceHandler
     {
-        class TextureImageSource : IImageSource
+        class TextureImageSource : IRenderElement
         {
             Texture2D _texture;
 
@@ -34,15 +37,16 @@ namespace Xamarin.Forms.Platforms.Xna
                 return new SizeRequest(new Size(_texture.Width, _texture.Height), default(Size));
             }
 
-            public Texture2D GetImage(Size availableSize)
+            public void Draw(SpriteBatch spriteBatch, XnaRectangle area)
             {
-                return _texture;
+                spriteBatch.Draw(_texture, area, XnaColor.White);
             }
         }
 
-        public async Task<IImageSource> LoadImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
+        public async Task<IRenderElement> LoadImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
         {
             Task<Stream> getStream = null;
+            Task<Texture2D> getTexture = null;
 
             var streamSource = imageSource as StreamImageSource;
             var uriSource = imageSource as UriImageSource;
@@ -56,10 +60,10 @@ namespace Xamarin.Forms.Platforms.Xna
                 else
 #endif
                 {
-                    return new TextureImageSource(Forms.Game.Content.Load<Texture2D>(fileSource.File));
+                    getTexture = Task.FromResult(Forms.Game.Content.Load<Texture2D>(fileSource.File));
                 }
             }
-            if (streamSource != null)
+            else if (streamSource != null)
                 getStream = streamSource.Stream(cancellationToken);
             else if (uriSource != null)
             {
@@ -70,16 +74,21 @@ namespace Xamarin.Forms.Platforms.Xna
                         throw new ArgumentException("Unsupported image source HOST " + uri.Host + ". Did you mean content:///?", "imageSource");
 
                     var asset = uriSource.Uri.PathAndQuery.TrimStart('/');
-                    return new TextureImageSource(Forms.Game.Content.Load<Texture2D>(asset));
+                    getTexture = Task.FromResult(Forms.Game.Content.Load<Texture2D>(asset));
                 }
-
-                getStream = uriSource.GetStreamAsync(cancellationToken);
+                else
+                    getStream = uriSource.GetStreamAsync(cancellationToken);
             }
 
-            if (getStream == null)
+            if (getTexture == null && getStream == null)
                 throw new InvalidOperationException("Not supported image source");
 
-            return new TextureImageSource(Texture2D.FromStream(Forms.Game.GraphicsDevice, await getStream));
+            var texture = getTexture != null? await getTexture : Texture2D.FromStream(Forms.Game.GraphicsDevice, await getStream);
+
+            if (Regex.IsMatch(fileSource.File, @"\.9(\.[^\.]+)?$"))
+                return new NinePatch(texture);
+
+            return new TextureImageSource(texture);
         }
     }
 }

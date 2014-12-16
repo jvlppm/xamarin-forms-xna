@@ -3,15 +3,16 @@
     using Microsoft.Xna.Framework.Graphics;
     using System.Threading;
     using System.Threading.Tasks;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
-    public interface IImageSource
+    public interface IRenderElement
     {
         SizeRequest Measure(Size availableSize);
-        Texture2D GetImage(Size availableSize);
+        void Draw(SpriteBatch spriteBatch, XnaRectangle area);
     }
 
     public interface IImageSourceHandler : IRegisterable
     {
-        Task<IImageSource> LoadImageAsync(ImageSource imageSource, CancellationToken cancellationToken);
+        Task<IRenderElement> LoadImageAsync(ImageSource imageSource, CancellationToken cancellationToken);
     }
 }

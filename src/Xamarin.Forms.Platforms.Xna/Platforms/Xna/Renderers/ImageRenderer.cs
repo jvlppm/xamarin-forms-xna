@@ -14,8 +14,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     public class ImageRenderer : VisualElementRenderer<Image>
     {
         CancellationTokenSource _imageLoadCancellation;
-        IImageSource _imageSource;
-        Texture2D _image;
+        IRenderElement _imageSource;
 
         public ImageRenderer()
         {
@@ -53,10 +52,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             if (_imageSource == null)
                 return;
-            if (_image == null)
-                _image = _imageSource.GetImage(new Size(area.Width, area.Height));
-            if (_image != null)
-                SpriteBatch.Draw(_image, area, Microsoft.Xna.Framework.Color.White);
+            _imageSource.Draw(SpriteBatch, area);
         }
 
         #region Property Handlers

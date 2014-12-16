@@ -4,8 +4,9 @@
     using System;
     using XnaColor = Microsoft.Xna.Framework.Color;
     using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
+    using Microsoft.Xna.Framework;
 
-    public class NinePatch
+    public class NinePatch : IRenderElement
     {
         public class Range
         {
@@ -144,6 +145,20 @@
                 area.Top + Content.Vertical.Start,
                 area.Width - Content.Horizontal.Margin,
                 area.Height - Content.Vertical.Margin);
+        }
+
+        public SizeRequest Measure(Size availableSize)
+        {
+            if (double.IsNaN(availableSize.Width) || double.IsInfinity(availableSize.Width))
+                availableSize.Width = Width;
+            if (double.IsNaN(availableSize.Height) || double.IsInfinity(availableSize.Height))
+                availableSize.Height = Height;
+            return new SizeRequest(availableSize, new Size(Stretch.Horizontal.Margin, Stretch.Vertical.Margin));
+        }
+
+        public void Draw(SpriteBatch spriteBatch, XnaRectangle area)
+        {
+            spriteBatch.Draw(this, area, XnaColor.White);
         }
     }
 }
