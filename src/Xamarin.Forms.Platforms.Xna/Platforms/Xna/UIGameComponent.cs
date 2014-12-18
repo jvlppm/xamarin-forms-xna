@@ -70,6 +70,11 @@ namespace Xamarin.Forms.Platforms.Xna
             _page.Platform = this;
             _renderer = VisualElementRenderer.Create(newRoot);
         }
+
+        public SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
+        {
+            return _page.GetSizeRequest(widthConstraint, heightConstraint);
+        }
     }
 
     public static class UIGameComponentExtensions
