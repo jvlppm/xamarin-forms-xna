@@ -85,7 +85,6 @@ namespace Sample.UI
                 VerticalOptions = Xamarin.Forms.LayoutOptions.CenterAndExpand,
                 Text = text,
                 WidthRequest = 150,
-                ContinuousClick = true
             };
             button.SetBinding(ImageButton.ImageProperty, "State", converter: new ButtonImageConverter());
             Grid.SetRow(button, row);

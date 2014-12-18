@@ -15,7 +15,6 @@
     {
         public static BindableProperty StateProperty = BindableProperty.Create<ImageButton, ImageButtonState>(p => p.State, defaultValue: ImageButtonState.Normal);
         public static BindableProperty ImageProperty = BindableProperty.Create<ImageButton, ImageSource>(p => p.Image, defaultValue: null);
-        public static BindableProperty ContinuousClickProperty = BindableProperty.Create<ImageButton, bool>(p => p.ContinuousClick, defaultValue: false);
         public static BindableProperty ImageOpacityProperty = BindableProperty.Create<ImageButton, float>(p => p.ImageOpacity, defaultValue: 1);
 
         public ImageButtonState State
@@ -28,12 +27,6 @@
         {
             get { return (ImageSource)GetValue(ImageProperty); }
             set { SetValue(ImageProperty, value); }
-        }
-
-        public bool ContinuousClick
-        {
-            get { return (bool)GetValue(ContinuousClickProperty); }
-            set { SetValue(ContinuousClickProperty, value); }
         }
 
         public float ImageOpacity
