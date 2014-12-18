@@ -453,7 +453,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected void InvalidateMeasure()
         {
-            Model.NativeSizeChanged();
+            ((IVisualElementController)Model).NativeSizeChanged();
             InvalidateVisual();
         }
 

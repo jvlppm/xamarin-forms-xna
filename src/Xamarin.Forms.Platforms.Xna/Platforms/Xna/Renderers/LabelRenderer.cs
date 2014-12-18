@@ -79,18 +79,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Handle_Font(BindableProperty property)
         {
-            if (Model.Font.FontFamily != null)
-                _font = Forms.Game.Content.Load<SpriteFont>(Model.Font.FontFamily);
+            if (Model.FontFamily != null)
+                _font = Forms.Game.Content.Load<SpriteFont>(Model.FontFamily);
             else
                 _font = null;
 
-            switch (Model.Font.NamedSize)
-            {
-                case NamedSize.Micro: _scale = 0.5f; break;
-                case NamedSize.Small: _scale = 0.75f; break;
-                case NamedSize.Medium: _scale = 1f; break;
-                case NamedSize.Large: _scale = 1.5f; break;
-            }
+            _scale = (float)Model.FontSize / 14f;
         }
 
         void Handle_MeasureProperty(BindableProperty property)

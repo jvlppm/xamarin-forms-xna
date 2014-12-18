@@ -138,5 +138,23 @@
             return new IsolatedStorageFile(isolatedStorage);
 #endif
         }
+
+
+        public double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
+        {
+            switch (size)
+            {
+                case NamedSize.Medium:
+                case NamedSize.Default:
+                    return 14;
+                case NamedSize.Large:
+                    return 18;
+                case NamedSize.Small:
+                    return 12;
+                case NamedSize.Micro:
+                    return 10;
+            }
+            throw new NotImplementedException();
+        }
     }
 }

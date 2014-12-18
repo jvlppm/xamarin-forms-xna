@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             IImageSourceHandler handler = Registrar.Registered.GetHandler<IImageSourceHandler>(Model.Source.GetType());
             if (handler != null)
             {
-                Model.IsLoading = true;
+                Model.SetValue(Image.IsLoadingPropertyKey, true);
                 try
                 {
                     _imageSource = await handler.LoadImageAsync(Model.Source, _imageLoadCancellation.Token);
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                     InvalidateMeasure();
                 }
                 catch { }
-                Model.IsLoading = false;
+                Model.SetValue(Image.IsLoadingPropertyKey, false);
             }
         }
         #endregion

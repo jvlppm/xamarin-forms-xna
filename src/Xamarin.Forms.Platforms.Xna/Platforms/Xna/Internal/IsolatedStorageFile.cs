@@ -2,6 +2,7 @@
 namespace Xamarin.Forms.Platforms.Xna
 {
     using System;
+    using System.Threading.Tasks;
 
     class IsolatedStorageFile : Xamarin.Forms.IIsolatedStorageFile
     {
@@ -12,34 +13,34 @@ namespace Xamarin.Forms.Platforms.Xna
             this.file = file;
         }
 
-        public void CreateDirectory(string path)
+        public Task CreateDirectoryAsync(string path)
         {
-            file.CreateDirectory(path);
+            return Task.Factory.StartNew(() => { file.CreateDirectory(path); });
         }
 
-        public bool DirectoryExists(string path)
+        public System.Threading.Tasks.Task<bool> GetDirectoryExistsAsync(string path)
         {
-            return file.DirectoryExists(path);
+            return Task.Factory.StartNew(() => file.DirectoryExists(path));
         }
 
-        public bool FileExists(string path)
+        public System.Threading.Tasks.Task<bool> GetFileExistsAsync(string path)
         {
-            return file.FileExists(path);
+            return Task.Factory.StartNew(() => file.FileExists(path));
         }
 
-        public DateTimeOffset GetLastWriteTime(string path)
+        public System.Threading.Tasks.Task<DateTimeOffset> GetLastWriteTimeAsync(string path)
         {
-            return file.GetLastWriteTime(path);
+            return Task.Factory.StartNew(() => file.GetLastWriteTime(path));
         }
 
-        public System.IO.Stream OpenFile(string path, FileMode mode, FileAccess access, FileShare share)
+        public System.Threading.Tasks.Task<System.IO.Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
         {
-            return file.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
+            return Task.Factory.StartNew(() => (System.IO.Stream)file.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share));
         }
 
-        public System.IO.Stream OpenFile(string path, FileMode mode, FileAccess access)
+        public System.Threading.Tasks.Task<System.IO.Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)
         {
-            return file.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
+            return Task.Factory.StartNew(() => (System.IO.Stream)file.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access));
         }
     }
 }
