@@ -147,18 +147,17 @@
                 area.Height - Content.Vertical.Margin);
         }
 
-        public SizeRequest Measure(Size availableSize)
+        public SizeRequest Measure(Size availableSize, SizeRequest contentSize)
         {
-            if (double.IsNaN(availableSize.Width) || double.IsInfinity(availableSize.Width))
-                availableSize.Width = Width;
-            if (double.IsNaN(availableSize.Height) || double.IsInfinity(availableSize.Height))
-                availableSize.Height = Height;
-            return new SizeRequest(availableSize, new Size(Stretch.Horizontal.Margin, Stretch.Vertical.Margin));
-        }
+            var minWidth = Math.Max(Stretch.Horizontal.Margin, contentSize.Minimum.Width + Content.Horizontal.Margin);
+            var minHeight = Math.Max(Stretch.Vertical.Margin, contentSize.Minimum.Height + Content.Vertical.Margin);
 
-        public void Draw(SpriteBatch spriteBatch, XnaRectangle area)
-        {
-            spriteBatch.Draw(this, area, XnaColor.White);
+            if (double.IsNaN(availableSize.Width) || availableSize.Width > Width)
+                availableSize.Width = Math.Max(Width, minWidth);
+            if (double.IsNaN(availableSize.Height) || availableSize.Height > Height)
+                availableSize.Height = Math.Max(Height, minHeight);
+
+            return new SizeRequest(availableSize, new Size(minWidth, minHeight));
         }
     }
 }

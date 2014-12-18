@@ -22,7 +22,6 @@ namespace Sample.UI
                 VerticalOptions = Xamarin.Forms.LayoutOptions.CenterAndExpand,
                 Text = "Grid Menu",
                 WidthRequest = 150,
-                ContinuousClick = true
             };
             startButton.SetBinding(ImageButton.ImageProperty, "State", converter: new ButtonImageConverter());
 

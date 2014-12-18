@@ -11,10 +11,13 @@ namespace Sample.Renderers
     using Xamarin.Forms.Platforms.Xna;
     using Xamarin.Forms.Platforms.Xna.Input;
     using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
+    using XnaColor = Microsoft.Xna.Framework.Color;
+    using System.Threading;
 
     public class ImageButtonRenderer : LabelRenderer
     {
-        NinePatch _image;
+        CancellationTokenSource _imageLoadCancellation;
+        IRenderElement _image;
 
         public new ImageButton Model { get { return (ImageButton)base.Model; } }
 
@@ -24,9 +27,12 @@ namespace Sample.Renderers
             PropertyTracker.AddHandler(ImageButton.TextProperty, p => InvalidateVisual());
         }
 
-        void HandleImage(Xamarin.Forms.BindableProperty prop)
+        async void HandleImage(Xamarin.Forms.BindableProperty prop)
         {
-            _image = Model.Image == null ? null : new NinePatch(Xamarin.Forms.Forms.Game.Content.Load<Texture2D>(Model.Image));
+            if (_imageLoadCancellation != null)
+                _imageLoadCancellation.Cancel();
+            _imageLoadCancellation = new CancellationTokenSource();
+            _image = await Model.Image.LoadAsync(_imageLoadCancellation.Token);
             InvalidateMeasure();
         }
 
@@ -35,29 +41,7 @@ namespace Sample.Renderers
             var lblSize = base.Measure(availableSize);
             if (_image != null)
             {
-                if (double.IsPositiveInfinity(availableSize.Width))
-                    availableSize.Width = _image.Width;
-                if (double.IsPositiveInfinity(availableSize.Height))
-                    availableSize.Height = _image.Height;
-
-                var minSize = new Xamarin.Forms.Size(
-                    (_image.Width - _image.Stretch.Horizontal.End) + _image.Stretch.Horizontal.Start,
-                    (_image.Height - _image.Stretch.Vertical.End) + _image.Stretch.Vertical.Start
-                );
-
-                var scaleFit = Math.Min(
-                                   availableSize.Width / (float)_image.Width,
-                                   availableSize.Height / (float)_image.Height);
-
-                var requestSize = new Xamarin.Forms.Size(
-                    width: Model.HorizontalOptions.Alignment == Xamarin.Forms.LayoutAlignment.Fill ?
-                        _image.Width * scaleFit : lblSize.Request.Width + minSize.Width,
-
-                    height: Model.VerticalOptions.Alignment == Xamarin.Forms.LayoutAlignment.Fill ?
-                        _image.Height * scaleFit : lblSize.Request.Height + minSize.Height
-                );
-
-                return new Xamarin.Forms.SizeRequest(requestSize, minSize);
+                return _image.Measure(availableSize, lblSize);
             }
             return lblSize;
         }
@@ -72,7 +56,7 @@ namespace Sample.Renderers
         {
             if (_image != null)
             {
-                SpriteBatch.Draw(_image, area, new Color(Color.White, Model.ImageOpacity));
+                _image.Draw(SpriteBatch, area, new XnaColor(XnaColor.White, Model.ImageOpacity));
                 base.LocalDraw(gameTime, _image.GetContentArea(area));
             }
             else base.LocalDraw(gameTime, area);

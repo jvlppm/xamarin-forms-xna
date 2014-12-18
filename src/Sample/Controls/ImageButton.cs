@@ -14,7 +14,7 @@
     public class ImageButton : Label
     {
         public static BindableProperty StateProperty = BindableProperty.Create<ImageButton, ImageButtonState>(p => p.State, defaultValue: ImageButtonState.Normal);
-        public static BindableProperty ImageProperty = BindableProperty.Create<ImageButton, string>(p => p.Image, defaultValue: null);
+        public static BindableProperty ImageProperty = BindableProperty.Create<ImageButton, ImageSource>(p => p.Image, defaultValue: null);
         public static BindableProperty ContinuousClickProperty = BindableProperty.Create<ImageButton, bool>(p => p.ContinuousClick, defaultValue: false);
         public static BindableProperty ImageOpacityProperty = BindableProperty.Create<ImageButton, float>(p => p.ImageOpacity, defaultValue: 1);
 
@@ -24,9 +24,9 @@
             set { SetValue(StateProperty, value); }
         }
 
-        public string Image
+        public ImageSource Image
         {
-            get { return (string)GetValue(ImageProperty); }
+            get { return (ImageSource)GetValue(ImageProperty); }
             set { SetValue(ImageProperty, value); }
         }
 
