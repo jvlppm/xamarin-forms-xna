@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Platforms.Xna
+﻿namespace Xamarin.Forms.Platforms.Xna.Images
 {
     using System;
 

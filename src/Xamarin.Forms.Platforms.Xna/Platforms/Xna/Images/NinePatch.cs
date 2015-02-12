@@ -1,12 +1,12 @@
-﻿namespace Xamarin.Forms.Platforms.Xna
+﻿namespace Xamarin.Forms.Platforms.Xna.Images
 {
     using Microsoft.Xna.Framework.Graphics;
     using System;
+    using System.Collections.Generic;
     using XnaColor = Microsoft.Xna.Framework.Color;
     using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
-    using Microsoft.Xna.Framework;
 
-    public class NinePatch : IRenderElement
+    public class NinePatch : IImage
     {
         public class Range
         {
@@ -29,12 +29,10 @@
         public class Area
         {
             readonly Range _horizontal, _vertical;
-            //readonly Rectangle _rectangle;
             public Area(Range horizontal, Range vertical)
             {
                 _horizontal = horizontal;
                 _vertical = vertical;
-                //_rectangle = new Rectangle(_horizontal.Start, _vertical.Start, _horizontal.Size, _vertical.Size);
             }
 
             public Range Horizontal { get { return _horizontal; } }
@@ -158,6 +156,10 @@
                 availableSize.Height = Math.Max(Height, minHeight);
 
             return new SizeRequest(availableSize, new Size(minWidth, minHeight));
+        }
+
+        public void SetState(ISet<State> states)
+        {
         }
     }
 }

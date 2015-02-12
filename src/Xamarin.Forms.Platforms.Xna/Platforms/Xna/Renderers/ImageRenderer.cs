@@ -4,18 +4,16 @@
 namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
     using System;
-    using System.IO;
     using System.Threading;
-    using System.Threading.Tasks;
     using Xamarin.Forms;
-    using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
+    using Xamarin.Forms.Platforms.Xna.Images;
     using XnaColor = Microsoft.Xna.Framework.Color;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class ImageRenderer : VisualElementRenderer<Image>
     {
         CancellationTokenSource _imageLoadCancellation;
-        IRenderElement _imageSource;
+        IImage _imageSource;
 
         public ImageRenderer()
         {
@@ -69,7 +67,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 Model.SetValue(Image.IsLoadingPropertyKey, true);
                 try
                 {
-                    _imageSource = await handler.LoadImageAsync(Model.Source, _imageLoadCancellation.Token);
+                    _imageSource = await handler.GetImageAsync(Model.Source, _imageLoadCancellation.Token);
                     _imageLoadCancellation = null;
                     InvalidateMeasure();
                 }
