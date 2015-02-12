@@ -1,8 +1,10 @@
 ﻿namespace Xamarin.Forms
 {
     using Microsoft.Xna.Framework;
+    using System.Reflection;
     using Xamarin.Forms.Platforms.Xna;
     using Xamarin.Forms.Platforms.Xna.Context;
+    using Xamarin.Forms.Platforms.Xna.Resources;
 
     public static class Forms
     {
@@ -15,6 +17,8 @@
         public static GameContext DrawContext { get; private set; }
         public static GameContext UpdateContext { get; private set; }
 #endif
+
+        internal static EmbeddedContent EmbeddedContent { get; private set; }
 
         public static void Init(Game game)
         {
@@ -40,6 +44,8 @@
             });
 
             Ticker.Default = new ContextTicker(platformServices.DrawContext);
+
+            EmbeddedContent = new EmbeddedContent(Assembly.GetExecutingAssembly(), game.Services);
 
             IsInitialized = true;
         }

@@ -3,28 +3,33 @@
     typeof(Xamarin.Forms.Platforms.Xna.Renderers.LabelRenderer))]
 namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
-    using System;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Xamarin.Forms;
-    using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
     using Color = Microsoft.Xna.Framework.Color;
+    using SpriteFont = Microsoft.Xna.Framework.Graphics.SpriteFont;
     using Vector2 = Microsoft.Xna.Framework.Vector2;
     using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class LabelRenderer : VisualElementRenderer<Label>
     {
-        public static SpriteFont DefaultFont;
-        public static Color DefaultTextColor = Color.Black;
-        float _scale = 1f;
+        #region Static
+        static SpriteFont DefaultFont;
+        static Color DefaultTextColor = Color.Black;
+        static LabelRenderer()
+        {
+            DefaultFont = Forms.EmbeddedContent.Load<SpriteFont>("DefaultFont");
+        }
+        #endregion
 
+        #region Attributes
+        float _scale = 1f;
         SpriteFont _font;
         Color _textColor;
         Vector2? _textOffset;
         SizeRequest _measuredSize;
         XnaRectangle? _lastArea;
+        #endregion
 
+        #region Constructors
         public LabelRenderer()
         {
             PropertyTracker.AddHandler(Label.TextColorProperty, Handle_TextColor);
@@ -33,7 +38,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(Label.FontProperty, Handle_MeasureProperty);
             PropertyTracker.AddHandler(Label.TextProperty, Handle_MeasureProperty);
         }
+        #endregion
 
+        #region VisualElementRenderer
         public override SizeRequest Measure(Size availableSize)
         {
             var font = _font ?? DefaultFont;
@@ -57,15 +64,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
             SpriteBatch.DrawString(font, Model.Text, _textOffset.Value, _textColor, 0, Vector2.Zero, _scale, Microsoft.Xna.Framework.Graphics.SpriteEffects.None, 1);
         }
-
-        void UpdateTextAlignment(XnaRectangle area)
-        {
-            _lastArea = area;
-            Measure(new Size(area.Width, area.Height));
-            _textOffset = new Vector2(
-                area.Left + GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, area.Width),
-                area.Top + GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, area.Height));
-        }
+        #endregion
 
         #region Property Handlers
 
@@ -93,6 +92,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             InvalidateMeasure();
         }
 
+        #endregion
+
+        #region Private Methods
+        void UpdateTextAlignment(XnaRectangle area)
+        {
+            _lastArea = area;
+            Measure(new Size(area.Width, area.Height));
+            _textOffset = new Vector2(
+                area.Left + GetAlignOffset(Model.XAlign, (float)_measuredSize.Request.Width, area.Width),
+                area.Top + GetAlignOffset(Model.YAlign, (float)_measuredSize.Request.Height, area.Height));
+        }
+
         static float GetAlignOffset(TextAlignment alignment, float textSize, float renderSize)
         {
             switch (alignment)
@@ -106,7 +117,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
             throw new System.NotImplementedException("Unsupported TextAlignment");
         }
-
         #endregion
     }
 }

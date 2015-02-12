@@ -30,7 +30,6 @@ namespace Sample
         {
             // TODO: Add your initialization logic here
             Xamarin.Forms.Forms.Init(this);
-            LabelRenderer.DefaultFont = Content.Load<SpriteFont>("DefaultFont");
             IsMouseVisible = true;
 
             base.Initialize();

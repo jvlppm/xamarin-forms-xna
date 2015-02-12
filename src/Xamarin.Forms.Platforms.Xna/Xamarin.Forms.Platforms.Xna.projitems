@@ -6,7 +6,7 @@
     <SharedGUID>b0144b80-f44d-49b0-933f-804cc9586dc0</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Xamarin.Forms.Platforms.Xna</Import_RootNamespace>
+    <Import_RootNamespace>Xamarin.Forms</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Forms.cs" />
@@ -47,7 +47,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\LabelRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\NavigationPageRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\VisualElementRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Resources\EmbeddedResources.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\UIGameComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyTracker.cs" />
   </ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\DefaultFont.xnb" />
 </Project>
