@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         List<Element> _manuallyAddedElements;
         float? _alpha;
         bool _isVisible;
-        Microsoft.Xna.Framework.Graphics.RenderTarget2D _rendererVisual;
+        RenderTarget2D _rendererVisual;
         bool _validVisual;
 
         ImmutableDictionary<Element, VisualElementRenderer> ChildrenRenderers;
@@ -246,13 +246,16 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                     _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height, false, SpriteBatch.GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 1, RenderTargetUsage.PreserveContents);
                 }
 
-                SpriteBatch.GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
-                SpriteBatch.GraphicsDevice.SetRenderTarget(_rendererVisual);
-                SpriteBatch.Begin();
-                SpriteBatch.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
-                LocalDraw(gameTime, new XnaRectangle(0, 0, (int)Model.Bounds.Size.Width, (int)Model.Bounds.Size.Height));
-                SpriteBatch.End();
-                SpriteBatch.GraphicsDevice.SetRenderTarget(null);
+                if (_rendererVisual.Width > 0 && _rendererVisual.Height > 0)
+                {
+                    SpriteBatch.GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
+                    SpriteBatch.GraphicsDevice.SetRenderTarget(_rendererVisual);
+                    SpriteBatch.Begin();
+                    SpriteBatch.GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.Transparent);
+                    LocalDraw(gameTime, new XnaRectangle(0, 0, (int)Model.Bounds.Size.Width, (int)Model.Bounds.Size.Height));
+                    SpriteBatch.End();
+                    SpriteBatch.GraphicsDevice.SetRenderTarget(null);
+                }
 
                 _validVisual = true;
             }
