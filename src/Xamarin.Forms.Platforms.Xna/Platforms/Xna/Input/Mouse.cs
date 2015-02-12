@@ -5,6 +5,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
     using System;
     using System.Linq;
     using Renderers;
+    using Platforms.Xna;
     using XnaMouse = Microsoft.Xna.Framework.Input.Mouse;
     using XnaVector2 = Microsoft.Xna.Framework.Vector2;
     using XnaVector3 = Microsoft.Xna.Framework.Vector3;
@@ -15,6 +16,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 
     public static class Mouse
     {
+        public static State Over = State.Register("Over");
+        public static State Pressed = State.Register("Pressed");
+
         public enum Button
         {
             Left,
@@ -24,8 +28,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             XButton2
         }
 
-        static VisualElementRenderer Pressing;
-        static VisualElementRenderer Over;
+        static VisualElementRenderer _pressing;
+        static VisualElementRenderer _over;
 
         static IDictionary<Button, XnaButtonState?> buttonState = new Dictionary<Button, XnaButtonState?>
         {
@@ -61,7 +65,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 
             if (newOver != null)
             {
-                foreach(Button button in Enum.GetValues(typeof(Button)))
+                foreach (Button button in Enum.GetValues(typeof(Button)))
                 {
                     XnaButtonState newState;
                     switch (button)
@@ -96,39 +100,39 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 }
             }
 
-            if (Pressing == null)
+            if (_pressing == null)
             {
-                if (Over != newOver)
+                if (_over != newOver)
                 {
-                    if (Over != null)
-                        Over.OnMouseLeave();
+                    if (_over != null)
+                        _over.OnMouseLeave();
                     if (newOver != null)
                         newOver.OnMouseEnter();
 
-                    Over = newOver;
+                    _over = newOver;
                 }
 
-                if (Over != null && state.LeftButton == XnaButtonState.Pressed)
+                if (_over != null && state.LeftButton == XnaButtonState.Pressed)
                 {
-                    Pressing = Over;
+                    _pressing = _over;
                 }
             }
-            else if(state.LeftButton == XnaButtonState.Released)
+            else if (state.LeftButton == XnaButtonState.Released)
             {
-                if (newOver == Pressing)
+                if (newOver == _pressing)
                 {
-                    Pressing.HandleRaise(r => r.InterceptClick(), r => r.HandleClick());
-                    Pressing = null;
+                    _pressing.HandleRaise(r => r.InterceptClick(), r => r.HandleClick());
+                    _pressing = null;
                 }
                 else
                 {
-                    Pressing.OnMouseLeave();
-                    Pressing = null;
+                    _pressing.OnMouseLeave();
+                    _pressing = null;
 
                     if (newOver != null)
                         newOver.OnMouseEnter();
 
-                    Over = newOver;
+                    _over = newOver;
                 }
             }
         }

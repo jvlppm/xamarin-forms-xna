@@ -87,12 +87,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #endregion
 
+        #region Events
+        public event EventHandler<ISet<State>> OnVisualStateChange;
+        #endregion
+
         #region Attributes
 
         public readonly XnaBasicEffect Effect;
 
         protected readonly PropertyTracker PropertyTracker;
         protected readonly XnaSpriteBatch SpriteBatch;
+
+        private ImmutableHashSet<State> visualState;
 
         Rectangle _lastArrangeBounds;
 
@@ -161,6 +167,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             if (!Forms.IsInitialized)
                 throw new InvalidOperationException("Xamarin.Forms not initialized");
+
+            visualState = ImmutableHashSet<State>.Empty;
 
             Effect = new XnaBasicEffect(Forms.Game.GraphicsDevice)
             {
@@ -500,10 +508,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public virtual void OnMouseEnter()
         {
+            AddVisualState(Mouse.Over);
         }
 
         public virtual void OnMouseLeave()
         {
+            RemoveVisualState(Mouse.Over);
         }
 
         public virtual bool InterceptMouseDown(Mouse.Button button)
@@ -536,6 +546,38 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             return false;
         }
 
+        #endregion
+
+        #region State
+        protected void AddVisualState(State state, params State[] additionalStates)
+        {
+            UpdateStates((b, s) => b.Add(s), state, additionalStates);
+        }
+
+        protected void RemoveVisualState(State state, params State[] additionalStates)
+        {
+            UpdateStates((b, s) => b.Remove(s), state, additionalStates);
+        }
+
+        void UpdateStates(Func<ImmutableHashSet<State>.Builder, State, bool> updateStates, State state, params State[] additionalStates)
+        {
+            if (state == null || additionalStates.Any(s => s == null))
+                throw new ArgumentNullException();
+
+            var builder = visualState.ToBuilder();
+
+            bool updated = updateStates(builder, state);
+            foreach (var adstate in additionalStates)
+                updated |= updateStates(builder, adstate);
+
+            if (updated)
+            {
+                visualState = builder.ToImmutable();
+                var handler = OnVisualStateChange;
+                if(handler != null)
+                    handler(this, visualState);
+            }
+        }
         #endregion
     }
 }

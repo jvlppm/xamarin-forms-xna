@@ -48,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\NavigationPageRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\VisualElementRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Resources\EmbeddedResources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\State.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\UIGameComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyTracker.cs" />
   </ItemGroup>

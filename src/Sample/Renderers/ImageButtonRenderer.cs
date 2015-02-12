@@ -3,21 +3,21 @@
     typeof(Sample.Renderers.ImageButtonRenderer))]
 namespace Sample.Renderers
 {
-    using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
     using Controls;
-    using System;
-    using Xamarin.Forms.Platforms.Xna.Renderers;
-    using Xamarin.Forms.Platforms.Xna;
-    using Xamarin.Forms.Platforms.Xna.Input;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
-    using XnaColor = Microsoft.Xna.Framework.Color;
+    using Microsoft.Xna.Framework;
+    using System.Collections.Generic;
     using System.Threading;
+    using Xamarin.Forms.Platforms.Xna;
+    using Xamarin.Forms.Platforms.Xna.Images;
+    using Xamarin.Forms.Platforms.Xna.Input;
+    using Xamarin.Forms.Platforms.Xna.Renderers;
+    using XnaColor = Microsoft.Xna.Framework.Color;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class ImageButtonRenderer : LabelRenderer
     {
         CancellationTokenSource _imageLoadCancellation;
-        IRenderElement _image;
+        IImage _image;
 
         public new ImageButton Model { get { return (ImageButton)base.Model; } }
 
@@ -25,6 +25,8 @@ namespace Sample.Renderers
         {
             PropertyTracker.AddHandler(ImageButton.ImageProperty, HandleImage);
             PropertyTracker.AddHandler(ImageButton.TextProperty, p => InvalidateVisual());
+
+            OnVisualStateChange += ImageButtonRenderer_OnVisualStateChange;
         }
 
         async void HandleImage(Xamarin.Forms.BindableProperty prop)
@@ -68,23 +70,37 @@ namespace Sample.Renderers
             base.OnMouseEnter();
         }
 
+        public override void OnMouseLeave()
+        {
+            RemoveVisualState(Mouse.Pressed);
+            Model.State = ImageButtonState.Normal;
+            base.OnMouseLeave();
+        }
+
         public override bool HandleMouseDown(Mouse.Button button)
         {
-            Model.State = ImageButtonState.Pressed;
+            if (button == Mouse.Button.Left)
+            {
+                AddVisualState(Mouse.Pressed);
+                Model.State = ImageButtonState.Pressed;
+            }
             return base.HandleMouseDown(button);
         }
 
         public override bool HandleMouseUp(Mouse.Button button)
         {
-            Model.State = ImageButtonState.Over;
+            if (button == Mouse.Button.Left)
+            {
+                RemoveVisualState(Mouse.Pressed);
+                Model.State = ImageButtonState.Over;
+            }
             return base.HandleMouseUp(button);
         }
 
-        public override void OnMouseLeave()
+        private void ImageButtonRenderer_OnVisualStateChange(object sender, ISet<State> e)
         {
-            Model.State = ImageButtonState.Normal;
-            base.OnMouseLeave();
+            if (_image != null)
+                _image.SetState(e);
         }
     }
 }
-
