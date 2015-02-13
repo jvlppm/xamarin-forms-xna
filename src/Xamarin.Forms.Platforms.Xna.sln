@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{B83C4D02-113F-4AEA-814C-07069A028BA6}"
 EndProject
@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "flavors", "flavors", "{BAA4
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Portable", "flavors\MonoGame.Portable\MonoGame.Portable.csproj", "{798E1F06-4BCA-4893-BB99-C25CC4E82F15}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Xamarin.Forms.Platforms.Xna", "Xamarin.Forms.Platforms.Xna\Xamarin.Forms.Platforms.Xna.shproj", "{B0144B80-F44D-49B0-933F-804CC9586DC0}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Xamarin.Forms.Platform.Xna", "Xamarin.Forms.Platforms.Xna\Xamarin.Forms.Platform.Xna.shproj", "{B0144B80-F44D-49B0-933F-804CC9586DC0}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

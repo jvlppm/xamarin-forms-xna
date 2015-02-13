@@ -49,6 +49,13 @@
             EmbeddedContent = new EmbeddedContent(Assembly.GetExecutingAssembly(), game.Services);
 
             IsInitialized = true;
+
+            // DEBUG
+            var src = new UriImageSource { Uri = new System.Uri("pack://application:////Xamarin.Forms.Platform.WP8;component/ButtonBackground.xml") };
+            src.LoadAsync(System.Threading.CancellationToken.None).ContinueWith(t =>
+            {
+                var a = t.Result;
+            });
         }
     }
 }

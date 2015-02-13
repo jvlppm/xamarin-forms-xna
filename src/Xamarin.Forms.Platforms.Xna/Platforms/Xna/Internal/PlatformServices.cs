@@ -5,12 +5,16 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
 #if !PORTABLE
     using System.IO.IsolatedStorage;
+    using System.Text.RegularExpressions;
+    using System.Reflection;
+    using Xamarin.Forms.Platforms.Xna.Resources;
 #endif
 
     class PlatformServices : DrawableGameComponent, IPlatformServices
@@ -19,6 +23,7 @@
         public readonly GameContext UpdateContext;
         readonly HttpClient HttpClient;
         readonly SynchronizationContext MainThreadContext;
+        readonly Regex PackUriRx = new Regex(@"^pack://(?<location>[^/]+:///)/((?<assembly>((?!;component/).)+);component/)?(?<path>.*)$");
 
         public PlatformServices(Game game)
             : base(game)
@@ -84,6 +89,32 @@
 
         public async Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
         {
+            var packMatch = PackUriRx.Match(uri.OriginalString);
+            if (packMatch.Success)
+            {
+                var location = packMatch.Groups["location"].Captures[0].Value;
+                if (location != "application:///")
+                    return null;
+
+                var assemblyName = packMatch.Groups["assembly"].Success ?
+                    new AssemblyName(packMatch.Groups["assembly"].Captures[0].Value) :
+                    Assembly.GetEntryAssembly().GetName();
+
+                var assembly = AppDomain.CurrentDomain.GetAssemblies()
+                    .SingleOrDefault(a => AssemblyName.ReferenceMatchesDefinition(a.GetName(), assemblyName));
+
+                if (assembly == null)
+                    return null;
+
+                var path = packMatch.Groups["path"].Captures[0].Value;
+                path = path.Replace("/", ".");
+
+                return assembly.GetManifestResourceNames()
+                    .Where(n => Regex.IsMatch(n, Regex.Escape(path) + @"(\.[^.]+)?"))
+                    .Select(n => assembly.GetManifestResourceStream(n))
+                    .FirstOrDefault();
+            }
+
             var webCancellation = new CancellationTokenSource();
             var getWebResponse = HttpClient.GetAsync(uri, webCancellation.Token);
 
