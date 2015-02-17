@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
+    using Xamarin.Forms.Platforms.Xna.Context;
 
     public class HandlerImageSourceUri : IImageSourceHandler
     {
@@ -15,7 +16,7 @@ namespace Xamarin.Forms.Platforms.Xna.Images
         public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var uriSource = (UriImageSource)imageSource;
-            var stream = await uriSource.GetStreamAsync();
+            var stream = await Forms.UpdateContext.Wait(uriSource.GetStreamAsync(cancellationToken));
             if (stream == null)
                 throw new ArgumentException("Resource not found");
             if (format == ImageFormat.Unknown)

@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected readonly PropertyTracker PropertyTracker;
         protected readonly XnaSpriteBatch SpriteBatch;
 
-        private ImmutableHashSet<State> visualState;
+        ImmutableHashSet<State> visualState;
 
         Rectangle _lastArrangeBounds;
 
@@ -270,18 +270,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (Model.Bounds != _lastArrangeBounds)
                 Arrange();
 
-            var state = Microsoft.Xna.Framework.Graphics.RasterizerState.CullNone;
-            var blendState = new Microsoft.Xna.Framework.Graphics.BlendState
+            var state = RasterizerState.CullNone;
+            var blendState = new BlendState
             {
-                ColorSourceBlend = Microsoft.Xna.Framework.Graphics.Blend.SourceAlpha,
-                AlphaSourceBlend = Microsoft.Xna.Framework.Graphics.Blend.SourceAlpha,
+                ColorSourceBlend = Blend.SourceAlpha,
+                AlphaSourceBlend = Blend.SourceAlpha,
 
-                ColorDestinationBlend = Microsoft.Xna.Framework.Graphics.Blend.InverseSourceAlpha,
-                AlphaDestinationBlend = Microsoft.Xna.Framework.Graphics.Blend.InverseSourceAlpha
+                ColorDestinationBlend = Blend.InverseSourceAlpha,
+                AlphaDestinationBlend = Blend.InverseSourceAlpha
             };
 
             Effect.Alpha = (_alpha = _alpha ?? GetAlpha()).Value;
-            SpriteBatch.Begin(Microsoft.Xna.Framework.Graphics.SpriteSortMode.Immediate, blendState, null, null, state, Effect);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, blendState, null, null, state, Effect);
 
             if (_backgroundTexture != null)
                 SpriteBatch.Draw(_backgroundTexture, _backgroundArea, Microsoft.Xna.Framework.Color.White);
