@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (_imageSource == null || !IsVisible)
                 return default(SizeRequest);
 
-            SizeRequest measuredSize = _imageSource.Measure(availableSize, default(SizeRequest));
+            SizeRequest measuredSize = _imageSource.Measure(VisualState, availableSize, default(SizeRequest));
 
             if (double.IsPositiveInfinity(availableSize.Width))
                 availableSize.Width = measuredSize.Request.Width;
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             if (_imageSource == null)
                 return;
-            _imageSource.Draw(SpriteBatch, area, XnaColor.White);
+            _imageSource.Draw(VisualState, SpriteBatch, area, XnaColor.White);
         }
 
         #region Property Handlers
@@ -70,6 +70,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
             catch { }
             Model.SetValue(Image.IsLoadingPropertyKey, false);
+        }
+        #endregion
+
+        #region IDisposable
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                //if (_imageSource != null)
+                //    _imageSource.Dispose();
+            }
+            base.Dispose(disposing);
         }
         #endregion
     }

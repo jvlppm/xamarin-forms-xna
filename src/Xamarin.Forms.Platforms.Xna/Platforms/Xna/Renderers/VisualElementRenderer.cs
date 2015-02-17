@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 using Xamarin.Forms.Platforms.Xna.Input;
-using Microsoft.Xna.Framework.Graphics;
 
 [assembly: Xamarin.Forms.Platforms.Xna.ExportRenderer(
     typeof(Xamarin.Forms.VisualElement),
@@ -12,14 +12,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System.Collections.Immutable;
     using Xamarin.Forms;
     using Xna;
-    using XnaBasicEffect = Microsoft.Xna.Framework.Graphics.BasicEffect;
     using XnaMathHelper = Microsoft.Xna.Framework.MathHelper;
     using XnaMatrix = Microsoft.Xna.Framework.Matrix;
-    using XnaSpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
-    using XnaTexture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
+    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
     using XnaVector2 = Microsoft.Xna.Framework.Vector2;
     using XnaVector3 = Microsoft.Xna.Framework.Vector3;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
     public class VisualElementRenderer<TModel> : VisualElementRenderer
         where TModel : VisualElement
@@ -51,7 +48,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         }
     }
 
-    public class VisualElementRenderer : IRegisterable
+    public class VisualElementRenderer : IRegisterable,  IDisposable
     {
         #region Static
 
@@ -93,17 +90,19 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #region Attributes
 
-        public readonly XnaBasicEffect Effect;
+        public readonly BasicEffect Effect;
 
         protected readonly PropertyTracker PropertyTracker;
-        protected readonly XnaSpriteBatch SpriteBatch;
+        protected readonly SpriteBatch SpriteBatch;
 
-        ImmutableHashSet<State> visualState;
+        public ISet<State> VisualState { get; private set; }
+
+        readonly BlendState _blendState;
 
         Rectangle _lastArrangeBounds;
 
         XnaRectangle _backgroundArea;
-        XnaTexture2D _backgroundTexture;
+        Texture2D _backgroundTexture;
 
         VisualElement _model;
         List<Element> _manuallyAddedElements;
@@ -111,6 +110,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         bool _isVisible;
         RenderTarget2D _rendererVisual;
         bool _validVisual;
+        bool _disposed;
 
         ImmutableDictionary<Element, VisualElementRenderer> ChildrenRenderers;
 
@@ -168,18 +168,27 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (!Forms.IsInitialized)
                 throw new InvalidOperationException("Xamarin.Forms not initialized");
 
-            visualState = ImmutableHashSet<State>.Empty;
+            VisualState = ImmutableHashSet<State>.Empty;
 
-            Effect = new XnaBasicEffect(Forms.Game.GraphicsDevice)
+            Effect = new BasicEffect(Forms.Game.GraphicsDevice)
             {
                 TextureEnabled = true,
                 VertexColorEnabled = true
             };
 
+            _blendState = new BlendState
+            {
+                ColorSourceBlend = Blend.SourceAlpha,
+                AlphaSourceBlend = Blend.SourceAlpha,
+
+                ColorDestinationBlend = Blend.InverseSourceAlpha,
+                AlphaDestinationBlend = Blend.InverseSourceAlpha
+            };
+
             _manuallyAddedElements = new List<Element>();
 
             PropertyTracker = new PropertyTracker();
-            SpriteBatch = new XnaSpriteBatch(Forms.Game.GraphicsDevice);
+            SpriteBatch = new SpriteBatch(Forms.Game.GraphicsDevice);
             ChildrenRenderers = ImmutableDictionary<Element, VisualElementRenderer>.Empty;
             Children = ImmutableList<VisualElementRenderer>.Empty;
             IsVisible = true;
@@ -237,12 +246,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected void Render(Microsoft.Xna.Framework.GameTime gameTime)
         {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             if (!_validVisual)
             {
                 if (_rendererVisual == null ||
                     (_rendererVisual.Width != (int)Model.Bounds.Width ||
                     _rendererVisual.Height != (int)Model.Bounds.Height))
                 {
+                    if (_rendererVisual != null)
+                        _rendererVisual.Dispose();
+
                     _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height, false, SpriteBatch.GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 1, RenderTargetUsage.PreserveContents);
                 }
 
@@ -271,20 +286,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 Arrange();
 
             var state = RasterizerState.CullNone;
-            var blendState = new BlendState
-            {
-                ColorSourceBlend = Blend.SourceAlpha,
-                AlphaSourceBlend = Blend.SourceAlpha,
-
-                ColorDestinationBlend = Blend.InverseSourceAlpha,
-                AlphaDestinationBlend = Blend.InverseSourceAlpha
-            };
 
             Effect.Alpha = (_alpha = _alpha ?? GetAlpha()).Value;
-            SpriteBatch.Begin(SpriteSortMode.Immediate, blendState, null, null, state, Effect);
+            SpriteBatch.Begin(SpriteSortMode.Immediate, _blendState, null, null, state, Effect);
 
             if (_backgroundTexture != null)
                 SpriteBatch.Draw(_backgroundTexture, _backgroundArea, Microsoft.Xna.Framework.Color.White);
+
+            //state.Dispose();
         }
 
         protected virtual void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, XnaRectangle area)
@@ -339,7 +348,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 _backgroundTexture = null;
             else
             {
-                _backgroundTexture = new XnaTexture2D(SpriteBatch.GraphicsDevice, 1, 1);
+                _backgroundTexture = new Texture2D(SpriteBatch.GraphicsDevice, 1, 1);
                 _backgroundTexture.SetData(new[] { Model.BackgroundColor.ToXnaColor() });
             }
         }
@@ -434,12 +443,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Model_ChildRemoved(object sender, ElementEventArgs e)
         {
-            Children = Model.LogicalChildren.Select(c => GetRenderer(c)).ToImmutableList();
-            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
-
             VisualElementRenderer childRenderer;
             if (ChildrenRenderers.TryGetValue(e.Element, out childRenderer))
-                childRenderer.Parent = null;
+                childRenderer.Dispose();
+
+            Children = Model.LogicalChildren.Select(c => GetRenderer(c)).ToImmutableList();
+            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
         }
 
         protected void AddElement(Element element)
@@ -567,7 +576,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (state == null || additionalStates.Any(s => s == null))
                 throw new ArgumentNullException();
 
-            var builder = visualState.ToBuilder();
+            var builder = ((ImmutableHashSet<State>)VisualState).ToBuilder();
 
             bool updated = updateStates(builder, state);
             foreach (var adstate in additionalStates)
@@ -575,10 +584,39 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
             if (updated)
             {
-                visualState = builder.ToImmutable();
+                VisualState = builder.ToImmutable();
                 var handler = OnVisualStateChange;
-                if(handler != null)
-                    handler(this, visualState);
+                InvalidateMeasure();
+                if (handler != null)
+                    handler(this, VisualState);
+            }
+        }
+        #endregion
+
+        #region IDisposable
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+            _disposed = true;
+            if (disposing)
+            {
+                foreach (var rend in ChildrenRenderers.Values)
+                    rend.Dispose();
+
+                SpriteBatch.Dispose();
+                Effect.Dispose();
+                _blendState.Dispose();
+                if (_backgroundTexture != null)
+                    _backgroundTexture.Dispose();
+                if (_rendererVisual != null)
+                    _rendererVisual.Dispose();
             }
         }
         #endregion

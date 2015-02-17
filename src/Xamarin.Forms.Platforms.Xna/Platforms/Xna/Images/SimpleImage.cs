@@ -7,31 +7,27 @@
 
     class SimpleImage : IImage
     {
-        Microsoft.Xna.Framework.Graphics.Texture2D _texture;
+        readonly Texture2D _texture;
 
         public SimpleImage(Texture2D texture)
         {
             _texture = texture;
         }
 
-        public SizeRequest Measure(Size availableSize, SizeRequest contentSize)
+        public SizeRequest Measure(ISet<State> states, Size availableSize, SizeRequest contentSize)
         {
             return new SizeRequest(new Size(_texture.Width, _texture.Height), default(Size));
         }
 
-        public void Draw(SpriteBatch spriteBatch, XnaRectangle area, XnaColor color)
+        public void Draw(ISet<State> states, SpriteBatch spriteBatch, XnaRectangle area, XnaColor color)
         {
             spriteBatch.Draw(_texture, area, color);
         }
 
 
-        public XnaRectangle GetContentArea(XnaRectangle area)
+        public XnaRectangle GetContentArea(ISet<State> states, XnaRectangle area)
         {
             return area;
-        }
-
-        public void SetState(ISet<State> states)
-        {
         }
     }
 }

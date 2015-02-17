@@ -25,8 +25,6 @@ namespace Sample.Renderers
         {
             PropertyTracker.AddHandler(ImageButton.ImageProperty, HandleImage);
             PropertyTracker.AddHandler(ImageButton.TextProperty, p => InvalidateVisual());
-
-            OnVisualStateChange += ImageButtonRenderer_OnVisualStateChange;
         }
 
         async void HandleImage(Xamarin.Forms.BindableProperty prop)
@@ -43,7 +41,7 @@ namespace Sample.Renderers
             var lblSize = base.Measure(availableSize);
             if (_image != null)
             {
-                return _image.Measure(availableSize, lblSize);
+                return _image.Measure(VisualState, availableSize, lblSize);
             }
             return lblSize;
         }
@@ -58,8 +56,8 @@ namespace Sample.Renderers
         {
             if (_image != null)
             {
-                _image.Draw(SpriteBatch, area, new XnaColor(XnaColor.White, Model.ImageOpacity));
-                base.LocalDraw(gameTime, _image.GetContentArea(area));
+                _image.Draw(VisualState, SpriteBatch, area, new XnaColor(XnaColor.White, Model.ImageOpacity));
+                base.LocalDraw(gameTime, _image.GetContentArea(VisualState, area));
             }
             else base.LocalDraw(gameTime, area);
         }
@@ -95,14 +93,6 @@ namespace Sample.Renderers
                 Model.State = ImageButtonState.Over;
             }
             return base.HandleMouseUp(button);
-        }
-
-        private void ImageButtonRenderer_OnVisualStateChange(object sender, ISet<State> e)
-        {
-            if (_image != null)
-                _image.SetState(e);
-
-            InvalidateMeasure();
         }
     }
 }

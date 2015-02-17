@@ -107,7 +107,7 @@
             return null;
         }
 
-        public void Draw(SpriteBatch spriteBatch, XnaRectangle position, XnaColor color)
+        public void Draw(ISet<State> states, SpriteBatch spriteBatch, XnaRectangle position, XnaColor color)
         {
             int rowTopHeight = _centerTop.Height;
             int rowBottomHeight = _centerBottom.Height;
@@ -136,7 +136,7 @@
             spriteBatch.Draw(_texture, new XnaRectangle(colRightLeft, rowBottomTop, colRightWidth, rowBottomHeight), _rightBottom, color);
         }
 
-        public XnaRectangle GetContentArea(XnaRectangle area)
+        public XnaRectangle GetContentArea(ISet<State> states, XnaRectangle area)
         {
             return new XnaRectangle(
                 area.Left + Content.Horizontal.Start,
@@ -145,7 +145,7 @@
                 area.Height - Content.Vertical.Margin);
         }
 
-        public SizeRequest Measure(Size availableSize, SizeRequest contentSize)
+        public SizeRequest Measure(ISet<State> states, Size availableSize, SizeRequest contentSize)
         {
             var minWidth = Math.Max(Stretch.Horizontal.Margin, contentSize.Minimum.Width + Content.Horizontal.Margin);
             var minHeight = Math.Max(Stretch.Vertical.Margin, contentSize.Minimum.Height + Content.Vertical.Margin);
@@ -156,10 +156,6 @@
                 availableSize.Height = Math.Max(Height, minHeight);
 
             return new SizeRequest(availableSize, new Size(minWidth, minHeight));
-        }
-
-        public void SetState(ISet<State> states)
-        {
         }
     }
 }

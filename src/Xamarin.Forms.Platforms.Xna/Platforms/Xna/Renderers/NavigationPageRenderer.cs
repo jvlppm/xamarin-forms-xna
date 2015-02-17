@@ -10,9 +10,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System.Threading.Tasks;
     using Xamarin.Forms;
 
-    public class NavigationPageRenderer : VisualElementRenderer<Xamarin.Forms.NavigationPage>
+    public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>
     {
-        protected override void OnModelLoad(Xamarin.Forms.NavigationPage model)
+        protected override void OnModelLoad(NavigationPage model)
         {
             model.PopRequested += model_PopRequested;
             model.PopToRootRequested += model_PopToRootRequested;
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             base.OnModelLoad(model);
         }
 
-        protected override void OnModelUnload(Xamarin.Forms.NavigationPage model)
+        protected override void OnModelUnload(NavigationPage model)
         {
             model.PopRequested -= model_PopRequested;
             model.PopToRootRequested -= model_PopToRootRequested;
@@ -28,22 +28,22 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             base.OnModelUnload(model);
         }
 
-        void model_PushRequested(object sender, Xamarin.Forms.NavigationRequestedEventArgs e)
+        void model_PushRequested(object sender, NavigationRequestedEventArgs e)
         {
             e.Task = PushAsync(e.Page);
         }
 
-        void model_PopToRootRequested(object sender, Xamarin.Forms.NavigationRequestedEventArgs e)
+        void model_PopToRootRequested(object sender, NavigationRequestedEventArgs e)
         {
             e.Task = PopToRootAsync();
         }
 
-        void model_PopRequested(object sender, Xamarin.Forms.NavigationRequestedEventArgs e)
+        void model_PopRequested(object sender, NavigationRequestedEventArgs e)
         {
             e.Task = PopAsync();
         }
 
-        Task<bool> PushAsync(Xamarin.Forms.Page page)
+        Task<bool> PushAsync(Page page)
         {
             var toShow = Model.StackCopy.First();
             var toHide = Model.StackCopy.Skip(1).FirstOrDefault();

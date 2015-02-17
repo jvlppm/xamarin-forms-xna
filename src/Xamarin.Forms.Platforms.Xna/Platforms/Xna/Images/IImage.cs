@@ -13,10 +13,9 @@
 
     public interface IImage
     {
-        void SetState(ISet<State> states);
-        SizeRequest Measure(Size availableSize, SizeRequest contentSize);
-        void Draw(SpriteBatch spriteBatch, XnaRectangle area, XnaColor color);
-        XnaRectangle GetContentArea(XnaRectangle area);
+        SizeRequest Measure(ISet<State> states, Size availableSize, SizeRequest contentSize);
+        void Draw(ISet<State> states, SpriteBatch spriteBatch, XnaRectangle area, XnaColor color);
+        XnaRectangle GetContentArea(ISet<State> states, XnaRectangle area);
     }
 
     public static class ImageFactory

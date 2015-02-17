@@ -4,16 +4,10 @@ using Xamarin.Forms.Platforms.Xna.Renderers;
 namespace Xamarin.Forms.Platforms.Xna
 {
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Content;
     using Microsoft.Xna.Framework.Graphics;
-    using System;
-    using System.IO;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using Xamarin.Forms.Platforms.Xna.Images;
-    using XnaColor = Microsoft.Xna.Framework.Color;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
+    using Images;
 
     public static class Extensions
     {
@@ -74,7 +68,7 @@ namespace Xamarin.Forms.Platforms.Xna
 
         public static void Draw(this SpriteBatch spriteBatch, NinePatch ninePatch, Rectangle rectangle, Color color)
         {
-            ninePatch.Draw(spriteBatch, rectangle, color);
+            ninePatch.Draw(null, spriteBatch, rectangle, color);
         }
 
         public static Task<IImage> LoadAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken), ImageFormat format = ImageFormat.Unknown)
