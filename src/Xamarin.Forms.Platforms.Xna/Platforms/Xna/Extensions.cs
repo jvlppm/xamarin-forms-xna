@@ -77,10 +77,10 @@ namespace Xamarin.Forms.Platforms.Xna
             ninePatch.Draw(spriteBatch, rectangle, color);
         }
 
-        public static Task<IImage> LoadAsync(this ImageSource source, CancellationToken token)
+        public static Task<IImage> LoadAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken), ImageFormat format = ImageFormat.Unknown)
         {
-            IImageSourceHandler handler = (IImageSourceHandler)Registrar.Registered.GetHandler(source.GetType());
-            return handler.GetImageAsync(source, token);
+            var handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType());
+            return handler.GetImageAsync(source, format, cancellationToken);
         }
     }
 }

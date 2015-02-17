@@ -61,19 +61,15 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 _imageLoadCancellation.Cancel();
             _imageLoadCancellation = new CancellationTokenSource();
 
-            IImageSourceHandler handler = Registrar.Registered.GetHandler<IImageSourceHandler>(Model.Source.GetType());
-            if (handler != null)
+            Model.SetValue(Image.IsLoadingPropertyKey, true);
+            try
             {
-                Model.SetValue(Image.IsLoadingPropertyKey, true);
-                try
-                {
-                    _imageSource = await handler.GetImageAsync(Model.Source, _imageLoadCancellation.Token);
-                    _imageLoadCancellation = null;
-                    InvalidateMeasure();
-                }
-                catch { }
-                Model.SetValue(Image.IsLoadingPropertyKey, false);
+                _imageSource = await Model.Source.LoadAsync(_imageLoadCancellation.Token);
+                _imageLoadCancellation = null;
+                InvalidateMeasure();
             }
+            catch { }
+            Model.SetValue(Image.IsLoadingPropertyKey, false);
         }
         #endregion
     }

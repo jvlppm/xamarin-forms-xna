@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 
     public static class Mouse
     {
+        internal static void Init() { }
+
         public static State Over = State.Register("Over");
         public static State Pressed = State.Register("Pressed");
 

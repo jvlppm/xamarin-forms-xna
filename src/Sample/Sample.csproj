@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,7 +48,6 @@
   <ItemGroup>
     <Compile Include="Controls\Style.cs" />
     <Compile Include="Controls\ImageButton.cs" />
-    <Compile Include="Converters\ButtonImageConverter.cs" />
     <Compile Include="Converters\ButtonTextColorConverter.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
@@ -70,6 +70,7 @@
     <None Include="Content\button_blue_pressed.9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="Content\ButtonBackground.xml" />
     <Content Include="Content\no-idea.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

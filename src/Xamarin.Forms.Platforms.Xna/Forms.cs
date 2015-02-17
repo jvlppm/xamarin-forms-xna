@@ -5,6 +5,7 @@
     using Xamarin.Forms.Platforms.Xna;
     using Xamarin.Forms.Platforms.Xna.Context;
     using Xamarin.Forms.Platforms.Xna.Images;
+    using Xamarin.Forms.Platforms.Xna.Input;
     using Xamarin.Forms.Platforms.Xna.Resources;
 
     public static class Forms
@@ -49,13 +50,7 @@
             EmbeddedContent = new EmbeddedContent(Assembly.GetExecutingAssembly(), game.Services);
 
             IsInitialized = true;
-
-            // DEBUG
-            var src = new UriImageSource { Uri = new System.Uri("pack://application:////Xamarin.Forms.Platform.WP8;component/ButtonBackground.xml") };
-            src.LoadAsync(System.Threading.CancellationToken.None).ContinueWith(t =>
-            {
-                var a = t.Result;
-            });
+            Mouse.Init();
         }
     }
 }

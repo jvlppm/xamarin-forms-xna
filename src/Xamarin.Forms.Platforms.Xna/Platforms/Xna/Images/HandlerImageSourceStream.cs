@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     public class HandlerImageSourceStream : IImageSourceHandler
     {
         // Carrega a imagem de tipo Simple
-        public Task<IImage> GetImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
+        public Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }

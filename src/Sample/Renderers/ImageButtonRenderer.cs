@@ -101,6 +101,8 @@ namespace Sample.Renderers
         {
             if (_image != null)
                 _image.SetState(e);
+
+            InvalidateMeasure();
         }
     }
 }

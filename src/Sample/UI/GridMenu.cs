@@ -81,12 +81,12 @@ namespace Sample.UI
         {
             var button = new ImageButton
             {
-                HorizontalOptions = Xamarin.Forms.LayoutOptions.Center,
-                VerticalOptions = Xamarin.Forms.LayoutOptions.CenterAndExpand,
+                Image = "pack://application/ButtonBackground.xml",
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
                 Text = text,
                 WidthRequest = 150,
             };
-            button.SetBinding(ImageButton.ImageProperty, "State", converter: new ButtonImageConverter());
             Grid.SetRow(button, row);
             Grid.SetColumn(button, column);
             return button;

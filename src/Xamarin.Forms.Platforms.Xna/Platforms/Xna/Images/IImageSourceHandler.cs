@@ -5,6 +5,6 @@
 
     public interface IImageSourceHandler : IRegisterable
     {
-        Task<IImage> GetImageAsync(ImageSource imageSource, CancellationToken cancellationToken);
+        Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken);
     }
 }

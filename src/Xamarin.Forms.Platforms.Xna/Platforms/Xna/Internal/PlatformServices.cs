@@ -23,7 +23,7 @@
         public readonly GameContext UpdateContext;
         readonly HttpClient HttpClient;
         readonly SynchronizationContext MainThreadContext;
-        readonly Regex PackUriRx = new Regex(@"^pack://(?<location>[^/]+:///)/((?<assembly>((?!;component/).)+);component/)?(?<path>.*)$");
+        readonly Regex PackUriRx = new Regex(@"^pack://(?<location>[^/]+)/((?<assembly>((?!;component/).)+);component/)?(?<path>.*)$");
 
         public PlatformServices(Game game)
             : base(game)
@@ -92,10 +92,6 @@
             var packMatch = PackUriRx.Match(uri.OriginalString);
             if (packMatch.Success)
             {
-                var location = packMatch.Groups["location"].Captures[0].Value;
-                if (location != "application:///")
-                    return null;
-
                 var assemblyName = packMatch.Groups["assembly"].Success ?
                     new AssemblyName(packMatch.Groups["assembly"].Captures[0].Value) :
                     Assembly.GetEntryAssembly().GetName();

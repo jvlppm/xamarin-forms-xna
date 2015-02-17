@@ -14,15 +14,16 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     {
         // Acha o arquivo, verifica extensao, carrega Image
         // Verificar cash para resources de disco
-        public async Task<IImage> GetImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
+        public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var fileSource = (FileImageSource)imageSource;
-            var format = ImageFactory.DetectFormat(fileSource.File);
             var path = Path.Combine(Forms.Game.Content.RootDirectory, fileSource.File);
+            if (format == ImageFormat.Unknown)
+                format = ImageFactory.DetectFormat(fileSource.File);
 
             if (File.Exists(path))
             {
-                return await ImageFactory.CreateFromStream(File.OpenRead(path), format);
+                return await ImageFactory.CreateFromStream(File.OpenRead(path), format, cancellationToken);
             }
 
             var texture = Forms.Game.Content.Load<Texture2D>(fileSource.File);

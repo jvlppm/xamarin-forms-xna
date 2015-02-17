@@ -17,12 +17,19 @@ namespace Xamarin.Forms.Platforms.Xna
 
         public static State Register(string name)
         {
-            if (_registeredStates.ContainsKey(name))
+            var registerName = name.ToLowerInvariant();
+            if (_registeredStates.ContainsKey(registerName))
                 throw new InvalidOperationException();
 
             var state = new State(name);
-            _registeredStates.Add(name, state);
+            _registeredStates.Add(registerName, state);
             return state;
+        }
+
+        public static State ByName(string name)
+        {
+            var registerName = name.ToLowerInvariant();
+            return _registeredStates[registerName];
         }
     }
 }

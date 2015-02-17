@@ -2,9 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using System.Xml.Linq;
 
     class StateImage
     {
@@ -33,30 +36,53 @@
             }
         }
 
+        public static async Task<StateImage> FromImageSource(ImageSource source, ImageFormat format, IEnumerable<State> enabled = null, IEnumerable<State> disabled = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var image = await source.LoadAsync(cancellationToken, format);
+            return new StateImage(image, enabled, disabled);
+        }
+
         public IDictionary<State, bool> States { get; private set; }
         public IImage Image { get; private set; }
     }
 
     class StateList : List<StateImage>, IImage
     {
-        public static Task<StateList> FromXml(XmlTextReader reader)
+        public static async Task<StateList> FromXml(XmlTextReader reader, CancellationToken cancellation)
         {
-            while (reader.Read())
-            {
-                switch (reader.NodeType)
-                {
-                    case XmlNodeType.Element:
-                        break;
-                }
-            }
-            throw new NotImplementedException();
+            var statePrefix = "state_";
+
+            var xml = XDocument.Load(reader);
+            var getImages = from item in xml.Root.Elements("item")
+                            let states = from attr in item.Attributes()
+                                         where attr.Name.ToString().StartsWith(statePrefix)
+                                         select new
+                                         {
+                                             State = State.ByName(attr.Name.ToString().Substring(statePrefix.Length)),
+                                             Enabled = bool.Parse(attr.Value)
+                                         }
+                            select StateImage.FromImageSource(
+                                source: (string)item.Attribute("image"),
+                                format: ImageFormat.Unknown,
+                                enabled: from state in states
+                                         where state.Enabled
+                                         select state.State,
+                                disabled: from state in states
+                                          where !state.Enabled
+                                          select state.State,
+                                cancellationToken: cancellation);
+
+            var result = new StateList();
+            result.AddRange(await Task.WhenAll(getImages));
+            result.SetState(ImmutableHashSet<State>.Empty);
+            return result;
         }
 
         IImage _currentImage;
 
         public void SetState(ISet<State> states)
         {
-            var selectedState = this.LastOrDefault(t => t.States.All(s => s.Value == states.Contains(s.Key)));
+            var selectedState = this.FirstOrDefault(t => t.States.All(s => s.Value == states.Contains(s.Key)));
             _currentImage = selectedState == null ? null : selectedState.Image;
         }
 

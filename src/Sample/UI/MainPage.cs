@@ -18,12 +18,12 @@ namespace Sample.UI
 
             var startButton = new ImageButton
             {
-                HorizontalOptions = Xamarin.Forms.LayoutOptions.Center,
-                VerticalOptions = Xamarin.Forms.LayoutOptions.CenterAndExpand,
+                Image = "pack://application/ButtonBackground.xml",
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
                 Text = "Grid Menu",
                 WidthRequest = 150,
             };
-            startButton.SetBinding(ImageButton.ImageProperty, "State", converter: new ButtonImageConverter());
 
             startButton.OnClick += startButton_OnClick;
 

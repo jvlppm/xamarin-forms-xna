@@ -12,14 +12,15 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     {
         // Baixa a Stream, carrega a imagem de acordo com extensão, via platform services (imageSource.GetStreamAsync())
         // resources do assembly serão representados via pack://
-        public async Task<IImage> GetImageAsync(ImageSource imageSource, CancellationToken cancellationToken)
+        public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var uriSource = (UriImageSource)imageSource;
             var stream = await uriSource.GetStreamAsync();
             if (stream == null)
                 throw new ArgumentException("Resource not found");
-            var format = ImageFactory.DetectFormat(uriSource.Uri.ToString());
-            return await ImageFactory.CreateFromStream(stream, format);
+            if (format == ImageFormat.Unknown)
+                format = ImageFactory.DetectFormat(uriSource.Uri.ToString());
+            return await ImageFactory.CreateFromStream(stream, format, cancellationToken);
         }
     }
 }

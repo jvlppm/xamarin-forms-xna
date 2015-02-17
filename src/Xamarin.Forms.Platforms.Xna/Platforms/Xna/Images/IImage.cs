@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
     using XnaColor = Microsoft.Xna.Framework.Color;
@@ -20,12 +21,12 @@
 
     public static class ImageFactory
     {
-        public static async Task<IImage> CreateFromStream(Stream stream, ImageFormat format)
+        public static async Task<IImage> CreateFromStream(Stream stream, ImageFormat format, CancellationToken cancellationToken)
         {
             switch (format)
             {
                 case ImageFormat.StateList:
-                    return await StateList.FromXml(new XmlTextReader(stream));
+                    return await StateList.FromXml(new XmlTextReader(stream), cancellationToken);
                 case ImageFormat.Unknown:
                 case ImageFormat.Default:
                 case ImageFormat.NinePatch:
