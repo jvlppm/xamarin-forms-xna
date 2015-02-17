@@ -6,13 +6,15 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
+    using Context;
 
     public class HandlerImageSourceStream : IImageSourceHandler
     {
-        // Carrega a imagem de tipo Simple
-        public Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
+        public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            var streamSorce = (StreamImageSource)imageSource;
+            var stream = await Forms.UpdateContext.Wait(streamSorce.Stream(cancellationToken));
+            return await ImageFactory.CreateFromStream(stream, format, cancellationToken);
         }
     }
 }

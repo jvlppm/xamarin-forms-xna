@@ -4,7 +4,6 @@
 namespace Xamarin.Forms.Platforms.Xna.Images
 {
     using Microsoft.Xna.Framework.Graphics;
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading;
@@ -15,8 +14,6 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     {
         readonly static Dictionary<string, IImage> _cachedImages = new Dictionary<string, IImage>();
 
-        // Acha o arquivo, verifica extensao, carrega Image
-        // Verificar cash para resources de disco
         public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var fileSource = (FileImageSource)imageSource;

@@ -3,19 +3,17 @@
     typeof(Xamarin.Forms.Platforms.Xna.Images.HandlerImageSourceUri))]
 namespace Xamarin.Forms.Platforms.Xna.Images
 {
+    using Context;
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
-    using Xamarin.Forms.Platforms.Xna.Context;
 
     public class HandlerImageSourceUri : IImageSourceHandler
     {
         static readonly Dictionary<Uri, IImage> _cachedImages = new Dictionary<Uri, IImage>();
 
-        // Baixa a Stream, carrega a imagem de acordo com extensão, via platform services (imageSource.GetStreamAsync())
-        // resources do assembly serão representados via pack://
         public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var uriSource = (UriImageSource)imageSource;

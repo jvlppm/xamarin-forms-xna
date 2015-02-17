@@ -1,5 +1,4 @@
 ﻿using Sample.Controls;
-using Sample.Converters;
 using Xamarin.Forms;
 
 namespace Sample.UI
@@ -8,10 +7,10 @@ namespace Sample.UI
     {
         public MainPage()
         {
-            var logo = new Xamarin.Forms.Image
+            var logo = new Image
             {
-                HorizontalOptions = Xamarin.Forms.LayoutOptions.Center,
-                VerticalOptions = Xamarin.Forms.LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
                 Source = "no-idea",
                 HeightRequest = 350
             };
@@ -27,11 +26,11 @@ namespace Sample.UI
 
             startButton.OnClick += startButton_OnClick;
 
-            Content = new Xamarin.Forms.StackLayout
+            Content = new StackLayout
             {
-                Orientation = Xamarin.Forms.StackOrientation.Vertical,
-                VerticalOptions = Xamarin.Forms.LayoutOptions.FillAndExpand,
-                HorizontalOptions = Xamarin.Forms.LayoutOptions.FillAndExpand,
+                Orientation = StackOrientation.Vertical,
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
 
                 Children =
                 {
