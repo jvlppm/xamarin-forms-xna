@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platforms.Xna.Images
 
     public class HandlerImageSourceUri : IImageSourceHandler
     {
-        static Dictionary<Uri, IImage> _cachedImages = new Dictionary<Uri, IImage>();
+        static readonly Dictionary<Uri, IImage> _cachedImages = new Dictionary<Uri, IImage>();
 
         // Baixa a Stream, carrega a imagem de acordo com extensão, via platform services (imageSource.GetStreamAsync())
         // resources do assembly serão representados via pack://
@@ -24,14 +24,16 @@ namespace Xamarin.Forms.Platforms.Xna.Images
             if (_cachedImages.TryGetValue(uriSource.Uri, out cached))
                 return cached;
 
-            var stream = await Forms.UpdateContext.Wait(uriSource.GetStreamAsync(cancellationToken));
-            if (stream == null)
-                throw new ArgumentException("Resource not found");
-            if (format == ImageFormat.Unknown)
-                format = ImageFactory.DetectFormat(uriSource.Uri.ToString());
-            var image = await ImageFactory.CreateFromStream(stream, format, cancellationToken);
-            _cachedImages.Add(uriSource.Uri, image);
-            return image;
+            using (var stream = await Forms.UpdateContext.Wait(uriSource.GetStreamAsync(cancellationToken)))
+            {
+                if (stream == null)
+                    throw new ArgumentException("Resource not found");
+                if (format == ImageFormat.Unknown)
+                    format = ImageFactory.DetectFormat(uriSource.Uri.ToString());
+                var image = await ImageFactory.CreateFromStream(stream, format, cancellationToken);
+                _cachedImages.Add(uriSource.Uri, image);
+                return image;
+            }
         }
     }
 }

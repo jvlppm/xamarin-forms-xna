@@ -1,13 +1,11 @@
-﻿using System.Linq;
-using Xamarin.Forms.Platforms.Xna.Input;
+﻿using Xamarin.Forms.Platforms.Xna.Input;
 
 namespace Xamarin.Forms.Platforms.Xna
 {
     using System;
     using Xamarin.Forms;
-    using Xamarin.Forms.Platforms.Xna.Renderers;
+    using Renderers;
     using GameTime = Microsoft.Xna.Framework.GameTime;
-    using MouseState = Microsoft.Xna.Framework.Input.MouseState;
 
     public class UIGameComponent : Microsoft.Xna.Framework.DrawableGameComponent, IPlatform
     {

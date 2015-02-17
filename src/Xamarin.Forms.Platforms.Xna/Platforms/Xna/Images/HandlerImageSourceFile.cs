@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platforms.Xna.Images
 
     public class HandlerImageSourceFile : IImageSourceHandler
     {
-        static Dictionary<string, IImage> _cachedImages = new Dictionary<string, IImage>();
+        readonly static Dictionary<string, IImage> _cachedImages = new Dictionary<string, IImage>();
 
         // Acha o arquivo, verifica extensao, carrega Image
         // Verificar cash para resources de disco

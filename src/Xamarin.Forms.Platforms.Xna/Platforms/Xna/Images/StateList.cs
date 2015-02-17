@@ -100,6 +100,10 @@
 
         public Microsoft.Xna.Framework.Rectangle GetContentArea(ISet<State> states, Microsoft.Xna.Framework.Rectangle area)
         {
+            var image = FromState(states);
+            if (image != null)
+                return image.GetContentArea(states, area);
+
             return area;
         }
     }
