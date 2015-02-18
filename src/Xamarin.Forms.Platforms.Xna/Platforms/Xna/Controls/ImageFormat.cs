@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Images
+﻿namespace Xamarin.Forms.Platforms.Xna.Controls
 {
     public enum ImageFormat
     {

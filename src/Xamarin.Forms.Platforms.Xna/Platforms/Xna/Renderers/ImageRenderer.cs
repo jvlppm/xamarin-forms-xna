@@ -5,15 +5,13 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
     using System;
     using System.Threading;
-    using Xamarin.Forms;
-    using Xamarin.Forms.Platforms.Xna.Images;
-    using XnaColor = Microsoft.Xna.Framework.Color;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
+    using Controls;
+    using Microsoft.Xna.Framework;
 
     public class ImageRenderer : VisualElementRenderer<Image>
     {
         CancellationTokenSource _imageLoadCancellation;
-        IImage _imageSource;
+        IControl _imageSource;
 
         public ImageRenderer()
         {
@@ -47,11 +45,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             throw new NotImplementedException();
         }
 
-        protected override void LocalDraw(Microsoft.Xna.Framework.GameTime gameTime, XnaRectangle area)
+        protected override void LocalDraw(GameTime gameTime, Rectangle area)
         {
             if (_imageSource == null)
                 return;
-            _imageSource.Draw(VisualState, SpriteBatch, area, XnaColor.White);
+            _imageSource.Draw(VisualState, SpriteBatch, area, Color.White);
         }
 
         #region Property Handlers
@@ -70,18 +68,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
             catch { }
             Model.SetValue(Image.IsLoadingPropertyKey, false);
-        }
-        #endregion
-
-        #region IDisposable
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                //if (_imageSource != null)
-                //    _imageSource.Dispose();
-            }
-            base.Dispose(disposing);
         }
         #endregion
     }

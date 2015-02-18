@@ -1,8 +1,9 @@
 ﻿[assembly: Xamarin.Forms.Platforms.Xna.Images.ExportImageSourceHandler(
     typeof(Xamarin.Forms.FileImageSource),
-    typeof(Xamarin.Forms.Platforms.Xna.Images.HandlerImageSourceFile))]
+    typeof(Xamarin.Forms.Platforms.Xna.Images.FileImageSourceHandler))]
 namespace Xamarin.Forms.Platforms.Xna.Images
 {
+    using Controls;
     using Microsoft.Xna.Framework.Graphics;
     using System.Collections.Generic;
     using System.IO;
@@ -10,15 +11,15 @@ namespace Xamarin.Forms.Platforms.Xna.Images
     using System.Threading.Tasks;
     using Xamarin.Forms;
 
-    public class HandlerImageSourceFile : IImageSourceHandler
+    public class FileImageSourceHandler : IImageSourceHandler
     {
-        readonly static Dictionary<string, IImage> _cachedImages = new Dictionary<string, IImage>();
+        readonly static Dictionary<string, IControl> _cachedImages = new Dictionary<string, IControl>();
 
-        public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
+        public async Task<IControl> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var fileSource = (FileImageSource)imageSource;
 
-            IImage cached;
+            IControl cached;
             if (_cachedImages.TryGetValue(fileSource.File, out cached))
                 return cached;
 
@@ -26,7 +27,7 @@ namespace Xamarin.Forms.Platforms.Xna.Images
             if (format == ImageFormat.Unknown)
                 format = ImageFactory.DetectFormat(fileSource.File);
 
-            IImage image;
+            IControl image;
             if (File.Exists(path))
                 image = await ImageFactory.CreateFromStream(File.OpenRead(path), format, cancellationToken);
             else

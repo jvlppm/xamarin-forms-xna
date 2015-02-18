@@ -5,10 +5,9 @@ namespace Sample.Renderers
 {
     using Controls;
     using Microsoft.Xna.Framework;
-    using System.Collections.Generic;
     using System.Threading;
     using Xamarin.Forms.Platforms.Xna;
-    using Xamarin.Forms.Platforms.Xna.Images;
+    using Xamarin.Forms.Platforms.Xna.Controls;
     using Xamarin.Forms.Platforms.Xna.Input;
     using Xamarin.Forms.Platforms.Xna.Renderers;
     using XnaColor = Microsoft.Xna.Framework.Color;
@@ -17,7 +16,7 @@ namespace Sample.Renderers
     public class ImageButtonRenderer : LabelRenderer
     {
         CancellationTokenSource _imageLoadCancellation;
-        IImage _image;
+        IControl _image;
 
         public new ImageButton Model { get { return (ImageButton)base.Model; } }
 
@@ -62,36 +61,23 @@ namespace Sample.Renderers
             else base.LocalDraw(gameTime, area);
         }
 
-        public override void OnMouseEnter()
-        {
-            Model.State = ImageButtonState.Over;
-            base.OnMouseEnter();
-        }
-
         public override void OnMouseLeave()
         {
             RemoveVisualState(Mouse.Pressed);
-            Model.State = ImageButtonState.Normal;
             base.OnMouseLeave();
         }
 
         public override bool HandleMouseDown(Mouse.Button button)
         {
             if (button == Mouse.Button.Left)
-            {
                 AddVisualState(Mouse.Pressed);
-                Model.State = ImageButtonState.Pressed;
-            }
             return base.HandleMouseDown(button);
         }
 
         public override bool HandleMouseUp(Mouse.Button button)
         {
             if (button == Mouse.Button.Left)
-            {
                 RemoveVisualState(Mouse.Pressed);
-                Model.State = ImageButtonState.Over;
-            }
             return base.HandleMouseUp(button);
         }
     }

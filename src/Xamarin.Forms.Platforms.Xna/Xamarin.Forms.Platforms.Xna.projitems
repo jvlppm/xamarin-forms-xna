@@ -30,18 +30,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\WhenAnyExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Operations\Yield.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Context\Reference.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\IControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\ImageFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\ImageFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\Label.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\NinePatchImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\SimpleImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Controls\StateList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\ExportRendererAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Extensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\HandlerImageSourceStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\HandlerImageSourceUri.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\HandlerImageSourceFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\StreamImageSourceHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\UriImageSourceHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\FileImageSourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\ExportImageSourceHandlerAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\IImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\IImageSourceHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\ImageFormat.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\NinePatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\SimpleImage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\StateList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\Mouse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\RoutedEventManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\ContextTicker.cs" />
@@ -50,6 +52,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformTimer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\ImageRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\ButtonRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\LabelRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\NavigationPageRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\VisualElementRenderer.cs" />
@@ -59,6 +62,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PropertyTracker.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\ButtonBackground.xml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\DefaultFont.xnb" />
   </ItemGroup>
 </Project>

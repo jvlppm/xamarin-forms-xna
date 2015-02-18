@@ -1,24 +1,25 @@
 ﻿[assembly: Xamarin.Forms.Platforms.Xna.Images.ExportImageSourceHandler(
     typeof(Xamarin.Forms.UriImageSource),
-    typeof(Xamarin.Forms.Platforms.Xna.Images.HandlerImageSourceUri))]
+    typeof(Xamarin.Forms.Platforms.Xna.Images.UriImageSourceHandler))]
 namespace Xamarin.Forms.Platforms.Xna.Images
 {
     using Context;
+    using Controls;
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
 
-    public class HandlerImageSourceUri : IImageSourceHandler
+    public class UriImageSourceHandler : IImageSourceHandler
     {
-        static readonly Dictionary<Uri, IImage> _cachedImages = new Dictionary<Uri, IImage>();
+        static readonly Dictionary<Uri, IControl> _cachedImages = new Dictionary<Uri, IControl>();
 
-        public async Task<IImage> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
+        public async Task<IControl> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var uriSource = (UriImageSource)imageSource;
 
-            IImage cached;
+            IControl cached;
             if (_cachedImages.TryGetValue(uriSource.Uri, out cached))
                 return cached;
 

@@ -15,16 +15,15 @@ namespace Sample.UI
                 HeightRequest = 350
             };
 
-            var startButton = new ImageButton
+            var startButton = new Button
             {
-                Image = "pack://application/ButtonBackground.xml",
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 Text = "Grid Menu",
                 WidthRequest = 150,
             };
 
-            startButton.OnClick += startButton_OnClick;
+            startButton.Clicked += startButton_OnClick;
 
             Content = new StackLayout
             {

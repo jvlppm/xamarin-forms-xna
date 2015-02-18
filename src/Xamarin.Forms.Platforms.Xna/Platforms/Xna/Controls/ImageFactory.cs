@@ -1,26 +1,16 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Images
+﻿namespace Xamarin.Forms.Platforms.Xna.Controls
 {
     using Microsoft.Xna.Framework.Graphics;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
-    using XnaColor = Microsoft.Xna.Framework.Color;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
-
-    public interface IImage
-    {
-        SizeRequest Measure(ISet<State> states, Size availableSize, SizeRequest contentSize);
-        void Draw(ISet<State> states, SpriteBatch spriteBatch, XnaRectangle area, XnaColor color);
-        XnaRectangle GetContentArea(ISet<State> states, XnaRectangle area);
-    }
 
     public static class ImageFactory
     {
-        public static async Task<IImage> CreateFromStream(Stream stream, ImageFormat format, CancellationToken cancellationToken)
+        public static async Task<IControl> CreateFromStream(Stream stream, ImageFormat format, CancellationToken cancellationToken)
         {
             switch (format)
             {
@@ -36,12 +26,12 @@
             }
         }
 
-        public static IImage CreateFromTexture(Texture2D texture, ImageFormat format)
+        public static IControl CreateFromTexture(Texture2D texture, ImageFormat format)
         {
             switch (format)
             {
                 case ImageFormat.NinePatch:
-                    return new NinePatch(texture);
+                    return new NinePatchImage(texture);
 
                 case ImageFormat.Unknown:
                 case ImageFormat.Default:

@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Platforms.Xna
     using System.Threading;
     using System.Threading.Tasks;
     using Images;
+    using Xamarin.Forms.Platforms.Xna.Controls;
 
     public static class Extensions
     {
@@ -66,12 +67,12 @@ namespace Xamarin.Forms.Platforms.Xna
             yield return renderer;
         }
 
-        public static void Draw(this SpriteBatch spriteBatch, NinePatch ninePatch, Rectangle rectangle, Color color)
+        public static void Draw(this SpriteBatch spriteBatch, NinePatchImage ninePatch, Rectangle rectangle, Color color)
         {
             ninePatch.Draw(null, spriteBatch, rectangle, color);
         }
 
-        public static Task<IImage> LoadAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken), ImageFormat format = ImageFormat.Unknown)
+        public static Task<IControl> LoadAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken), ImageFormat format = ImageFormat.Unknown)
         {
             var handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType());
             return handler.GetImageAsync(source, format, cancellationToken);

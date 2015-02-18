@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Images
+﻿namespace Xamarin.Forms.Platforms.Xna.Controls
 {
     using Microsoft.Xna.Framework.Graphics;
     using System;
@@ -6,7 +6,7 @@
     using XnaColor = Microsoft.Xna.Framework.Color;
     using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
-    public class NinePatch : IImage
+    public class NinePatchImage : IControl
     {
         public class Range
         {
@@ -55,7 +55,7 @@
         readonly XnaRectangle _rightCenter;
         readonly XnaRectangle _rightBottom;
 
-        public NinePatch(Texture2D texture)
+        public NinePatchImage(Texture2D texture)
         {
             _texture = texture;
             XnaColor[] data = new XnaColor[texture.Width * texture.Height];

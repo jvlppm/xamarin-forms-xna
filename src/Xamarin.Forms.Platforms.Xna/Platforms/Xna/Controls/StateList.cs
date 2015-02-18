@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Images
+﻿namespace Xamarin.Forms.Platforms.Xna.Controls
 {
     using System;
     using System.Collections.Generic;
@@ -9,18 +9,18 @@
     using System.Xml;
     using System.Xml.Linq;
 
-    class StateImage
+    class StateDefinition
     {
-        public StateImage(IImage image)
+        public StateDefinition(IControl control)
         {
-            if (image == null)
-                throw new ArgumentNullException("image");
+            if (control == null)
+                throw new ArgumentNullException("control");
 
             States = new Dictionary<State, bool>();
-            Image = image;
+            Image = control;
         }
 
-        public StateImage(IImage image, IEnumerable<State> enabled = null, IEnumerable<State> disabled = null)
+        public StateDefinition(IControl image, IEnumerable<State> enabled = null, IEnumerable<State> disabled = null)
             : this(image)
         {
             if (enabled != null)
@@ -36,17 +36,17 @@
             }
         }
 
-        public static async Task<StateImage> FromImageSource(ImageSource source, ImageFormat format, IEnumerable<State> enabled = null, IEnumerable<State> disabled = null, CancellationToken cancellationToken = default(CancellationToken))
+        public static async Task<StateDefinition> FromImageSource(ImageSource source, ImageFormat format, IEnumerable<State> enabled = null, IEnumerable<State> disabled = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var image = await source.LoadAsync(cancellationToken, format);
-            return new StateImage(image, enabled, disabled);
+            return new StateDefinition(image, enabled, disabled);
         }
 
         public IDictionary<State, bool> States { get; private set; }
-        public IImage Image { get; private set; }
+        public IControl Image { get; private set; }
     }
 
-    class StateList : List<StateImage>, IImage
+    class StateList : IControl
     {
         public static async Task<StateList> FromXml(XmlTextReader reader, CancellationToken cancellation)
         {
@@ -61,7 +61,7 @@
                                              State = State.ByName(attr.Name.ToString().Substring(statePrefix.Length)),
                                              Enabled = bool.Parse(attr.Value)
                                          }
-                            select StateImage.FromImageSource(
+                            select StateDefinition.FromImageSource(
                                 source: (string)item.Attribute("image"),
                                 format: ImageFormat.Unknown,
                                 enabled: from state in states
@@ -72,14 +72,19 @@
                                           select state.State,
                                 cancellationToken: cancellation);
 
-            var result = new StateList();
-            result.AddRange(await Task.WhenAll(getImages));
-            return result;
+            return new StateList(await Task.WhenAll(getImages));
         }
 
-        IImage FromState(ISet<State> states)
+        public readonly ImmutableArray<StateDefinition> States;
+
+        public StateList(IEnumerable<StateDefinition> states)
         {
-            var selectedState = this.FirstOrDefault(t => t.States.All(s => s.Value == states.Contains(s.Key)));
+            States = states.ToImmutableArray();
+        }
+
+        IControl FromState(ISet<State> states)
+        {
+            var selectedState = States.FirstOrDefault(t => t.States.All(s => s.Value == states.Contains(s.Key)));
             return selectedState == null ? null : selectedState.Image;
         }
 

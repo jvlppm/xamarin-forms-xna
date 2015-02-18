@@ -1,11 +1,10 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Images
+﻿namespace Xamarin.Forms.Platforms.Xna.Controls
 {
+    using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
     using System.Collections.Generic;
-    using XnaColor = Microsoft.Xna.Framework.Color;
-    using XnaRectangle = Microsoft.Xna.Framework.Rectangle;
 
-    class SimpleImage : IImage
+    class SimpleImage : IControl
     {
         readonly Texture2D _texture;
 
@@ -19,13 +18,12 @@
             return new SizeRequest(new Size(_texture.Width, _texture.Height), default(Size));
         }
 
-        public void Draw(ISet<State> states, SpriteBatch spriteBatch, XnaRectangle area, XnaColor color)
+        public void Draw(ISet<State> states, SpriteBatch spriteBatch, Rectangle area, Color color)
         {
             spriteBatch.Draw(_texture, area, color);
         }
 
-
-        public XnaRectangle GetContentArea(ISet<State> states, XnaRectangle area)
+        public Rectangle GetContentArea(ISet<State> states, Rectangle area)
         {
             return area;
         }
