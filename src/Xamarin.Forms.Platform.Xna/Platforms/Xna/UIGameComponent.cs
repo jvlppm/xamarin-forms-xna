@@ -15,10 +15,14 @@ namespace Xamarin.Forms.Platforms.Xna
 
         public Rectangle? Area;
 
-        public UIGameComponent()
+        public UIGameComponent(Application application)
             : base(Forms.Game)
         {
-            Application = new GameApplication();
+            if (application == null)
+                throw new ArgumentNullException("application");
+
+            Application = application;
+            SetPage(Application.MainPage);
         }
 
         public override void Draw(GameTime gameTime)
@@ -65,7 +69,20 @@ namespace Xamarin.Forms.Platforms.Xna
 
         public void SetPage(Page newRoot)
         {
-            Application.MainPage = newRoot as NavigationPage ?? new NavigationPage(newRoot);
+            if (newRoot == Application.MainPage && (_renderer != null || newRoot == null))
+                return;
+
+            if (_renderer != null)
+                _renderer.Dispose();
+
+            if (newRoot == null)
+            {
+                Application.MainPage = null;
+                _renderer = null;
+                return;
+            }
+
+            Application.MainPage = newRoot;
             Application.MainPage.Platform = this;
             _renderer = VisualElementRenderer.Create(Application.MainPage);
         }
@@ -78,18 +95,33 @@ namespace Xamarin.Forms.Platforms.Xna
 
     public static class UIGameComponentExtensions
     {
+        static NavigationPage Navigatable(this Page page)
+        {
+            if (page == null)
+                return null;
+
+            return page as NavigationPage ?? new NavigationPage(page);
+        }
+
+        public static UIGameComponent AsGameComponent(this Application application)
+        {
+            return new UIGameComponent(application);
+        }
+
         public static UIGameComponent AsGameComponent(this Page page)
         {
-            var component = new UIGameComponent();
-            component.SetPage(page);
-            return component;
+            return new UIGameComponent(new GameApplication
+            {
+                MainPage = page.Navigatable()
+            });
         }
 
         public static UIGameComponent AsGameComponent(this View view)
         {
-            var component = new UIGameComponent();
-            component.SetPage(new ContentPage { Content = view });
-            return component;
+            return new UIGameComponent(new GameApplication
+            {
+                MainPage = new ContentPage { Content = view }.Navigatable()
+            });
         }
     }
 }

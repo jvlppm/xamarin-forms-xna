@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Sample.UI;
 using Xamarin.Forms.Platforms.Xna;
-using Xamarin.Forms.Platforms.Xna.Renderers;
 
 namespace Sample
 {
@@ -46,8 +44,8 @@ namespace Sample
 
             // TODO: use this.Content to load your game content here
 
-            var gui = new MainPage();
-            Components.Add(gui.AsGameComponent());
+            var page = new UI.MainPage();
+            Components.Add(page.AsGameComponent());
         }
 
         /// <summary>
