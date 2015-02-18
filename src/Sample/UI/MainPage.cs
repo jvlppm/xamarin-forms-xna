@@ -1,5 +1,4 @@
-﻿using Sample.Controls;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace Sample.UI
 {

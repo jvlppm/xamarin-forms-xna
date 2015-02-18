@@ -17,6 +17,8 @@ namespace Xamarin.Forms.Platforms.Xna.Images
         public Task<IControl> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var uriSource = (UriImageSource)imageSource;
+            if (uriSource.Uri.Scheme == "pack")
+                uriSource.CachingEnabled = false;
             string asset = uriSource.Uri.ToString();
 
             if (format == ImageFormat.Unknown)

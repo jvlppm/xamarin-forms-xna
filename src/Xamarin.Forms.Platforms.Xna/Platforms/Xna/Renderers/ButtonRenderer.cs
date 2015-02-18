@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             DefaultFont = Forms.EmbeddedContent.Load<SpriteFont>("DefaultFont");
             var background = new UriImageSource
             {
-                Uri = new System.Uri("pack://application/Xamarin.Forms.Platform.WP8;component/ButtonBackground"),
+                Uri = new System.Uri("pack://application/Xamarin.Forms.Platform.WP8;component/ButtonBackground.xml"),
                 CachingEnabled = false
             };
             background.LoadAsync(format: ImageFormat.StateList)

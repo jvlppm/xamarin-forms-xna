@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <selector>
-  <item image="button_blue_pressed.9" state_pressed="true" />
-  <item image="button_blue_over.9" state_over="true" />
-  <item image="button_blue_normal.9" />
+  <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_pressed.9" state_pressed="true" />
+  <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_over.9" state_over="true" />
+  <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_normal.9" />
 </selector>

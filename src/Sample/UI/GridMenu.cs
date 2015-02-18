@@ -1,4 +1,4 @@
-﻿using Sample.Controls;
+﻿
 using System;
 using Xamarin.Forms;
 
@@ -17,13 +17,13 @@ namespace Sample.UI
             Grid.SetColumnSpan(title, 2);
 
             var scaleButton = CreateButton("Scale", 1, 0);
-            scaleButton.OnClick += scaleButton_OnClick;
+            scaleButton.Clicked += scaleButton_OnClick;
 
             var rotateButton = CreateButton("Rotate", 1, 1);
-            rotateButton.OnClick += rotateButton_OnClick;
+            rotateButton.Clicked += rotateButton_OnClick;
 
             var backButton = CreateButton("Back", 2, 0);
-            backButton.OnClick += startButton_OnClick;
+            backButton.Clicked += startButton_OnClick;
 
             Content = new Grid
             {
@@ -50,7 +50,7 @@ namespace Sample.UI
 
         async void scaleButton_OnClick(object sender, EventArgs e)
         {
-            var btn = (ImageButton)sender;
+            var btn = (VisualElement)sender;
             btn.IsEnabled = false;
             await btn.ScaleTo(1.5, easing: Easing.CubicIn);
             await btn.ScaleTo(1, easing: Easing.CubicOut);
@@ -59,24 +59,23 @@ namespace Sample.UI
 
         async void rotateButton_OnClick(object sender, EventArgs e)
         {
-            var btn = (ImageButton)sender;
+            var btn = (VisualElement)sender;
             int rotation = btn.RotationY > 0 ? 0 : 360;
             await btn.RotateYTo(rotation, easing: Easing.CubicInOut, length: 800);
         }
 
         async void startButton_OnClick(object sender, EventArgs e)
         {
-            var button = (ImageButton)sender;
+            var button = (VisualElement)sender;
             button.IsEnabled = false;
             await Navigation.PopAsync();
             button.IsEnabled = true;
         }
 
-        private static ImageButton CreateButton(string text, int row, int column)
+        private static Button CreateButton(string text, int row, int column)
         {
-            var button = new ImageButton
+            var button = new Button
             {
-                Image = "pack://application/ButtonBackground.xml",
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 Text = text,

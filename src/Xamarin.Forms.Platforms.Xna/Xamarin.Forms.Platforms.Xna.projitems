@@ -65,4 +65,9 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\ButtonBackground.xml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\DefaultFont.xnb" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\button_normal.9.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\button_over.9.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\button_pressed.9.png" />
+  </ItemGroup>
 </Project>
