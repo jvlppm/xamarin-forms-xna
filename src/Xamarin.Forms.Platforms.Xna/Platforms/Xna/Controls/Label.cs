@@ -12,7 +12,10 @@
         public float Scale = 1;
         public TextAlignment XAlign, YAlign;
 
-        public Rectangle GetContentArea(ISet<State> states, Rectangle area) => area;
+        public Rectangle GetContentArea(ISet<State> states, Rectangle area)
+		{
+			return area;
+		}
 
         public void Draw(ISet<State> states, SpriteBatch spriteBatch, Rectangle area, Color color)
         {
@@ -49,7 +52,7 @@
                 case TextAlignment.End:
                     return (renderSize - textSize);
             }
-            throw new ArgumentException("Unsupported TextAlignment", nameof(alignment));
+            throw new ArgumentException("Unsupported TextAlignment", "alignment");
         }
         #endregion
     }

@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected override void LocalDraw(GameTime gameTime, Rectangle area)
         {
-            Control.Draw(VisualState, SpriteBatch, area, Color.White);
+            Control.Draw(VisualState, SpriteBatch, area, TextColor);
         }
         #endregion
 

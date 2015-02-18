@@ -13,31 +13,32 @@ namespace Xamarin.Forms.Platforms.Xna.Images
 
     public class FileImageSourceHandler : IImageSourceHandler
     {
-        readonly static Dictionary<string, IControl> _cachedImages = new Dictionary<string, IControl>();
+        static readonly ConcurrentDictionary<string, Task<IControl>> _cachedImages = new ConcurrentDictionary<string, Task<IControl>>();
 
-        public async Task<IControl> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
+        public Task<IControl> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
             var fileSource = (FileImageSource)imageSource;
+            string asset = fileSource.File;
 
-            IControl cached;
-            if (_cachedImages.TryGetValue(fileSource.File, out cached))
-                return cached;
-
-            var path = Path.Combine(Forms.Game.Content.RootDirectory, fileSource.File);
             if (format == ImageFormat.Unknown)
-                format = ImageFactory.DetectFormat(fileSource.File);
+                format = ImageFactory.DetectFormat(asset);
 
-            IControl image;
+            string cacheKey = format.ToString() + "|" + asset;
+
+            return _cachedImages.GetOrAdd(cacheKey, k => GetImage(fileSource, format));
+        }
+
+        public async Task<IControl> GetImage(FileImageSource source, ImageFormat format)
+        {
+            var path = Path.Combine(Forms.Game.Content.RootDirectory, source.File);
             if (File.Exists(path))
-                image = await ImageFactory.CreateFromStream(File.OpenRead(path), format, cancellationToken);
-            else
             {
-                var texture = Forms.Game.Content.Load<Texture2D>(fileSource.File);
-                image = ImageFactory.CreateFromTexture(texture, format);
+                using (var stream = File.OpenRead(path))
+                    return await ImageFactory.CreateFromStream(stream, format, CancellationToken.None);
             }
 
-            _cachedImages.Add(fileSource.File, image);
-            return image;
+            var texture = Forms.Game.Content.Load<Texture2D>(source.File);
+            return ImageFactory.CreateFromTexture(texture, format);
         }
     }
 }

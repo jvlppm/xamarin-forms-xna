@@ -7,7 +7,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using Input;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
-    using System.Threading;
     using Xna;
 
     public class ButtonRenderer : VisualElementRenderer<Button>
@@ -57,7 +56,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public override bool HandleClick()
         {
-            //Model.FireClicked();
+            ((IButtonController)Model).SendClicked();
             return true;
         }
 
