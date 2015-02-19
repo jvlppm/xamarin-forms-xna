@@ -523,32 +523,42 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #region Input
 
-        public virtual void OnMouseEnter()
+        public virtual void OnMouseEnter(MouseEventArgs e)
         {
             AddVisualState(Mouse.Over);
         }
 
-        public virtual void OnMouseLeave()
+        public virtual void OnMouseLeave(MouseEventArgs e)
         {
             RemoveVisualState(Mouse.Over);
         }
 
-        public virtual bool InterceptMouseDown(Mouse.Button button)
+        public virtual bool InterceptMouseDown(MouseButtonEventArgs e)
         {
             return false;
         }
 
-        public virtual bool HandleMouseDown(Mouse.Button button)
+        public virtual bool HandleMouseDown(MouseButtonEventArgs e)
         {
             return false;
         }
 
-        public virtual bool InterceptMouseUp(Mouse.Button button)
+        public virtual bool InterceptMouseUp(MouseButtonEventArgs e)
         {
             return false;
         }
 
-        public virtual bool HandleMouseUp(Mouse.Button button)
+        public virtual bool HandleMouseUp(MouseButtonEventArgs e)
+        {
+            return false;
+        }
+
+        public virtual bool InterceptMouseMove(MouseEventArgs e)
+        {
+            return false;
+        }
+
+        public virtual bool HandleMouseMove(MouseEventArgs e)
         {
             return false;
         }

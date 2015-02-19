@@ -73,24 +73,24 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #region Visual State
 
-        public override void OnMouseLeave()
+        public override void OnMouseLeave(MouseEventArgs e)
         {
             RemoveVisualState(Mouse.Pressed);
-            base.OnMouseLeave();
+            base.OnMouseLeave(e);
         }
 
-        public override bool HandleMouseDown(Mouse.Button button)
+        public override bool HandleMouseDown(MouseButtonEventArgs e)
         {
-            if (button == Mouse.Button.Left)
+            if (e.Button == Mouse.Button.Left)
                 AddVisualState(Mouse.Pressed);
-            return base.HandleMouseDown(button);
+            return base.HandleMouseDown(e);
         }
 
-        public override bool HandleMouseUp(Mouse.Button button)
+        public override bool HandleMouseUp(MouseButtonEventArgs e)
         {
-            if (button == Mouse.Button.Left)
+            if (e.Button == Mouse.Button.Left)
                 RemoveVisualState(Mouse.Pressed);
-            return base.HandleMouseUp(button);
+            return base.HandleMouseUp(e);
         }
 
         #endregion

@@ -13,13 +13,33 @@ namespace Xamarin.Forms.Platforms.Xna.Input
     using XnaMatrix = Microsoft.Xna.Framework.Matrix;
     using XnaMouseState = Microsoft.Xna.Framework.Input.MouseState;
     using XnaButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+    using System.Collections.Immutable;
 
     public static class Mouse
     {
+        #region Nested
+        struct ElementPosition
+        {
+            public VisualElementRenderer Element;
+            public XnaVector2? Position;
+
+            public bool IsPositionInside()
+            {
+                if (Position != null &&
+                    Position.Value.X >= 0 && Position.Value.X < Element.Model.Bounds.Width &&
+                    Position.Value.Y >= 0 && Position.Value.Y < Element.Model.Bounds.Height)
+                    return true;
+                return false;
+            }
+        }
+        #endregion
+
         internal static void Init() { }
 
         public static State Over = State.Register("Over");
         public static State Pressed = State.Register("Pressed");
+
+        static List<ElementPosition> ElementPositions = new List<ElementPosition>();
 
         public enum Button
         {
@@ -33,7 +53,16 @@ namespace Xamarin.Forms.Platforms.Xna.Input
         static VisualElementRenderer _pressing;
         static VisualElementRenderer _over;
 
-        static IDictionary<Button, XnaButtonState?> buttonState = new Dictionary<Button, XnaButtonState?>
+        static readonly IDictionary<Button, XnaButtonState?> buttonState = new Dictionary<Button, XnaButtonState?>
+        {
+            { Button.Left, null },
+            { Button.Right, null },
+            { Button.Middle, null },
+            { Button.XButton1, null },
+            { Button.XButton2, null },
+        };
+
+        static readonly IDictionary<Button, XnaButtonState?> buttonStateChange = new Dictionary<Button, XnaButtonState?>
         {
             { Button.Left, null },
             { Button.Right, null },
@@ -44,6 +73,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 
         public static void Update(VisualElementRenderer renderer)
         {
+            ElementPositions.Clear();
+
             XnaMouseState state;
             try
             {
@@ -51,55 +82,40 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             }
             catch (InvalidOperationException) { return; }
 
+            var buttonState = UpdateButtonsState(state);
+
             var reallyOver = renderer.FlattenHierarchyReverse()
                 .Where(c => !c.Model.InputTransparent && c.Model.IsEnabled)
-                .Select(c =>
-                {
-                    var pos = DetectPosition(c, state.X, state.Y);
-                    if (pos != null &&
-                        pos.Value.X >= 0 && pos.Value.X < c.Model.Bounds.Width &&
-                        pos.Value.Y >= 0 && pos.Value.Y < c.Model.Bounds.Height)
-                        return new { Element = c, Position = pos };
-                    return null;
-                }).FirstOrDefault(p => p != null);
+                .Select(c => new ElementPosition { Element = c, Position = state.ToRelative(c) })
+                .Where(c => c.IsPositionInside());
 
-            var newOver = reallyOver == null ? null : reallyOver.Element;
+            var newOver = reallyOver.Select(c => c.Element).FirstOrDefault();
 
             if (newOver != null)
             {
-                foreach (Button button in Enum.GetValues(typeof(Button)))
+                foreach(var stateChange in buttonStateChange)
                 {
-                    XnaButtonState newState;
-                    switch (button)
+                    if (stateChange.Value != null)
                     {
-                        case Button.Left:
-                            newState = state.LeftButton;
-                            break;
-                        case Button.Right:
-                            newState = state.RightButton;
-                            break;
-                        case Button.Middle:
-                            newState = state.MiddleButton;
-                            break;
-                        case Button.XButton1:
-                            newState = state.XButton1;
-                            break;
-                        case Button.XButton2:
-                            newState = state.XButton2;
-                            break;
-                        default:
-                            throw new NotImplementedException();
-                    }
-
-                    if (newState != buttonState[button])
-                    {
-                        buttonState[button] = newState;
-                        if (newState == XnaButtonState.Pressed)
-                            newOver.HandleRaise(r => r.InterceptMouseDown(button), r => r.HandleMouseDown(button));
+                        if (stateChange.Value == XnaButtonState.Pressed)
+                        {
+                            newOver.HandleRaise(
+                                r => new MouseButtonEventArgs(stateChange.Key, buttonState, state.ToRelative(r)),
+                                (r, e) => r.InterceptMouseDown(e),
+                                (r, e) => r.HandleMouseDown(e));
+                        }
                         else
-                            newOver.HandleRaise(r => r.InterceptMouseUp(button), r => r.HandleMouseUp(button));
+                            newOver.HandleRaise(
+                                r => new MouseButtonEventArgs(stateChange.Key, buttonState, state.ToRelative(r)),
+                                (r, e) => r.InterceptMouseUp(e),
+                                (r, e) => r.HandleMouseUp(e));
                     }
                 }
+
+                newOver.HandleRaise(
+                    r => new MouseEventArgs(buttonState, state.ToRelative(r)),
+                    (r, e) => r.InterceptMouseMove(e),
+                    (r, e) => r.HandleMouseMove(e));
             }
 
             if (_pressing == null)
@@ -107,9 +123,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 if (_over != newOver)
                 {
                     if (_over != null)
-                        _over.OnMouseLeave();
+                        _over.OnMouseLeave(new MouseEventArgs(buttonState, state.ToRelative(_over)));
                     if (newOver != null)
-                        newOver.OnMouseEnter();
+                        newOver.OnMouseEnter(new MouseEventArgs(buttonState, state.ToRelative(newOver)));
 
                     _over = newOver;
                 }
@@ -128,30 +144,81 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 }
                 else
                 {
-                    _pressing.OnMouseLeave();
+                    _pressing.OnMouseLeave(new MouseEventArgs(buttonState, state.ToRelative(_pressing)));
                     _pressing = null;
 
                     if (newOver != null)
-                        newOver.OnMouseEnter();
+                        newOver.OnMouseEnter(new MouseEventArgs(buttonState, state.ToRelative(newOver)));
 
                     _over = newOver;
                 }
             }
         }
 
-        static XnaVector2? DetectPosition(VisualElementRenderer renderer, float x, float y)
+        static ImmutableDictionary<Button, XnaButtonState> UpdateButtonsState(XnaMouseState state)
         {
+            foreach (Button button in Enum.GetValues(typeof(Button)))
+            {
+                XnaButtonState newState;
+                switch (button)
+                {
+                    case Button.Left:
+                        newState = state.LeftButton;
+                        break;
+                    case Button.Right:
+                        newState = state.RightButton;
+                        break;
+                    case Button.Middle:
+                        newState = state.MiddleButton;
+                        break;
+                    case Button.XButton1:
+                        newState = state.XButton1;
+                        break;
+                    case Button.XButton2:
+                        newState = state.XButton2;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                if (newState != buttonState[button])
+                    buttonStateChange[button] = newState;
+                else
+                    buttonStateChange[button] = null;
+
+                buttonState[button] = newState;
+            }
+
+            return buttonState.ToImmutableDictionary(k => k.Key, e => e.Value.Value);
+        }
+
+        static XnaVector2? ToRelative(this XnaMouseState state, VisualElementRenderer renderer)
+        {
+            foreach (var savedPosition in ElementPositions)
+            {
+                if (savedPosition.Element == renderer)
+                    return savedPosition.Position;
+            }
+
+            XnaVector2? position;
             var plane = new XnaPlane(new XnaVector3(0, 0, 1), 0);
             plane = plane.Transform(renderer.Effect.World);
 
-            var ray = GetPickRay(renderer, x, y);
+            var ray = GetPickRay(renderer, state.X, state.Y);
             var dist = ray.Intersects(plane);
             if (dist != null)
             {
                 var clickPosition = XnaVector3.Transform(ray.Position + ray.Direction * dist.Value, XnaMatrix.Invert(renderer.Effect.World));
-                return new XnaVector2(clickPosition.X, clickPosition.Y);
+                position = new XnaVector2(clickPosition.X, clickPosition.Y);
             }
-            return null;
+            else position = null;
+
+            ElementPositions.Add(new ElementPosition
+            {
+                Element = renderer,
+                Position = position
+            });
+            return position;
         }
 
         static Microsoft.Xna.Framework.Ray GetPickRay(VisualElementRenderer renderer, float x, float y)

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace VisualRenderersPreview
 {
@@ -16,11 +11,12 @@ namespace VisualRenderersPreview
             {
                 Content = new StackLayout
                 {
-                    VerticalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.FillAndExpand,
                     Children = {
-                        new Label {
-                            XAlign = TextAlignment.Center,
-                            Text = "Welcome to Xamarin Forms!"
+                        new Button { },
+                        new Slider {
+                            BackgroundColor = Color.Yellow,
+                            VerticalOptions = LayoutOptions.FillAndExpand
                         }
                     }
                 }

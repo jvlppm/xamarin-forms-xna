@@ -45,6 +45,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\ExportImageSourceHandlerAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Images\IImageSourceHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\Mouse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\MouseButtonEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\MouseEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Input\RoutedEventManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\ContextTicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\Deserializer.cs" />
