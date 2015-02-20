@@ -42,6 +42,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(Button.TextColorProperty, Handle_TextColor);
             PropertyTracker.AddHandler(Button.FontProperty, Handle_Font);
             PropertyTracker.AddHandler(Button.TextProperty, Handle_Text);
+
+            OnMouseClick += ButtonRenderer_OnMouseClick;
         }
 
         public override SizeRequest Measure(Size availableSize)
@@ -54,12 +56,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             return lblSize;
         }
 
-        public override bool HandleClick()
-        {
-            ((IButtonController)Model).SendClicked();
-            return true;
-        }
-
         protected override void LocalDraw(GameTime gameTime, Rectangle area)
         {
             Rectangle textArea = area;
@@ -70,6 +66,13 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
 
             Label.Draw(VisualState, SpriteBatch, textArea, TextColor);
+        }
+
+        void ButtonRenderer_OnMouseClick(object sender, MouseEventArgs e)
+        {
+            var controller = Model as IButtonController;
+            if (controller != null)
+                controller.SendClicked();
         }
 
         #region Visual State

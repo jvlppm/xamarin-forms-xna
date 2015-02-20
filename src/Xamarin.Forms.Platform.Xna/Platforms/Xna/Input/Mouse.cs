@@ -89,9 +89,10 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 .Select(c => new ElementPosition { Element = c, Position = state.ToRelative(c) })
                 .Where(c => c.IsPositionInside());
 
-            var newOver = reallyOver.Select(c => c.Element).FirstOrDefault();
+            var newOver = reallyOver.FirstOrDefault();
+            var newOverEventArgs = newOver.Element != null? new MouseEventArgs(buttonState, state.ToRelative(newOver.Element)) : null;
 
-            if (newOver != null)
+            if (newOver.Element != null)
             {
                 foreach(var stateChange in buttonStateChange)
                 {
@@ -99,35 +100,33 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                     {
                         if (stateChange.Value == XnaButtonState.Pressed)
                         {
-                            newOver.HandleRaise(
+                            newOver.Element.HandleRaise(
                                 r => new MouseButtonEventArgs(stateChange.Key, buttonState, state.ToRelative(r)),
                                 (r, e) => r.InterceptMouseDown(e),
                                 (r, e) => r.HandleMouseDown(e));
                         }
                         else
-                            newOver.HandleRaise(
+                            newOver.Element.HandleRaise(
                                 r => new MouseButtonEventArgs(stateChange.Key, buttonState, state.ToRelative(r)),
                                 (r, e) => r.InterceptMouseUp(e),
                                 (r, e) => r.HandleMouseUp(e));
                     }
                 }
 
-                newOver.HandleRaise(
-                    r => new MouseEventArgs(buttonState, state.ToRelative(r)),
-                    (r, e) => r.InterceptMouseMove(e),
-                    (r, e) => r.HandleMouseMove(e));
+                if (newOver.Position != null)
+                    newOver.Element.OnMouseOver(newOverEventArgs);
             }
 
             if (_pressing == null)
             {
-                if (_over != newOver)
+                if (_over != newOver.Element)
                 {
                     if (_over != null)
                         _over.OnMouseLeave(new MouseEventArgs(buttonState, state.ToRelative(_over)));
-                    if (newOver != null)
-                        newOver.OnMouseEnter(new MouseEventArgs(buttonState, state.ToRelative(newOver)));
+                    if (newOver.Element != null)
+                        newOver.Element.OnMouseEnter(newOverEventArgs);
 
-                    _over = newOver;
+                    _over = newOver.Element;
                 }
 
                 if (_over != null && state.LeftButton == XnaButtonState.Pressed)
@@ -137,9 +136,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             }
             else if (state.LeftButton == XnaButtonState.Released)
             {
-                if (newOver == _pressing)
+                if (newOver.Element == _pressing)
                 {
-                    _pressing.HandleRaise(r => r.InterceptClick(), r => r.HandleClick());
+                    _pressing.RaiseClick(newOverEventArgs);
                     _pressing = null;
                 }
                 else
@@ -147,10 +146,10 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                     _pressing.OnMouseLeave(new MouseEventArgs(buttonState, state.ToRelative(_pressing)));
                     _pressing = null;
 
-                    if (newOver != null)
-                        newOver.OnMouseEnter(new MouseEventArgs(buttonState, state.ToRelative(newOver)));
+                    if (newOver.Element != null)
+                        newOver.Element.OnMouseEnter(newOverEventArgs);
 
-                    _over = newOver;
+                    _over = newOver.Element;
                 }
             }
         }

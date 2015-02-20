@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         }
     }
 
-    public class VisualElementRenderer : IRegisterable,  IDisposable
+    public class VisualElementRenderer : IRegisterable, IDisposable
     {
         #region Static
 
@@ -86,6 +86,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #region Events
         public event EventHandler<ISet<State>> OnVisualStateChange;
+        public event EventHandler<MouseEventArgs> OnMouseMove;
+        public event EventHandler<MouseEventArgs> OnMouseClick;
         #endregion
 
         #region Attributes
@@ -95,11 +97,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected readonly PropertyTracker PropertyTracker;
         protected readonly SpriteBatch SpriteBatch;
 
-        public ISet<State> VisualState { get; private set; }
-
         readonly BlendState _blendState;
 
         Rectangle _lastArrangeBounds;
+        XnaVector2? _lastMousePosition;
 
         XnaRectangle _backgroundArea;
         Texture2D _backgroundTexture;
@@ -143,6 +144,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         public VisualElementRenderer Parent { get; set; }
 
         public ImmutableList<VisualElementRenderer> Children { get; private set; }
+
+        public ISet<State> VisualState { get; private set; }
 
         public bool IsVisible
         {
@@ -534,6 +537,24 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             RemoveVisualState(Mouse.Over);
         }
 
+        public virtual void OnMouseOver(MouseEventArgs e)
+        {
+            if (_lastMousePosition == e.Position)
+                return;
+            _lastMousePosition = e.Position;
+
+            var handler = OnMouseMove;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        internal void RaiseClick(MouseEventArgs e)
+        {
+            var handler = OnMouseClick;
+            if (handler != null)
+                handler(this, e);
+        }
+
         public virtual bool InterceptMouseDown(MouseButtonEventArgs e)
         {
             return false;
@@ -550,26 +571,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         }
 
         public virtual bool HandleMouseUp(MouseButtonEventArgs e)
-        {
-            return false;
-        }
-
-        public virtual bool InterceptMouseMove(MouseEventArgs e)
-        {
-            return false;
-        }
-
-        public virtual bool HandleMouseMove(MouseEventArgs e)
-        {
-            return false;
-        }
-
-        public virtual bool InterceptClick()
-        {
-            return false;
-        }
-
-        public virtual bool HandleClick()
         {
             return false;
         }
