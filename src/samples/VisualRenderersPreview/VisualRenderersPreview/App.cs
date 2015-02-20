@@ -11,11 +11,12 @@ namespace VisualRenderersPreview
             {
                 Content = new StackLayout
                 {
+                    Padding = new Thickness(10, 10),
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     Children = {
                         new Button { },
                         new Slider {
-                            BackgroundColor = Color.Yellow,
+                            //BackgroundColor = Color.Yellow,
                             VerticalOptions = LayoutOptions.FillAndExpand
                         }
                     }

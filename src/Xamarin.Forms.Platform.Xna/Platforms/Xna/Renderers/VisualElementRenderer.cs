@@ -249,18 +249,19 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (!_validVisual)
-            {
-                if (_rendererVisual == null ||
+            if (!_validVisual || _rendererVisual == null ||
                     (_rendererVisual.Width != (int)Model.Bounds.Width ||
                     _rendererVisual.Height != (int)Model.Bounds.Height))
-                {
-                    if (_rendererVisual != null)
-                        _rendererVisual.Dispose();
+            {
+                if (_rendererVisual != null)
+                    _rendererVisual.Dispose();
 
-                    _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height, false, SpriteBatch.GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 1, RenderTargetUsage.PreserveContents);
-                }
+                _rendererVisual = new RenderTarget2D(SpriteBatch.GraphicsDevice, (int)Model.Bounds.Width, (int)Model.Bounds.Height, false, SpriteBatch.GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24, 1, RenderTargetUsage.PreserveContents);
+                _validVisual = false;
+            }
 
+            if (!_validVisual)
+            {
                 if (_rendererVisual.Width > 0 && _rendererVisual.Height > 0)
                 {
                     SpriteBatch.GraphicsDevice.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
@@ -369,7 +370,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         #region 3D Transformations
 
-        public virtual void InvalidateTransformations()
+        internal void InvalidateTransformations()
         {
             _lastArrangeBounds = default(Rectangle);
             foreach (var childRenderer in Children)

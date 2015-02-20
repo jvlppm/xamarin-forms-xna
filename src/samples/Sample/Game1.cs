@@ -45,7 +45,9 @@ namespace Sample
             // TODO: use this.Content to load your game content here
 
             var page = new UI.MainPage();
-            Components.Add(page.AsGameComponent());
+            var gui = page.AsGameComponent();
+            gui.Bounds = GraphicsDevice.Viewport.Bounds;
+            Components.Add(gui);
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Xamarin.Forms.Platforms.Xna;
@@ -9,13 +10,17 @@ namespace Sample
     /// </summary>
     public class Game1 : Game
     {
+        readonly Color BackgroundColor = new Color(new Vector3(240));
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        UIGameComponent _gui;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            Window.AllowUserResizing = true;
         }
 
         /// <summary>
@@ -45,28 +50,8 @@ namespace Sample
             // TODO: use this.Content to load your game content here
 
             var app = new VisualRenderersPreview.App();
-            Components.Add(app.AsGameComponent());
-        }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Update(GameTime gameTime)
-        {
-            // TODO: Add your update logic here
-
-            base.Update(gameTime);
+            _gui = app.AsGameComponent();
+            Components.Add(_gui);
         }
 
         /// <summary>
@@ -75,9 +60,10 @@ namespace Sample
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(BackgroundColor);
 
             // TODO: Add your drawing code here
+            _gui.Bounds = GraphicsDevice.Viewport.Bounds;
 
             base.Draw(gameTime);
         }
