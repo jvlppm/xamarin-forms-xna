@@ -55,13 +55,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformTimer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\ResourcesProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\ImageRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\ButtonRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\LabelRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\NavigationPageRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Renderers\VisualElementRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Resources\EmbeddedResources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Resources\ResourcesProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\State.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\UIGameComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PropertyTracker.cs" />

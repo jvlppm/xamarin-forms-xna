@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Platforms.Xna
         {
             var style = new Style(typeof(Button));
             style.Setters.Add(Button.TextColorProperty, Color.Black);
+            style.Setters.Add(Button.BackgroundColorProperty, Color.White);
             style.Setters.Add(Button.FontSizeProperty, 10);
             return style;
         }

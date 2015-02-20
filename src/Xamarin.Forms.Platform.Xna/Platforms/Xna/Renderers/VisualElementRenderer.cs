@@ -342,7 +342,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             InvalidateAlpha();
         }
 
-        void Handle_BackgroundColor(BindableProperty prop)
+        protected virtual void Handle_BackgroundColor(BindableProperty prop)
         {
             if (Model.BackgroundColor == default(Color))
             {
@@ -358,7 +358,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             InvalidateVisual();
         }
 
-        public virtual void InvalidateAlpha()
+        void InvalidateAlpha()
         {
             _alpha = null;
             foreach (var childRenderer in Children)

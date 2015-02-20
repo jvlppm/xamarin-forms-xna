@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         readonly Label Label;
         Color TextColor;
+        Color BackgroundColor;
 
         public ButtonRenderer()
         {
@@ -64,7 +65,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             Rectangle textArea = area;
             if (Background != null)
             {
-                Background.Draw(VisualState, SpriteBatch, area, Color.White);
+                Background.Draw(VisualState, SpriteBatch, area, BackgroundColor);
                 textArea = Background.GetContentArea(VisualState, area);
             }
 
@@ -118,6 +119,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             Label.Text = Model.Text;
             InvalidateMeasure();
+        }
+
+        protected override void Handle_BackgroundColor(BindableProperty prop)
+        {
+            BackgroundColor = Model.BackgroundColor.ToXnaColor();
         }
 
         #endregion
