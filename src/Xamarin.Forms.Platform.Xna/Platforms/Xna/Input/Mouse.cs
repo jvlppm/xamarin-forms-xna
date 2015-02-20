@@ -2,18 +2,18 @@
 
 namespace Xamarin.Forms.Platforms.Xna.Input
 {
-    using System;
-    using System.Linq;
-    using Renderers;
     using Platforms.Xna;
+    using Renderers;
+    using System;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using XnaButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+    using XnaMatrix = Microsoft.Xna.Framework.Matrix;
     using XnaMouse = Microsoft.Xna.Framework.Input.Mouse;
+    using XnaMouseState = Microsoft.Xna.Framework.Input.MouseState;
+    using XnaPlane = Microsoft.Xna.Framework.Plane;
     using XnaVector2 = Microsoft.Xna.Framework.Vector2;
     using XnaVector3 = Microsoft.Xna.Framework.Vector3;
-    using XnaPlane = Microsoft.Xna.Framework.Plane;
-    using XnaMatrix = Microsoft.Xna.Framework.Matrix;
-    using XnaMouseState = Microsoft.Xna.Framework.Input.MouseState;
-    using XnaButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-    using System.Collections.Immutable;
 
     public static class Mouse
     {
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 .Where(c => c.IsPositionInside());
 
             var newOver = reallyOver.FirstOrDefault();
-            var newOverEventArgs = newOver.Element != null? new MouseEventArgs(buttonState, state.ToRelative(newOver.Element)) : null;
+            var newOverEventArgs = newOver.Element != null? new MouseEventArgs(state.ToRelative(newOver.Element)) : null;
 
             if (newOver.Element != null)
             {
@@ -101,13 +101,13 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                         if (stateChange.Value == XnaButtonState.Pressed)
                         {
                             newOver.Element.HandleRaise(
-                                r => new MouseButtonEventArgs(stateChange.Key, buttonState, state.ToRelative(r)),
+                                r => new MouseButtonEventArgs(stateChange.Key, state.ToRelative(r)),
                                 (r, e) => r.InterceptMouseDown(e),
                                 (r, e) => r.HandleMouseDown(e));
                         }
                         else
                             newOver.Element.HandleRaise(
-                                r => new MouseButtonEventArgs(stateChange.Key, buttonState, state.ToRelative(r)),
+                                r => new MouseButtonEventArgs(stateChange.Key, state.ToRelative(r)),
                                 (r, e) => r.InterceptMouseUp(e),
                                 (r, e) => r.HandleMouseUp(e));
                     }
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 if (_over != newOver.Element)
                 {
                     if (_over != null)
-                        _over.OnMouseLeave(new MouseEventArgs(buttonState, state.ToRelative(_over)));
+                        _over.OnMouseLeave(new MouseEventArgs(state.ToRelative(_over)));
                     if (newOver.Element != null)
                         newOver.Element.OnMouseEnter(newOverEventArgs);
 
@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 }
                 else
                 {
-                    _pressing.OnMouseLeave(new MouseEventArgs(buttonState, state.ToRelative(_pressing)));
+                    _pressing.OnMouseLeave(new MouseEventArgs(state.ToRelative(_pressing)));
                     _pressing = null;
 
                     if (newOver.Element != null)
