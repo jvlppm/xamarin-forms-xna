@@ -179,14 +179,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 VertexColorEnabled = true
             };
 
-            _blendState = new BlendState
-            {
-                ColorSourceBlend = Blend.SourceAlpha,
-                AlphaSourceBlend = Blend.SourceAlpha,
-
-                ColorDestinationBlend = Blend.InverseSourceAlpha,
-                AlphaDestinationBlend = Blend.InverseSourceAlpha
-            };
+            _blendState = BlendState.AlphaBlend;
 
             _manuallyAddedElements = new List<Element>();
 

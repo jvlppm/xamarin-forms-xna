@@ -3,11 +3,9 @@
     typeof(Xamarin.Forms.Platforms.Xna.Renderers.SliderRenderer))]
 namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
+    using Controls;
     using Input;
     using Microsoft.Xna.Framework;
-    using Microsoft.Xna.Framework.Graphics;
-    using System.Diagnostics;
-    using Controls;
 
     class SliderRenderer : VisualElementRenderer<Slider>
     {
@@ -25,25 +23,28 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         static IControl SliderTrack;
         static IControl SliderThumb;
 
-        Texture2D _whiteTexture;
-
         public SliderRenderer()
         {
-            _whiteTexture = new Texture2D(SpriteBatch.GraphicsDevice, 1, 1);
-            var data = new[] { Color.White };
-            _whiteTexture.SetData(data);
-
             OnMouseMove += SliderRenderer_OnMouseMove;
         }
 
         public override SizeRequest Measure(Size availableSize)
         {
-            return new SizeRequest(new Size(100, 8), new Size(0, 8));
+            var endMeasure = SliderEnd.Measure(VisualState, default(Size), default(SizeRequest));
+            int endWidth = (int)endMeasure.Request.Width;
+            int endHeight = (int)endMeasure.Request.Height;
+            var trackMeasure = SliderTrack.Measure(VisualState, default(Size), default(SizeRequest));
+            int trackWidth = (int)trackMeasure.Request.Width;
+            int trackHeight = (int)trackMeasure.Request.Height;
+            var thumbMeasure = SliderThumb.Measure(VisualState, default(Size), default(SizeRequest));
+            int thumbWidth = (int)thumbMeasure.Request.Width;
+            int thumbHeight = (int)thumbMeasure.Request.Height;
+
+            return new SizeRequest(new Size(thumbWidth + endWidth * 2 + trackWidth, thumbHeight), new Size(thumbWidth, thumbHeight));
         }
 
         protected override void LocalDraw(GameTime gameTime, Rectangle area)
         {
-            Debug.WriteLine("SliderDraw");
             if (SliderEnd != null && SliderTrack != null && SliderThumb != null)
             {
                 var endMeasure = SliderEnd.Measure(VisualState, default(Size), default(SizeRequest));

@@ -6,6 +6,21 @@ namespace VisualRenderersPreview
     {
         public App()
         {
+            var tstButton = new Button
+            {
+                BackgroundColor = Color.FromRgb(53, 186, 243)
+            };
+            var slider = new Slider
+            {
+                Minimum = 0,
+                Maximum = 1,
+                Value = 1,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            tstButton.SetBinding(VisualElement.OpacityProperty, new Binding("Value", source: slider));
+
             // The root page of your application
             MainPage = new ContentPage
             {
@@ -14,13 +29,8 @@ namespace VisualRenderersPreview
                     Padding = new Thickness(10, 10),
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     Children = {
-                        new Button {
-                        },
-                        new Slider {
-                            Minimum = -20,
-                            Maximum = 20,
-                            VerticalOptions = LayoutOptions.FillAndExpand,
-                        }
+                        tstButton,
+                        slider
                     }
                 }
             };

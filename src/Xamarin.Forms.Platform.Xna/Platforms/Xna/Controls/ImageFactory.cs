@@ -20,10 +20,20 @@
                 case ImageFormat.Default:
                 case ImageFormat.NinePatch:
                     var texture = Texture2D.FromStream(Forms.Game.GraphicsDevice, stream);
+                    PreMultiplyAlphas(texture);
                     return CreateFromTexture(texture, format);
                 default:
                     throw new ArgumentException("Invalid image format", "format");
             }
+        }
+
+        private static void PreMultiplyAlphas(Texture2D texture)
+        {
+            var data = new Microsoft.Xna.Framework.Color[texture.Width * texture.Height];
+            texture.GetData(data);
+            for (int i = 0; i != data.Length; ++i)
+                data[i] = Microsoft.Xna.Framework.Color.FromNonPremultiplied(data[i].ToVector4());
+            texture.SetData(data);
         }
 
         public static IControl CreateFromTexture(Texture2D texture, ImageFormat format)
