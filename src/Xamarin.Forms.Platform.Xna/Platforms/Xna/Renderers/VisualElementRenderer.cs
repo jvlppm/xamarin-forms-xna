@@ -528,6 +528,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         public virtual void OnMouseLeave(MouseEventArgs e)
         {
             RemoveVisualState(Mouse.Over);
+            RemoveVisualState(Mouse.Pressed);
         }
 
         public virtual void OnMouseOver(MouseEventArgs e)
@@ -555,6 +556,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public virtual bool HandleMouseDown(MouseButtonEventArgs e)
         {
+            if (e.Button == Mouse.Button.Left)
+            {
+                AddVisualState(Mouse.Pressed);
+                return true;
+            }
             return false;
         }
 
@@ -565,6 +571,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public virtual bool HandleMouseUp(MouseButtonEventArgs e)
         {
+            if (e.Button == Mouse.Button.Left)
+            {
+                RemoveVisualState(Mouse.Pressed);
+                return true;
+            }
             return false;
         }
 

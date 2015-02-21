@@ -46,6 +46,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             OnMouseClick += ButtonRenderer_OnMouseClick;
         }
 
+        #region Render
+
         public override SizeRequest Measure(Size availableSize)
         {
             var lblSize = Label.Measure(VisualState, availableSize, default(SizeRequest));
@@ -68,36 +70,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             Label.Draw(VisualState, SpriteBatch, textArea, TextColor);
         }
 
+        #endregion
+
         void ButtonRenderer_OnMouseClick(object sender, MouseEventArgs e)
         {
             var controller = Model as IButtonController;
             if (controller != null)
                 controller.SendClicked();
         }
-
-        #region Visual State
-
-        public override void OnMouseLeave(MouseEventArgs e)
-        {
-            RemoveVisualState(Mouse.Pressed);
-            base.OnMouseLeave(e);
-        }
-
-        public override bool HandleMouseDown(MouseButtonEventArgs e)
-        {
-            if (e.Button == Mouse.Button.Left)
-                AddVisualState(Mouse.Pressed);
-            return base.HandleMouseDown(e);
-        }
-
-        public override bool HandleMouseUp(MouseButtonEventArgs e)
-        {
-            if (e.Button == Mouse.Button.Left)
-                RemoveVisualState(Mouse.Pressed);
-            return base.HandleMouseUp(e);
-        }
-
-        #endregion
 
         #region Property Handlers
 

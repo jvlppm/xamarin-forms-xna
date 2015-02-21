@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             OnMouseMove += SliderRenderer_OnMouseMove;
         }
 
+        #region Render
+
         public override SizeRequest Measure(Size availableSize)
         {
             var endMeasure = SliderEnd.Measure(VisualState, default(Size), default(SizeRequest));
@@ -66,6 +68,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             base.LocalDraw(gameTime, area);
         }
 
+        #endregion
+
         void SliderRenderer_OnMouseMove(object sender, MouseEventArgs e)
         {
             if (VisualState.Contains(Mouse.Pressed))
@@ -76,32 +80,6 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 Model.Value = MathHelper.Lerp((float)Model.Minimum, (float)Model.Maximum, (e.Position.Value.X - thumbWidth / 2) / ((float)Model.Bounds.Width - thumbWidth));
                 InvalidateVisual();
             }
-        }
-
-        public override bool HandleMouseDown(MouseButtonEventArgs e)
-        {
-            if (e.Button == Mouse.Button.Left)
-            {
-                AddVisualState(Mouse.Pressed);
-                return true;
-            }
-            return base.HandleMouseDown(e);
-        }
-
-        public override void OnMouseLeave(MouseEventArgs e)
-        {
-            RemoveVisualState(Mouse.Pressed);
-            base.OnMouseLeave(e);
-        }
-
-        public override bool HandleMouseUp(MouseButtonEventArgs e)
-        {
-            if (e.Button == Mouse.Button.Left)
-            {
-                RemoveVisualState(Mouse.Pressed);
-                return true;
-            }
-            return base.HandleMouseUp(e);
         }
     }
 }
