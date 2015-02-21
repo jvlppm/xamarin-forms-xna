@@ -76,4 +76,9 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\button_over.9.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\button_pressed.9.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\SliderTrack.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\SliderEnd.png" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Platforms\Xna\Content\SliderThumb.png" />
+  </ItemGroup>
 </Project>

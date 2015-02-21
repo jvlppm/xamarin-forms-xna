@@ -112,13 +112,13 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                                 (r, e) => r.HandleMouseUp(e));
                     }
                 }
-
-                if (newOver.Position != null)
-                    newOver.Element.OnMouseOver(newOverEventArgs);
             }
 
             if (_pressing == null)
             {
+                if (newOver.Position != null)
+                    newOver.Element.OnMouseOver(newOverEventArgs);
+
                 if (_over != newOver.Element)
                 {
                     if (_over != null)
@@ -134,22 +134,28 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                     _pressing = _over;
                 }
             }
-            else if (state.LeftButton == XnaButtonState.Released)
+            else
             {
-                if (newOver.Element == _pressing)
-                {
-                    _pressing.RaiseClick(newOverEventArgs);
-                    _pressing = null;
-                }
-                else
-                {
-                    _pressing.OnMouseLeave(new MouseEventArgs(state.ToRelative(_pressing)));
-                    _pressing = null;
+                var pressingEvent = new MouseEventArgs(state.ToRelative(_pressing));
+                _pressing.OnMouseOver(pressingEvent);
 
-                    if (newOver.Element != null)
-                        newOver.Element.OnMouseEnter(newOverEventArgs);
+                if (state.LeftButton == XnaButtonState.Released)
+                {
+                    if (newOver.Element == _pressing)
+                    {
+                        _pressing.RaiseClick(newOverEventArgs);
+                        _pressing = null;
+                    }
+                    else
+                    {
+                        _pressing.OnMouseLeave(pressingEvent);
+                        _pressing = null;
 
-                    _over = newOver.Element;
+                        if (newOver.Element != null)
+                            newOver.Element.OnMouseEnter(newOverEventArgs);
+
+                        _over = newOver.Element;
+                    }
                 }
             }
         }

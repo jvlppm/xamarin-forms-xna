@@ -10,7 +10,7 @@ namespace Sample
     /// </summary>
     public class Game1 : Game
     {
-        readonly Color BackgroundColor = new Color(new Vector3(240));
+        readonly Color BackgroundColor = new Color(238, 238, 238);
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;

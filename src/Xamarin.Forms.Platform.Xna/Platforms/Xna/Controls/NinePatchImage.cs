@@ -61,8 +61,8 @@
             XnaColor[] data = new XnaColor[texture.Width * texture.Height];
             texture.GetData(data);
             Stretch = new Area(
-                vertical: GetLine(texture, data, 1, 0, 0, 0),
-                horizontal: GetLine(texture, data, 0, 1, 0, 0));
+                vertical: GetLine(texture, data, 0, 1, 0, 0),
+                horizontal: GetLine(texture, data, 1, 0, 0, 0));
             Content = new Area(
                 vertical: GetLine(texture, data, 0, 1, _texture.Width - 1, 0),
                 horizontal: GetLine(texture, data, 1, 0, 0, _texture.Height - 1));

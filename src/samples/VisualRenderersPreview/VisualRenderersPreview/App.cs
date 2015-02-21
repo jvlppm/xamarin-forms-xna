@@ -14,10 +14,12 @@ namespace VisualRenderersPreview
                     Padding = new Thickness(10, 10),
                     VerticalOptions = LayoutOptions.FillAndExpand,
                     Children = {
-                        new Button { },
+                        new Button {
+                        },
                         new Slider {
-                            //BackgroundColor = Color.Yellow,
-                            VerticalOptions = LayoutOptions.FillAndExpand
+                            Minimum = -20,
+                            Maximum = 20,
+                            VerticalOptions = LayoutOptions.FillAndExpand,
                         }
                     }
                 }
