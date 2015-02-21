@@ -78,6 +78,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             XnaMouseState state;
             try
             {
+                if (!Forms.Game.IsActive)
+                    return;
                 state = XnaMouse.GetState();
             }
             catch (InvalidOperationException) { return; }
