@@ -6,10 +6,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using Controls;
     using Input;
     using Microsoft.Xna.Framework;
-    using System.Threading.Tasks;
+    using System;
 
     public class SliderRenderer : VisualElementRenderer<Slider>
     {
+        #region Default Style
+        static Color DefaultBackgroundColor = Color.White;
+        #endregion
+
         #region Attached Properties
         public static BindableProperty ThumbImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
                 r => GetThumbImage(r),
@@ -42,6 +46,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         IControl ThumbImage;
         IControl EndImage;
         IControl TrackImage;
+        Color BackgroundColor;
 
         public SliderRenderer()
         {
@@ -51,75 +56,42 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             OnMouseMove += SliderRenderer_OnMouseMove;
         }
 
-        async void Handle_ThumbImage(BindableProperty property)
-        {
-            await LoadResourcesAsync(thumb: GetThumbImage(Model));
-        }
-
-        async void Handle_TrackImage(BindableProperty property)
-        {
-            await LoadResourcesAsync(track: GetTrackImage(Model));
-        }
-
-        async void Handle_EndImage(BindableProperty property)
-        {
-            await LoadResourcesAsync(end: GetEndImage(Model));
-        }
-
-        public async Task LoadResourcesAsync(ImageSource thumb = null, ImageSource end = null, ImageSource track = null)
-        {
-            if (thumb != null)
-                ThumbImage = await thumb.LoadAsync();
-            if (end != null)
-                EndImage = await end.LoadAsync();
-            if(track != null)
-                TrackImage = await track.LoadAsync();
-            InvalidateMeasure();
-        }
-
         #region Render
 
         public override SizeRequest Measure(Size availableSize)
         {
-            var endMeasure = EndImage?.Measure(VisualState, default(Size), default(SizeRequest)) ?? default(SizeRequest);
-            int endWidth = (int)endMeasure.Request.Width;
-            int endHeight = (int)endMeasure.Request.Height;
-            var trackMeasure = TrackImage?.Measure(VisualState, default(Size), default(SizeRequest)) ?? default(SizeRequest);
-            int trackWidth = (int)trackMeasure.Request.Width;
-            int trackHeight = (int)trackMeasure.Request.Height;
-            var thumbMeasure = ThumbImage?.Measure(VisualState, default(Size), default(SizeRequest)) ?? default(SizeRequest);
-            int thumbWidth = (int)thumbMeasure.Request.Width;
-            int thumbHeight = (int)thumbMeasure.Request.Height;
-
-            return new SizeRequest(new Size(thumbWidth + endWidth * 2 + trackWidth, thumbHeight), new Size(thumbWidth, thumbHeight));
+            var thumb = ThumbImage.Measure(VisualState);
+            var track = TrackImage.Measure(VisualState);
+            var end = EndImage.Measure(VisualState);
+            return new SizeRequest(new Size(thumb.Width + end.Width * 2 + track.Width, MathHelper.Max((float)thumb.Height, MathHelper.Max((float)end.Height, (float)track.Height))), thumb);
         }
 
         protected override void LocalDraw(GameTime gameTime, Rectangle area)
         {
-            var endMeasure = EndImage?.Measure(VisualState, default(Size), default(SizeRequest)) ?? default(SizeRequest);
-            int endWidth = (int)endMeasure.Request.Width;
-            int endHeight = (int)endMeasure.Request.Height;
+            var thumb = ThumbImage.Measure(VisualState);
+            var track = TrackImage.Measure(VisualState);
+            var end = EndImage.Measure(VisualState);
 
-            var trackMeasure = TrackImage?.Measure(VisualState, default(Size), default(SizeRequest)) ?? default(SizeRequest);
-            int trackWidth = (int)trackMeasure.Request.Width;
-            int trackHeight = (int)trackMeasure.Request.Height;
-
-            var thumbMeasure = ThumbImage?.Measure(VisualState, default(Size), default(SizeRequest)) ?? default(SizeRequest);
-            int thumbWidth = (int)thumbMeasure.Request.Width;
-            int thumbHeight = (int)thumbMeasure.Request.Height;
+            var value = (Model.Value - Model.Minimum) / (Model.Maximum - Model.Minimum);
+            var endColor = Color.White;
+            var startColor = Model.Value > Model.Minimum ? BackgroundColor : endColor;
 
             if (EndImage != null)
             {
-                EndImage.Draw(VisualState, SpriteBatch, new Rectangle(area.X + thumbWidth / 2, (area.Y + area.Height - endHeight) / 2, endWidth, endHeight), Color.White);
-                EndImage.Draw(VisualState, SpriteBatch, new Rectangle(area.Right - endWidth - thumbWidth / 2, (area.Y + area.Height - endHeight) / 2, endWidth, endHeight), Color.White);
+                EndImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(area.X + thumb.Width / 2), (int)((area.Y + area.Height - end.Height) / 2), (int)end.Width, (int)end.Height), startColor);
+                EndImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(area.Right - end.Width - thumb.Width / 2), (int)((area.Y + area.Height - end.Height) / 2), (int)end.Width, (int)end.Height), endColor);
             }
 
-            TrackImage?.Draw(VisualState, SpriteBatch, new Rectangle(area.X + endWidth + thumbWidth / 2, (area.Y + area.Height - trackHeight) / 2, area.Width - endWidth * 2 - thumbWidth, trackHeight), Color.White);
+            if (TrackImage != null)
+            {
+                var trackWidth = (area.Width - end.Width * 2 - thumb.Width);
+                TrackImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(area.X + end.Width + thumb.Width / 2), (int)((area.Y + area.Height - track.Height) / 2), (int)(trackWidth * value), (int)track.Height), startColor);
+                TrackImage.Draw(VisualState, SpriteBatch, new Rectangle((int)Math.Floor(area.X + end.Width + thumb.Width / 2 + (trackWidth * value)), (int)((area.Y + area.Height - track.Height) / 2), (int)Math.Ceiling(trackWidth * (1 - value)), (int)track.Height), endColor);
+            }
 
             if (ThumbImage != null)
             {
-                var value = (Model.Value - Model.Minimum) / (Model.Maximum - Model.Minimum);
-                ThumbImage.Draw(VisualState, SpriteBatch, new Rectangle(thumbWidth / 2 + (int)((area.Width - thumbWidth) * value) - thumbWidth / 2, (area.Height - thumbHeight) / 2, thumbWidth, thumbHeight), Color.White);
+                ThumbImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(thumb.Width / 2 + (int)((area.Width - thumb.Width) * value) - thumb.Width / 2), (int)((area.Height - thumb.Height) / 2), (int)thumb.Width, (int)thumb.Height), BackgroundColor);
             }
         }
 
@@ -129,12 +101,43 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             if (VisualState.Contains(Mouse.Pressed))
             {
-                var thumbMeasure = ThumbImage.Measure(VisualState, default(Size), default(SizeRequest));
-                int thumbWidth = (int)thumbMeasure.Request.Width;
+                var thumb = ThumbImage.Measure(VisualState);
+                var end = EndImage.Measure(VisualState);
 
-                Model.Value = MathHelper.Lerp((float)Model.Minimum, (float)Model.Maximum, (e.Position.Value.X - thumbWidth / 2) / ((float)Model.Bounds.Width - thumbWidth));
+                var value = (e.Position.Value.X - thumb.Width / 2 - end.Width) / (Model.Bounds.Width - thumb.Width - end.Width * 2);
+
+                Model.Value = MathHelper.Lerp((float)Model.Minimum, (float)Model.Maximum, (float)value);
                 InvalidateVisual();
             }
         }
+
+        #region Property Handlers
+        protected override void Handle_BackgroundColor(BindableProperty prop)
+        {
+            if (Model.BackgroundColor != default(Xamarin.Forms.Color))
+                BackgroundColor = Model.BackgroundColor.ToXnaColor();
+            else
+                BackgroundColor = DefaultBackgroundColor;
+            InvalidateVisual();
+        }
+
+        async void Handle_ThumbImage(BindableProperty property)
+        {
+            ThumbImage = await GetThumbImage(Model).LoadAsync();
+            InvalidateMeasure();
+        }
+
+        async void Handle_TrackImage(BindableProperty property)
+        {
+            TrackImage = await GetTrackImage(Model).LoadAsync();
+            InvalidateMeasure();
+        }
+
+        async void Handle_EndImage(BindableProperty property)
+        {
+            EndImage = await GetEndImage(Model).LoadAsync();
+            InvalidateMeasure();
+        }
+        #endregion
     }
 }

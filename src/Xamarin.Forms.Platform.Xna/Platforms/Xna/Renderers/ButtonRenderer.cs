@@ -12,14 +12,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     public class ButtonRenderer : VisualElementRenderer<Button>
     {
         #region Default Style
-        static ImageSource DefaultBackgroundImage = "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.ButtonBackground.xml";
         static Color DefaultBackgroundColor = Color.White;
         static Color DefaultTextColor = Color.Black;
         #endregion
 
         #region Attached Properties
         public static BindableProperty BackgroundImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
-                r => GetBackgroundImage(r), null);
+                r => GetBackgroundImage(r),
+                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.ButtonBackground.xml");
 
         public static ImageSource GetBackgroundImage(BindableObject obj)
         {
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected override void Handle_BackgroundColor(BindableProperty prop)
         {
-            if (Model.TextColor != default(Xamarin.Forms.Color))
+            if (Model.BackgroundColor != default(Xamarin.Forms.Color))
                 BackgroundColor = Model.BackgroundColor.ToXnaColor();
             else
                 BackgroundColor = DefaultBackgroundColor;
@@ -120,8 +120,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         async void Handle_BackgroundImage(BindableProperty property)
         {
-            var source = GetBackgroundImage(Model) ?? DefaultBackgroundImage;
-            BackgroundImage = await source.LoadAsync();
+            BackgroundImage = await GetBackgroundImage(Model).LoadAsync();
             InvalidateMeasure();
         }
 

@@ -8,7 +8,6 @@ namespace VisualRenderersPreview
         {
             var tstButton = new Button
             {
-                BackgroundColor = Color.FromRgb(53, 186, 243)
             };
             var slider = new Slider
             {
@@ -20,6 +19,7 @@ namespace VisualRenderersPreview
             };
 
             tstButton.SetBinding(VisualElement.OpacityProperty, new Binding("Value", source: slider));
+            tstButton.SetBinding(Button.TextProperty, new Binding("Value", source: slider, stringFormat: "Opacity: {0:0.00}"));
 
             // The root page of your application
             MainPage = new ContentPage
