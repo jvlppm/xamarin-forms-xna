@@ -3,14 +3,15 @@
     typeof(Xamarin.Forms.Platforms.Xna.Renderers.LabelRenderer))]
 namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
-    using System;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
 
     public class LabelRenderer : VisualElementRenderer<Label>
     {
-        #region Static
-        static SpriteFont DefaultFont;
+        #region Default Style
+        static Color DefaultTextColor = Color.Black;
+
+        public static SpriteFont DefaultFont;
         static LabelRenderer()
         {
             DefaultFont = Forms.EmbeddedContent.Load<SpriteFont>("DefaultFont");
@@ -51,7 +52,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Handle_TextColor(BindableProperty property)
         {
-            TextColor = Model.TextColor.ToXnaColor();
+            if (Model.TextColor != default(Xamarin.Forms.Color))
+                TextColor = Model.TextColor.ToXnaColor();
+            else
+                TextColor = DefaultTextColor;
             InvalidateVisual();
         }
 
@@ -62,7 +66,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             else
                 Control.Font = DefaultFont;
 
-            Control.Scale = (float)Model.FontSize / 14f;
+            Control.Scale = (float)Model.FontSize / 18f;
             InvalidateMeasure();
         }
 

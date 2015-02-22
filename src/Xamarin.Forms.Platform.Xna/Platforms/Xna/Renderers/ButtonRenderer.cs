@@ -11,23 +11,24 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
     public class ButtonRenderer : VisualElementRenderer<Button>
     {
-        #region Static
-        static SpriteFont DefaultFont;
-        static IControl Background;
-        static ButtonRenderer()
+        #region Default Style
+        static ImageSource DefaultBackgroundImage = "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.ButtonBackground.xml";
+        static Color DefaultBackgroundColor = Color.White;
+        static Color DefaultTextColor = Color.Black;
+        #endregion
+
+        #region Attached Properties
+        public static BindableProperty BackgroundImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
+                r => GetBackgroundImage(r), null);
+
+        public static ImageSource GetBackgroundImage(BindableObject obj)
         {
-            DefaultFont = Forms.EmbeddedContent.Load<SpriteFont>("DefaultFont");
-            var background = new UriImageSource
-            {
-                Uri = new System.Uri("pack://application/Xamarin.Forms.Platform.WP8;component/ButtonBackground.xml"),
-                CachingEnabled = false
-            };
-            background.LoadAsync(format: ImageFormat.StateList)
-                .ContinueWith(t => Background = t.Result);
+            return (ImageSource)obj.GetValue(BackgroundImageProperty);
         }
         #endregion
 
         readonly Label Label;
+        IControl BackgroundImage;
         Color TextColor;
         Color BackgroundColor;
 
@@ -42,6 +43,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(Button.TextColorProperty, Handle_TextColor);
             PropertyTracker.AddHandler(Button.FontProperty, Handle_Font);
             PropertyTracker.AddHandler(Button.TextProperty, Handle_Text);
+            PropertyTracker.AddHandler(BackgroundImageProperty, Handle_BackgroundImage);
 
             OnMouseClick += ButtonRenderer_OnMouseClick;
         }
@@ -52,8 +54,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             var lblSize = Label.Measure(VisualState, availableSize, default(SizeRequest));
 
-            if (Background != null)
-                return Background.Measure(VisualState, availableSize, lblSize);
+            if (BackgroundImage != null)
+                return BackgroundImage.Measure(VisualState, availableSize, lblSize);
 
             return lblSize;
         }
@@ -61,10 +63,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         protected override void LocalDraw(GameTime gameTime, Rectangle area)
         {
             Rectangle textArea = area;
-            if (Background != null)
+            if (BackgroundImage != null)
             {
-                Background.Draw(VisualState, SpriteBatch, area, BackgroundColor);
-                textArea = Background.GetContentArea(VisualState, area);
+                BackgroundImage.Draw(VisualState, SpriteBatch, area, BackgroundColor);
+                textArea = BackgroundImage.GetContentArea(VisualState, area);
             }
 
             Label.Draw(VisualState, SpriteBatch, textArea, TextColor);
@@ -83,7 +85,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         void Handle_TextColor(BindableProperty property)
         {
-            TextColor = Model.TextColor.ToXnaColor();
+            if (Model.TextColor != default(Xamarin.Forms.Color))
+                TextColor = Model.TextColor.ToXnaColor();
+            else
+                TextColor = DefaultTextColor;
             InvalidateVisual();
         }
 
@@ -92,9 +97,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (Model.FontFamily != null)
                 Label.Font = Forms.Game.Content.Load<SpriteFont>(Model.FontFamily);
             else
-                Label.Font = DefaultFont;
+                Label.Font = LabelRenderer.DefaultFont;
 
-            Label.Scale = (float)Model.FontSize / 14f;
+            Label.Scale = (float)Model.FontSize / 18f;
             InvalidateMeasure();
         }
 
@@ -106,7 +111,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected override void Handle_BackgroundColor(BindableProperty prop)
         {
-            BackgroundColor = Model.BackgroundColor.ToXnaColor();
+            if (Model.TextColor != default(Xamarin.Forms.Color))
+                BackgroundColor = Model.BackgroundColor.ToXnaColor();
+            else
+                BackgroundColor = DefaultBackgroundColor;
+            InvalidateVisual();
+        }
+
+        async void Handle_BackgroundImage(BindableProperty property)
+        {
+            var source = GetBackgroundImage(Model) ?? DefaultBackgroundImage;
+            BackgroundImage = await source.LoadAsync();
+            InvalidateMeasure();
         }
 
         #endregion
