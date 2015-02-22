@@ -402,13 +402,21 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (element.Bounds.Width <= 0 && element.Bounds.Height <= 0)
                 return XnaMatrix.Identity;
 
+            var offset = new Point(
+                             element.Bounds.X + element.TranslationX,
+                             element.Bounds.Y + element.TranslationY
+                         ) + element.Bounds.Size * 0.5;
+
             var viewport = Forms.Game.GraphicsDevice.Viewport;
 
-            float dist = (float)Math.Max(viewport.Width, viewport.Height);
+            float dist = Math.Max(viewport.Width, viewport.Height);
             var angle = (float)Math.Atan(((float)viewport.Height / 2) / dist) * 2;
 
-            return XnaMatrix.CreateTranslation(-(float)viewport.Width / 2 - 0.5f, -(float)viewport.Height / 2 - 0.5f, -dist)
+            return XnaMatrix.CreateTranslation((float)-offset.X - 0.5f, (float)-offset.Y - 0.5f, -dist)
                  * XnaMatrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), dist * 0.8f, dist * 2)
+                 * XnaMatrix.CreateTranslation(
+                     (float)offset.X * 2 / viewport.Width - 1,
+                     (float)offset.Y * 2 / viewport.Height - 1, 0)
                  * XnaMatrix.CreateScale(1, -1, 1);
         }
 
