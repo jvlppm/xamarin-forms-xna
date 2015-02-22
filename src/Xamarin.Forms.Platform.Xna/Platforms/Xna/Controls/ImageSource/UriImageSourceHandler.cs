@@ -1,16 +1,15 @@
-﻿[assembly: Xamarin.Forms.Platforms.Xna.Images.ExportImageSourceHandler(
+﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportImageSourceHandler(
     typeof(Xamarin.Forms.UriImageSource),
-    typeof(Xamarin.Forms.Platforms.Xna.Images.UriImageSourceHandler))]
-namespace Xamarin.Forms.Platforms.Xna.Images
+    typeof(Xamarin.Forms.Platforms.Xna.Controls.UriImageSourceHandler))]
+namespace Xamarin.Forms.Platforms.Xna.Controls
 {
     using Context;
-    using Controls;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
 
-    public class UriImageSourceHandler : IImageSourceHandler
+    class UriImageSourceHandler : IImageSourceHandler
     {
         static readonly ConcurrentDictionary<string, Task<IControl>> _cachedImages = new ConcurrentDictionary<string, Task<IControl>>();
 

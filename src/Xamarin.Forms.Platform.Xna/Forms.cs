@@ -4,7 +4,7 @@
     using System.Reflection;
     using Xamarin.Forms.Platforms.Xna;
     using Xamarin.Forms.Platforms.Xna.Context;
-    using Xamarin.Forms.Platforms.Xna.Images;
+    using Xamarin.Forms.Platforms.Xna.Controls;
     using Xamarin.Forms.Platforms.Xna.Input;
     using Xamarin.Forms.Platforms.Xna.Resources;
 

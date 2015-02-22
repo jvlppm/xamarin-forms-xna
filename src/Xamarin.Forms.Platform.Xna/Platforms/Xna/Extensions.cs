@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platforms.Xna
     using Microsoft.Xna.Framework.Graphics;
     using System.Threading;
     using System.Threading.Tasks;
-    using Images;
+    using Controls;
     using Xamarin.Forms.Platforms.Xna.Controls;
 
     public static class Extensions

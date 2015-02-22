@@ -1,15 +1,14 @@
-﻿[assembly: Xamarin.Forms.Platforms.Xna.Images.ExportImageSourceHandler(
+﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportImageSourceHandler(
     typeof(Xamarin.Forms.StreamImageSource),
-    typeof(Xamarin.Forms.Platforms.Xna.Images.StreamImageSourceHandler))]
-namespace Xamarin.Forms.Platforms.Xna.Images
+    typeof(Xamarin.Forms.Platforms.Xna.Controls.StreamImageSourceHandler))]
+namespace Xamarin.Forms.Platforms.Xna.Controls
 {
     using Context;
-    using Controls;
     using System.Threading;
     using System.Threading.Tasks;
     using Xamarin.Forms;
 
-    public class StreamImageSourceHandler : IImageSourceHandler
+    class StreamImageSourceHandler : IImageSourceHandler
     {
         public async Task<IControl> GetImageAsync(ImageSource imageSource, ImageFormat format, CancellationToken cancellationToken)
         {
