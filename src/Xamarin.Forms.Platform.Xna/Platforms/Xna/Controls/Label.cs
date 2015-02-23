@@ -9,7 +9,7 @@
     {
         public SpriteFont Font;
         public string Text;
-        public float Scale = 1;
+        public float FontSize = 12;
         public TextAlignment XAlign, YAlign;
 
         public Rectangle GetContentArea(ISet<State> states, Rectangle area)
@@ -23,11 +23,14 @@
                 return;
 
             var textMeasure = Font.MeasureString(Text);
-            var textOffset = new Vector2(
-                area.Left + GetAlignOffset(XAlign, (float)textMeasure.X * Scale, area.Width),
-                area.Top + GetAlignOffset(YAlign, (float)textMeasure.Y * Scale, area.Height));
+            var originalFontSize = textMeasure.Y * 72 / 96.0f;
+            var scale = FontSize / originalFontSize;
 
-            spriteBatch.DrawString(Font, Text, textOffset, color, 0, Vector2.Zero, Scale, SpriteEffects.None, 1);
+            var textOffset = new Vector2(
+                area.Left + GetAlignOffset(XAlign, textMeasure.X * scale, area.Width),
+                area.Top + GetAlignOffset(YAlign, textMeasure.Y * scale, area.Height));
+
+            spriteBatch.DrawString(Font, Text, textOffset, color, 0, Vector2.Zero, scale, SpriteEffects.None, 1);
         }
 
         public SizeRequest Measure(ISet<State> states, Size availableSize, SizeRequest contentSize)
@@ -36,7 +39,10 @@
                 return default(SizeRequest);
 
             var textMeasure = Font.MeasureString(Text);
-            return new SizeRequest(new Size(textMeasure.X * Scale, textMeasure.Y * Scale));
+            var originalFontSize = textMeasure.Y * 72 / 96.0f;
+            var scale = FontSize / originalFontSize;
+
+            return new SizeRequest(new Size(textMeasure.X * scale, textMeasure.Y * scale));
         }
 
         #region Private Methods

@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             else
                 Control.Font = DefaultFont;
 
-            Control.Scale = (float)Model.FontSize / 18f;
+            Control.FontSize = (float)Model.FontSize;
             InvalidateMeasure();
         }
 

@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             else
                 Label.Font = LabelRenderer.DefaultFont;
 
-            Label.Scale = (float)Model.FontSize / 18f;
+            Label.FontSize = (float)Model.FontSize;
             InvalidateMeasure();
         }
 
