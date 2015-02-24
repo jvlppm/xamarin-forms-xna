@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         Texture2D _backgroundTexture;
 
         VisualElement _model;
-        List<Element> _manuallyAddedElements;
+        List<VisualElement> _manuallyAddedElements;
         float? _alpha;
         bool _isVisible;
         RenderTarget2D _rendererVisual;
@@ -181,12 +181,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
             _blendState = BlendState.AlphaBlend;
 
-            _manuallyAddedElements = new List<Element>();
+            _manuallyAddedElements = new List<VisualElement>();
 
             PropertyTracker = new PropertyTracker();
             SpriteBatch = new SpriteBatch(Forms.Game.GraphicsDevice);
-            ChildrenRenderers = ImmutableDictionary<Element, VisualElementRenderer>.Empty;
-            Children = ImmutableList<VisualElementRenderer>.Empty;
+            RefreshRenderers();
             IsVisible = true;
 
             PropertyTracker.AddHandler(VisualElement.AnchorXProperty, Handle_Transformation);
@@ -447,21 +446,33 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             var childRenderer = Create((VisualElement)e.Element);
             childRenderer.Parent = this;
-            Children = Model.LogicalChildren.Select(c => GetRenderer(c)).ToImmutableList();
-            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
+            RefreshRenderers();
         }
 
         void Model_ChildRemoved(object sender, ElementEventArgs e)
         {
             VisualElementRenderer childRenderer;
             if (ChildrenRenderers.TryGetValue(e.Element, out childRenderer))
+            {
+                SetRenderer(e.Element, null);
                 childRenderer.Dispose();
-
-            Children = Model.LogicalChildren.Select(c => GetRenderer(c)).ToImmutableList();
-            ChildrenRenderers = Model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
+            }
+            RefreshRenderers();
         }
 
-        protected void AddElement(Element element)
+        void RefreshRenderers()
+        {
+            var children = Model == null ?
+                ImmutableList<VisualElement>.Empty :
+                Model.LogicalChildren.OfType<VisualElement>();
+
+            children = children.Union(_manuallyAddedElements);
+
+            Children = children.Select(c => GetRenderer(c) ?? Create(c)).ToImmutableList();
+            ChildrenRenderers = children.ToImmutableDictionary(c => (Element)c, c => GetRenderer(c));
+        }
+
+        protected void AddElement(VisualElement element)
         {
             if (_manuallyAddedElements.Contains(element))
                 return;
@@ -469,9 +480,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             _manuallyAddedElements.Add(element);
             element.Parent = Model;
             Model_ChildAdded(this, new ElementEventArgs(element));
+            ((IVisualElementController)element).NativeSizeChanged();
         }
 
-        protected void RemoveElement(Element element)
+        protected void RemoveElement(VisualElement element)
         {
             if (_manuallyAddedElements.Remove(element))
                 Model_ChildRemoved(this, new ElementEventArgs(element));
@@ -495,16 +507,25 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void OnModelUnload(VisualElement model)
         {
-            Children = ImmutableList<VisualElementRenderer>.Empty;
-            ChildrenRenderers = ImmutableDictionary<Element, VisualElementRenderer>.Empty;
+            foreach (var c in model.LogicalChildren)
+            {
+                var childRenderer = GetRenderer(c);
+                if (childRenderer != null)
+                {
+                    SetRenderer(c, null);
+                    childRenderer.Dispose();
+                }
+            }
+
+            System.Diagnostics.Debug.Assert(Model == null);
+            RefreshRenderers();
             model.ChildAdded -= Model_ChildAdded;
             model.ChildRemoved -= Model_ChildRemoved;
         }
 
         protected virtual void OnModelLoad(VisualElement model)
         {
-            Children = model.LogicalChildren.Select(c => VisualElementRenderer.Create((VisualElement)c)).ToImmutableList();
-            ChildrenRenderers = model.LogicalChildren.ToImmutableDictionary(c => c, c => GetRenderer(c));
+            RefreshRenderers();
 
             model.ChildAdded += Model_ChildAdded;
             model.ChildRemoved += Model_ChildRemoved;
