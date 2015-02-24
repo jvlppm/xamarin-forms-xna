@@ -2,5 +2,6 @@
 <selector>
   <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_pressed.9" state_pressed="true" />
   <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_over.9" state_over="true" />
+  <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_disabled.9" state_enabled="false" />
   <item image="pack://application/Xamarin.Forms.Platform.WP8;component/button_normal.9" />
 </selector>

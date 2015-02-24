@@ -52,6 +52,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     {
         #region Static
 
+        public static readonly State Enabled = State.Register("Enabled");
+
         static BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(VisualElementRenderer), typeof(VisualElementRenderer), null);
 
         public static VisualElementRenderer GetRenderer(BindableObject obj)
@@ -196,6 +198,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             PropertyTracker.AddHandler(VisualElement.ScaleProperty, Handle_Transformation);
             PropertyTracker.AddHandler(VisualElement.OpacityProperty, Handle_Opacity);
             PropertyTracker.AddHandler(VisualElement.BackgroundColorProperty, Handle_BackgroundColor);
+            PropertyTracker.AddHandler(VisualElement.IsEnabledProperty, Handle_Enabled);
         }
 
         #endregion
@@ -352,6 +355,14 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 _backgroundTexture.SetData(new[] { Model.BackgroundColor.ToXnaColor() });
             }
             InvalidateVisual();
+        }
+
+        void Handle_Enabled(BindableProperty property)
+        {
+            if (Model.IsEnabled)
+                AddVisualState(Enabled);
+            else
+                RemoveVisualState(Enabled);
         }
 
         void InvalidateAlpha()

@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 YAlign = TextAlignment.Center,
             };
 
+            PropertyTracker.AddHandler(VisualElement.IsEnabledProperty, Handle_TextColor);
             PropertyTracker.AddHandler(Button.TextColorProperty, Handle_TextColor);
             PropertyTracker.AddHandler(Button.FontProperty, Handle_Font);
             PropertyTracker.AddHandler(Button.TextProperty, Handle_Text);
@@ -94,6 +95,9 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 TextColor = Model.TextColor.ToXnaColor();
             else
                 TextColor = DefaultTextColor;
+
+            if (!Model.IsEnabled)
+                TextColor.A = (byte)(TextColor.A * 0.5f);
             InvalidateVisual();
         }
 
