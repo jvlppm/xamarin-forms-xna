@@ -147,8 +147,8 @@
 
         public SizeRequest Measure(ISet<State> states, Size availableSize, SizeRequest contentSize)
         {
-            var minWidth = Math.Max(Stretch.Horizontal.Margin, contentSize.Minimum.Width + Content.Horizontal.Margin);
-            var minHeight = Math.Max(Stretch.Vertical.Margin, contentSize.Minimum.Height + Content.Vertical.Margin);
+            var minWidth = contentSize.Minimum.Width + Math.Max(Stretch.Horizontal.Margin, Content.Horizontal.Margin);
+            var minHeight = contentSize.Minimum.Height + Math.Max(Stretch.Vertical.Margin, Content.Vertical.Margin);
 
             if (double.IsNaN(availableSize.Width) || availableSize.Width > Width)
                 availableSize.Width = Math.Max(Width, minWidth);
