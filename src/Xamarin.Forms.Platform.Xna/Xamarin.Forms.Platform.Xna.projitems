@@ -52,6 +52,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\Deserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\GameApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\IsolatedStorageFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\LogListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Platforms\Xna\Internal\PlatformTimer.cs" />

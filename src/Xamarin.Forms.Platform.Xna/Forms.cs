@@ -27,6 +27,8 @@
             if (IsInitialized)
                 return;
 
+            Log.Listeners.Add(new Platforms.Xna.LogListener());
+
             PlatformServices platformServices = new PlatformServices(game);
 #if !INTERNAL_CONTEXT
             DrawContext = platformServices.DrawContext;
