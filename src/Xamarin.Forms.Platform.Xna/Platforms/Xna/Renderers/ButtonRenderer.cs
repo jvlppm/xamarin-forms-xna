@@ -17,13 +17,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         #endregion
 
         #region Attached Properties
-        public static BindableProperty BackgroundImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
+        public static BindableProperty BackgroundImageProperty = BindableProperty.CreateAttached<ButtonRenderer, ImageSource>(
                 r => GetBackgroundImage(r),
                 "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.ButtonBackground.xml");
 
         public static ImageSource GetBackgroundImage(BindableObject obj)
         {
             return (ImageSource)obj.GetValue(BackgroundImageProperty);
+        }
+
+        public static void SetBackgroundImage(BindableObject obj, ImageSource value)
+        {
+            obj.SetValue(BackgroundImageProperty, value);
         }
         #endregion
 

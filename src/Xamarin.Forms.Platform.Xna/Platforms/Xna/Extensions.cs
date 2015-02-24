@@ -8,7 +8,6 @@ namespace Xamarin.Forms.Platforms.Xna
     using System.Threading;
     using System.Threading.Tasks;
     using Controls;
-    using Xamarin.Forms.Platforms.Xna.Controls;
 
     public static class Extensions
     {
@@ -30,6 +29,16 @@ namespace Xamarin.Forms.Platforms.Xna
         public static Xamarin.Forms.Rectangle ToXFormsRectangle(this Rectangle rectangle)
         {
             return new Xamarin.Forms.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
+        public static Vector2 ToXnaVector2(this Xamarin.Forms.Point location)
+        {
+            return new Vector2((float)location.X, (float)location.Y);
+        }
+
+        public static Xamarin.Forms.Point ToXFormsPoint(this Vector2 vector)
+        {
+            return new Xamarin.Forms.Point(vector.X, vector.Y);
         }
 
         public static Plane Transform(this Plane plane, Matrix matrix)
