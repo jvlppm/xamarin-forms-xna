@@ -11,21 +11,24 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     public class SliderRenderer : VisualElementRenderer<Slider>
     {
         #region Default Style
+
         static Color DefaultBackgroundColor = Color.White;
+
         #endregion
 
         #region Attached Properties
+
         public static BindableProperty ThumbImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
-                r => GetThumbImage(r),
-                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderThumb.png");
+                                                                r => GetThumbImage(r),
+                                                                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderThumb.png");
 
         public static BindableProperty EndImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
-                r => GetEndImage(r),
-                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderEnd.png");
+                                                              r => GetEndImage(r),
+                                                              "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderEnd.png");
 
         public static BindableProperty TrackImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
-                r => GetTrackImage(r),
-                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderTrack.png");
+                                                                r => GetTrackImage(r),
+                                                                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderTrack.png");
 
         public static ImageSource GetThumbImage(BindableObject obj)
         {
@@ -56,17 +59,18 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             obj.SetValue(TrackImageProperty, value);
         }
+
         #endregion
 
         readonly Button Thumb;
         readonly VisualElementRenderer ThumbRenderer;
         IControl EndImage;
         IControl TrackImage;
-        Color BackgroundColor;
+        Color BackgroundColor = Color.White;
 
         public SliderRenderer()
         {
-            Thumb = new Button();
+            Thumb = new Button { Opacity = 0.6f };
             AddElement(Thumb);
             ThumbRenderer = GetRenderer(Thumb);
             ThumbRenderer.OnMouseMove += Thumb_OnMouseMove;
@@ -95,31 +99,34 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             var track = TrackImage.Measure(VisualState);
             var end = EndImage.Measure(VisualState);
 
+            var trackStart = (int)(area.X + thumb.Width / 2);
+            var trackWidth = (area.Width - end.Width - thumb.Width);
+
             var value = (Model.Value - Model.Minimum) / (Model.Maximum - Model.Minimum);
-            var endColor = Model.Value >= Model.Maximum ? BackgroundColor : new Color(Color.White, 0.8f* BackgroundColor.A / 255.0f);
+            var endColor = Model.Value >= Model.Maximum ? BackgroundColor : new Color(Color.White, 0.8f * BackgroundColor.A / 255.0f);
             var startColor = Model.Value > Model.Minimum ? BackgroundColor : endColor;
 
             if (EndImage != null)
             {
-                EndImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(area.X + thumb.Width / 2), (int)((area.Y + area.Height - end.Height) / 2), (int)end.Width, (int)end.Height), startColor);
-                EndImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(area.Right - end.Width - thumb.Width / 2), (int)((area.Y + area.Height - end.Height) / 2), (int)end.Width, (int)end.Height), endColor);
+                EndImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(trackStart - end.Width / 2), (int)((area.Y + area.Height - end.Height) / 2), (int)end.Width, (int)end.Height), startColor);
+                EndImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(trackStart + trackWidth + end.Width / 2), (int)((area.Y + area.Height - end.Height) / 2), (int)end.Width, (int)end.Height), endColor);
             }
 
             if (TrackImage != null)
             {
-                var trackWidth = (area.Width - end.Width * 2 - thumb.Width);
-                TrackImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(area.X + end.Width + thumb.Width / 2), (int)((area.Y + area.Height - track.Height) / 2), (int)(trackWidth * value), (int)track.Height), startColor);
-                TrackImage.Draw(VisualState, SpriteBatch, new Rectangle((int)Math.Floor(area.X + end.Width + thumb.Width / 2 + (trackWidth * value)), (int)((area.Y + area.Height - track.Height) / 2), (int)Math.Ceiling(trackWidth * (1 - value)), (int)track.Height), endColor);
+                TrackImage.Draw(VisualState, SpriteBatch, new Rectangle((int)(trackStart + end.Width / 2), (int)((area.Y + area.Height - track.Height) / 2), (int)(trackWidth * value), (int)track.Height), startColor);
+                TrackImage.Draw(VisualState, SpriteBatch, new Rectangle((int)Math.Floor(trackStart + end.Width / 2 + ((trackWidth) * value)), (int)((area.Y + area.Height - track.Height) / 2), (int)Math.Ceiling(trackWidth * (1 - value)), (int)track.Height), endColor);
             }
 
             Thumb.Layout(new Xamarin.Forms.Rectangle(
-                (thumb.Width / 2 + ((area.Width - thumb.Width) * value) - thumb.Width / 2),
-                ((area.Height - thumb.Height) / 2), thumb.Width, thumb.Height));
+                    (trackWidth + end.Width) * value,
+                    ((area.Height - thumb.Height) / 2), thumb.Width, thumb.Height));
         }
 
         #endregion
 
         #region Event Handlers
+
         void Thumb_OnMouseMove(object sender, MouseEventArgs e)
         {
             if (ThumbRenderer.VisualState.Contains(Mouse.Pressed) && e.Position != null)
@@ -139,9 +146,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             else if (newValue > Model.Value)
                 Model.Value = Math.Min(Model.Maximum, Model.Value + range / 10);
         }
+
         #endregion
 
         #region Property Handlers
+
         void Handle_ThumbImage(BindableProperty property)
         {
             ButtonRenderer.SetBackgroundImage(Thumb, GetThumbImage(Model));
@@ -169,17 +178,23 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             EndImage = await GetEndImage(Model).LoadAsync();
             InvalidateMeasure();
         }
+
         #endregion
 
         #region Private Methods
+
         double GetValue(Vector2 mousePosition)
         {
-            var thumb = Thumb.Bounds.Size;
             var end = EndImage.Measure(VisualState);
 
-            var value = (mousePosition.X - thumb.Width / 2 - end.Width) / (Model.Bounds.Width - thumb.Width - end.Width * 2);
+            var trackStart = end.Width + Thumb.Width / 2;
+            var trackWidth = (Model.Bounds.Width - end.Width * 2 - Thumb.Width);
+            var mouseX = (mousePosition.X - trackStart);
+
+            var value = mouseX / trackWidth;
             return MathHelper.Lerp((float)Model.Minimum, (float)Model.Maximum, (float)value);
         }
+
         #endregion
     }
 }
