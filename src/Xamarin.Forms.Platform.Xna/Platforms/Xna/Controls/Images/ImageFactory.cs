@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms.Platforms.Xna.Controls
+﻿namespace Xamarin.Forms.Platforms.Xna.Controls.Images
 {
     using Microsoft.Xna.Framework.Graphics;
     using System;

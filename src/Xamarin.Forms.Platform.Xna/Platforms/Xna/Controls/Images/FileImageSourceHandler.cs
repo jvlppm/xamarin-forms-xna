@@ -1,12 +1,7 @@
-﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportImageSourceHandler(
+﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportSourceHandler(
     typeof(Xamarin.Forms.FileImageSource),
-<<<<<<< Updated upstream:src/Xamarin.Forms.Platform.Xna/Platforms/Xna/Controls/ImageSource/FileImageSourceHandler.cs
-    typeof(Xamarin.Forms.Platforms.Xna.Controls.FileImageSourceHandler))]
-namespace Xamarin.Forms.Platforms.Xna.Controls
-=======
     typeof(Xamarin.Forms.Platforms.Xna.Controls.Images.FileImageSourceHandler))]
 namespace Xamarin.Forms.Platforms.Xna.Controls.Images
->>>>>>> Stashed changes:src/Xamarin.Forms.Platform.Xna/Platforms/Xna/Controls/Images/FileImageSourceHandler.cs
 {
     using Microsoft.Xna.Framework.Graphics;
     using System.IO;

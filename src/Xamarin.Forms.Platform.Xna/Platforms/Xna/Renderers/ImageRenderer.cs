@@ -6,6 +6,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System;
     using System.Threading;
     using Controls;
+    using Controls.Images;
     using Microsoft.Xna.Framework;
 
     public class ImageRenderer : VisualElementRenderer<Image>

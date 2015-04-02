@@ -44,7 +44,7 @@
 
             Registrar.RegisterAll(new[]{
                 typeof(ExportRendererAttribute),
-                typeof(ExportImageSourceHandlerAttribute),
+                typeof(ExportSourceHandlerAttribute),
             });
 
             Ticker.Default = new ContextTicker(platformServices.DrawContext);

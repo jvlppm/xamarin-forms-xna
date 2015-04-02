@@ -1,12 +1,7 @@
-﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportImageSourceHandler(
+﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportSourceHandler(
     typeof(Xamarin.Forms.UriImageSource),
-<<<<<<< Updated upstream:src/Xamarin.Forms.Platform.Xna/Platforms/Xna/Controls/ImageSource/UriImageSourceHandler.cs
-    typeof(Xamarin.Forms.Platforms.Xna.Controls.UriImageSourceHandler))]
-namespace Xamarin.Forms.Platforms.Xna.Controls
-=======
     typeof(Xamarin.Forms.Platforms.Xna.Controls.Images.UriImageSourceHandler))]
 namespace Xamarin.Forms.Platforms.Xna.Controls.Images
->>>>>>> Stashed changes:src/Xamarin.Forms.Platform.Xna/Platforms/Xna/Controls/Images/UriImageSourceHandler.cs
 {
     using Context;
     using System;

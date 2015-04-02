@@ -1,12 +1,7 @@
-﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportImageSourceHandler(
+﻿[assembly: Xamarin.Forms.Platforms.Xna.Controls.ExportSourceHandler(
     typeof(Xamarin.Forms.StreamImageSource),
-<<<<<<< Updated upstream:src/Xamarin.Forms.Platform.Xna/Platforms/Xna/Controls/ImageSource/StreamImageSourceHandler.cs
-    typeof(Xamarin.Forms.Platforms.Xna.Controls.StreamImageSourceHandler))]
-namespace Xamarin.Forms.Platforms.Xna.Controls
-=======
     typeof(Xamarin.Forms.Platforms.Xna.Controls.Images.StreamImageSourceHandler))]
 namespace Xamarin.Forms.Platforms.Xna.Controls.Images
->>>>>>> Stashed changes:src/Xamarin.Forms.Platform.Xna/Platforms/Xna/Controls/Images/StreamImageSourceHandler.cs
 {
     using Context;
     using System.Threading;

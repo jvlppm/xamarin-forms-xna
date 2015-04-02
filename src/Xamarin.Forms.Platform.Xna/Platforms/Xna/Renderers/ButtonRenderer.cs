@@ -4,6 +4,7 @@
 namespace Xamarin.Forms.Platforms.Xna.Renderers
 {
     using Controls;
+    using Controls.Images;
     using Input;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
