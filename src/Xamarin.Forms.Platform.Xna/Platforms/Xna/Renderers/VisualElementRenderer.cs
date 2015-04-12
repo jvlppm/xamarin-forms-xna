@@ -114,6 +114,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         RenderTarget2D _rendererVisual;
         bool _validVisual;
         bool _disposed;
+        VisualElementRenderer _renderParent;
 
         ImmutableDictionary<Element, VisualElementRenderer> ChildrenRenderers;
 
@@ -247,7 +248,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (_disposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (!_validVisual || _rendererVisual == null ||
+            if (_rendererVisual == null ||
                     (_rendererVisual.Width != (int)Model.Bounds.Width ||
                     _rendererVisual.Height != (int)Model.Bounds.Height))
             {
@@ -412,6 +413,10 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             if (element.Bounds.Width <= 0 && element.Bounds.Height <= 0)
                 return XnaMatrix.Identity;
 
+            VisualElementRenderer parent = GetRenderer(element)._renderParent;
+            if (parent != null)
+                element = parent.Model ?? element;
+
             var offset = new Point(
                              element.Bounds.X + element.TranslationX,
                              element.Bounds.Y + element.TranslationY
@@ -492,6 +497,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             element.Parent = Model;
             Model_ChildAdded(this, new ElementEventArgs(element));
             ((IVisualElementController)element).NativeSizeChanged();
+            GetRenderer(element)._renderParent = _renderParent ?? this;
         }
 
         protected void RemoveElement(VisualElement element)
