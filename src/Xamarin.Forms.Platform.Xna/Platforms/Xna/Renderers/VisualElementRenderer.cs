@@ -87,9 +87,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         #endregion
 
         #region Events
+
         public event EventHandler<ISet<State>> OnVisualStateChange;
         public event EventHandler<MouseEventArgs> OnMouseMove;
         public event EventHandler<MouseEventArgs> OnMouseClick;
+
         #endregion
 
         #region Attributes
@@ -249,8 +251,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                 throw new ObjectDisposedException(GetType().FullName);
 
             if (_rendererVisual == null ||
-                    (_rendererVisual.Width != (int)Model.Bounds.Width ||
-                    _rendererVisual.Height != (int)Model.Bounds.Height))
+                (_rendererVisual.Width != (int)Model.Bounds.Width ||
+                _rendererVisual.Height != (int)Model.Bounds.Height))
             {
                 if (_rendererVisual != null)
                     _rendererVisual.Dispose();
@@ -428,11 +430,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             var angle = (float)Math.Atan(((float)viewport.Height / 2) / dist) * 2;
 
             return XnaMatrix.CreateTranslation((float)-offset.X - 0.5f, (float)-offset.Y - 0.5f, -dist)
-                 * XnaMatrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), dist * 0.8f, dist * 2)
-                 * XnaMatrix.CreateTranslation(
-                     (float)offset.X * 2 / viewport.Width - 1,
-                     (float)offset.Y * 2 / viewport.Height - 1, 0)
-                 * XnaMatrix.CreateScale(1, -1, 1);
+            * XnaMatrix.CreatePerspectiveFieldOfView(angle, ((float)viewport.Width / viewport.Height), dist * 0.8f, dist * 2)
+            * XnaMatrix.CreateTranslation(
+                (float)offset.X * 2 / viewport.Width - 1,
+                (float)offset.Y * 2 / viewport.Height - 1, 0)
+            * XnaMatrix.CreateScale(1, -1, 1);
         }
 
         static XnaMatrix GetControlTransformation(VisualElement element)
@@ -446,12 +448,12 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                          );
 
             return XnaMatrix.CreateTranslation(-absAnchorX, -absAnchorY, 0f)
-                 * XnaMatrix.CreateRotationX(XnaMathHelper.ToRadians((float)element.RotationX))
-                 * XnaMatrix.CreateRotationY(XnaMathHelper.ToRadians((float)element.RotationY))
-                 * XnaMatrix.CreateRotationZ(XnaMathHelper.ToRadians((float)element.Rotation))
-                 * XnaMatrix.CreateScale((float)element.Scale)
-                 * XnaMatrix.CreateTranslation(absAnchorX * (float)element.Scale, absAnchorY * (float)element.Scale, 0f)
-                 * XnaMatrix.CreateTranslation(new XnaVector3(offset, 0));
+            * XnaMatrix.CreateRotationX(XnaMathHelper.ToRadians((float)element.RotationX))
+            * XnaMatrix.CreateRotationY(XnaMathHelper.ToRadians((float)element.RotationY))
+            * XnaMatrix.CreateRotationZ(XnaMathHelper.ToRadians((float)element.Rotation))
+            * XnaMatrix.CreateScale((float)element.Scale)
+            * XnaMatrix.CreateTranslation(absAnchorX * (float)element.Scale, absAnchorY * (float)element.Scale, 0f)
+            * XnaMatrix.CreateTranslation(new XnaVector3(offset, 0));
         }
 
         #endregion
@@ -629,6 +631,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         #endregion
 
         #region State
+
         protected void AddVisualState(State state, params State[] additionalStates)
         {
             UpdateStates((b, s) => b.Add(s), state, additionalStates);
@@ -659,9 +662,11 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                     handler(this, VisualState);
             }
         }
+
         #endregion
 
         #region IDisposable
+
         public void Dispose()
         {
             Dispose(true);
@@ -687,6 +692,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
                     _rendererVisual.Dispose();
             }
         }
+
         #endregion
     }
 }

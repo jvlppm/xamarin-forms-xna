@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\VisualRenderersPreview.Xna.Shared\VisualRenderersPreview.Xna.Shared.projitems" Label="Shared" Condition="Exists('..\VisualRenderersPreview.Xna.Shared\VisualRenderersPreview.Xna.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -37,14 +38,13 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Xamarin.Forms.Core">
-      <HintPath>..\..\..\packages\Xamarin.Forms.1.3.5.6333-pre1\lib\portable-win+net45+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
+      <HintPath>..\..\..\packages\Xamarin.Forms.1.4.1.6349\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml">
-      <HintPath>..\..\..\packages\Xamarin.Forms.1.3.5.6333-pre1\lib\portable-win+net45+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
+      <HintPath>..\..\..\packages\Xamarin.Forms.1.4.1.6349\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,25 +59,24 @@
     <Content Include="SDL.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\flavors\MonoGame.Portable\MonoGame.Portable.csproj">
-      <Project>{798e1f06-4bca-4893-bb99-c25cc4e82f15}</Project>
-      <Name>MonoGame.Portable</Name>
-    </ProjectReference>
     <ProjectReference Include="..\VisualRenderersPreview\VisualRenderersPreview.csproj">
-      <Project>{678d0153-cf4d-4a8c-8119-42ea0e7d7891}</Project>
+      <Project>{678D0153-CF4D-4A8C-8119-42EA0E7D7891}</Project>
       <Name>VisualRenderersPreview</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\flavors\MonoGame.Portable\Xamarin.Forms.Platform.MonoGame.Portable.csproj">
+      <Project>{798E1F06-4BCA-4893-BB99-C25CC4E82F15}</Project>
+      <Name>Xamarin.Forms.Platform.MonoGame.Portable</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\packages\MonoGame.Binaries.3.2.2-alpha\build\net40\MonoGame.Binaries.targets" Condition="Exists('..\..\..\packages\MonoGame.Binaries.3.2.2-alpha\build\net40\MonoGame.Binaries.targets')" />
+  <Import Project="..\..\..\packages\Xamarin.Forms.1.4.1.6349\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\..\packages\Xamarin.Forms.1.4.1.6349\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\packages\MonoGame.Binaries.3.2.2-alpha\build\net40\MonoGame.Binaries.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\MonoGame.Binaries.3.2.2-alpha\build\net40\MonoGame.Binaries.targets'))" />
-    <Error Condition="!Exists('..\..\..\packages\Xamarin.Forms.1.3.5.6333-pre1\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\packages\Xamarin.Forms.1.3.5.6333-pre1\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets'))" />
   </Target>
-  <Import Project="..\..\..\packages\Xamarin.Forms.1.3.5.6333-pre1\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\..\packages\Xamarin.Forms.1.3.5.6333-pre1\build\portable-win+net45+wp80+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

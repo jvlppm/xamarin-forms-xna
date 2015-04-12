@@ -11,15 +11,15 @@ namespace VisualRenderersPreview
             };
             var slider = new Slider
             {
-                Minimum = 0,
-                Maximum = 1,
-                Value = 1,
+                Minimum = -20,
+                Maximum = 20,
+                Value = 20,
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
             tstButton.SetBinding(VisualElement.OpacityProperty, new Binding("Value", source: slider));
-            tstButton.SetBinding(Button.TextProperty, new Binding("Value", source: slider, stringFormat: "Opacity: {0:0.00}"));
+
 
             // The root page of your application
             MainPage = new ContentPage
@@ -28,7 +28,8 @@ namespace VisualRenderersPreview
                 {
                     Padding = new Thickness(10, 10),
                     VerticalOptions = LayoutOptions.FillAndExpand,
-                    Children = {
+                    Children =
+                    {
                         tstButton,
                         slider
                     }

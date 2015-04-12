@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public SliderRenderer()
         {
-            Thumb = new Button { Opacity = 0.6f };
+            Thumb = new Button();
             AddElement(Thumb);
             ThumbRenderer = GetRenderer(Thumb);
             ThumbRenderer.OnMouseMove += Thumb_OnMouseMove;
