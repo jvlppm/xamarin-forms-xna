@@ -9,22 +9,23 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     using System.Text;
     using System.Threading.Tasks;
     using Xamarin.Forms;
+    using Xamarin.Forms.Internals;
 
     public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>
     {
         protected override void OnModelLoad(NavigationPage model)
         {
-            model.PopRequested += model_PopRequested;
-            model.PopToRootRequested += model_PopToRootRequested;
-            model.PushRequested += model_PushRequested;
+            ((INavigationPageController)model).PopRequested += model_PopRequested;
+            ((INavigationPageController)model).PopToRootRequested += model_PopToRootRequested;
+            ((INavigationPageController)model).PushRequested += model_PushRequested;
             base.OnModelLoad(model);
         }
 
         protected override void OnModelUnload(NavigationPage model)
         {
-            model.PopRequested -= model_PopRequested;
-            model.PopToRootRequested -= model_PopToRootRequested;
-            model.PushRequested -= model_PushRequested;
+            ((INavigationPageController)model).PopRequested -= model_PopRequested;
+            ((INavigationPageController)model).PopToRootRequested -= model_PopToRootRequested;
+            ((INavigationPageController)model).PushRequested -= model_PushRequested;
             base.OnModelUnload(model);
         }
 
@@ -45,24 +46,24 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         Task<bool> PushAsync(Page page)
         {
-            var toShow = Model.StackCopy.First();
-            var toHide = Model.StackCopy.Skip(1).FirstOrDefault();
+            var toShow = ((INavigationPageController)Model).StackCopy.First();
+            var toHide = ((INavigationPageController)Model).StackCopy.Skip(1).FirstOrDefault();
 
             return ChangePageAsync(toShow, toHide);
         }
 
         Task<bool> PopAsync()
         {
-            var toHide = Model.StackCopy.First();
-            var toShow = Model.StackCopy.Skip(1).First();
+            var toHide = ((INavigationPageController)Model).StackCopy.First();
+            var toShow = ((INavigationPageController)Model).StackCopy.Skip(1).First();
 
             return ChangePageAsync(toShow, toHide);
         }
 
         Task<bool> PopToRootAsync()
         {
-            var toHide = Model.StackCopy.First();
-            var toShow = Model.StackCopy.Last();
+            var toHide = ((INavigationPageController)Model).StackCopy.First();
+            var toShow = ((INavigationPageController)Model).StackCopy.Last();
 
             return ChangePageAsync(toShow, toHide);
         }

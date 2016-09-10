@@ -71,6 +71,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             { Button.XButton2, null },
         };
 
+
+        static int i = 0;
+
         public static void Update(VisualElementRenderer renderer)
         {
             ElementPositions.Clear();
@@ -81,10 +84,12 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 if (!Forms.Game.IsActive)
                     return;
                 state = XnaMouse.GetState();
-            }
-            catch (InvalidOperationException) { return; }
 
-            var buttonState = UpdateButtonsState(state);
+                Console.WriteLine ($"Update: {i++}: {state.X}x{state.Y}");
+            }
+            catch (InvalidOperationException) {
+                return;
+            }
 
             var reallyOver = renderer.FlattenHierarchyReverse()
                 .Where(c => !c.Model.InputTransparent && c.Model.IsEnabled)
@@ -92,7 +97,7 @@ namespace Xamarin.Forms.Platforms.Xna.Input
                 .Where(c => c.IsPositionInside());
 
             var newOver = reallyOver.FirstOrDefault();
-            var newOverEventArgs = newOver.Element != null? new MouseEventArgs(state.ToRelative(newOver.Element)) : null;
+            var newOverEventArgs = newOver.Element != null? new MouseEventArgs(newOver.Position) : null;
 
             if (newOver.Element != null)
             {
@@ -118,8 +123,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
 
             if (_pressing == null)
             {
-                if (newOver.Position != null)
-                    newOver.Element.OnMouseOver(newOverEventArgs);
+                if (newOver.Position != null) {
+                    newOver.Element.OnMouseOver (newOverEventArgs);
+                }
 
                 if (_over != newOver.Element)
                 {
@@ -138,7 +144,8 @@ namespace Xamarin.Forms.Platforms.Xna.Input
             }
             else
             {
-                var pressingEvent = new MouseEventArgs(state.ToRelative(_pressing));
+                var relativePosition = state.ToRelative (_pressing);
+                var pressingEvent = new MouseEventArgs(relativePosition);
                 _pressing.OnMouseOver(pressingEvent);
 
                 if (state.LeftButton == XnaButtonState.Released)
@@ -203,8 +210,9 @@ namespace Xamarin.Forms.Platforms.Xna.Input
         {
             foreach (var savedPosition in ElementPositions)
             {
-                if (savedPosition.Element == renderer)
+                if (savedPosition.Element == renderer) {
                     return savedPosition.Position;
+                }
             }
 
             XnaVector2? position;

@@ -17,6 +17,7 @@
     using Xamarin.Forms.Platforms.Xna.Resources;
     using System.Security.Cryptography;
     using System.Text;
+    using Internals;
 #endif
 
     class PlatformServices : DrawableGameComponent, IPlatformServices
@@ -200,6 +201,11 @@
                 sb.Append(hash[i].ToString("X2"));
             }
             return sb.ToString();
+        }
+
+        public Ticker CreateTicker ()
+        {
+            return new ContextTicker (DrawContext);
         }
     }
 }

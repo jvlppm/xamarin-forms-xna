@@ -12,14 +12,17 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
     public class ButtonRenderer : VisualElementRenderer<Button>
     {
         #region Default Style
+
         static Color DefaultBackgroundColor = Color.White;
         static Color DefaultTextColor = Color.Black;
+
         #endregion
 
         #region Attached Properties
+
         public static BindableProperty BackgroundImageProperty = BindableProperty.CreateAttached<ButtonRenderer, ImageSource>(
-                r => GetBackgroundImage(r),
-                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.ButtonBackground.xml");
+                                                                     r => GetBackgroundImage(r),
+                                                                     "pack://application/Xamarin.Forms.Platform.WP8;component/ButtonBackground.xml");
 
         public static ImageSource GetBackgroundImage(BindableObject obj)
         {
@@ -30,6 +33,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             obj.SetValue(BackgroundImageProperty, value);
         }
+
         #endregion
 
         readonly Label Label;

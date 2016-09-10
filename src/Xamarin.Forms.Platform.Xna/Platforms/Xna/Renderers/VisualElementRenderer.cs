@@ -354,7 +354,8 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
             }
             else
             {
-                _backgroundTexture = new Texture2D(SpriteBatch.GraphicsDevice, 1, 1);
+                if (_backgroundTexture == null)
+                    _backgroundTexture = new Texture2D(SpriteBatch.GraphicsDevice, 1, 1);
                 _backgroundTexture.SetData(new[] { Model.BackgroundColor.ToXnaColor() });
             }
             InvalidateVisual();
@@ -482,7 +483,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
         {
             var children = Model == null ?
                 ImmutableList<VisualElement>.Empty :
-                Model.LogicalChildren.OfType<VisualElement>();
+                                            ((IVisualElementController)Model).LogicalChildren.OfType<VisualElement>();
 
             children = children.Union(_manuallyAddedElements);
 
@@ -526,7 +527,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         protected virtual void OnModelUnload(VisualElement model)
         {
-            foreach (var c in model.LogicalChildren)
+            foreach (var c in ((IVisualElementController)model).LogicalChildren)
             {
                 var childRenderer = GetRenderer(c);
                 if (childRenderer != null)

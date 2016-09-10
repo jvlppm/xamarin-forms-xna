@@ -20,15 +20,15 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public static BindableProperty ThumbImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
                                                                 r => GetThumbImage(r),
-                                                                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderThumb.png");
+                                                                "pack://application/Xamarin.Forms.Platform.WP8;component/SliderThumb.png");
 
         public static BindableProperty EndImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
                                                               r => GetEndImage(r),
-                                                              "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderEnd.png");
+                                                              "pack://application/Xamarin.Forms.Platform.WP8;component/SliderEnd.png");
 
         public static BindableProperty TrackImageProperty = BindableProperty.CreateAttached<SliderRenderer, ImageSource>(
                                                                 r => GetTrackImage(r),
-                                                                "pack://application/Xamarin.Forms.Platform.WP8;component/Xamarin.Forms.SliderTrack.png");
+                                                                "pack://application/Xamarin.Forms.Platform.WP8;component/SliderTrack.png");
 
         public static ImageSource GetThumbImage(BindableObject obj)
         {
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Platforms.Xna.Renderers
 
         public SliderRenderer()
         {
-            Thumb = new Button();
+            Thumb = new Button { Text = "Slider Button" };
             AddElement(Thumb);
             ThumbRenderer = GetRenderer(Thumb);
             ThumbRenderer.OnMouseMove += Thumb_OnMouseMove;

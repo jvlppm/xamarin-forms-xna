@@ -7,13 +7,14 @@
     using Xamarin.Forms.Platforms.Xna.Controls;
     using Xamarin.Forms.Platforms.Xna.Input;
     using Xamarin.Forms.Platforms.Xna.Resources;
+    using Xamarin.Forms.Internals;
 
     public static class Forms
     {
         internal static bool IsInitialized;
 
         public static Game Game { get; private set; }
-        public static IPlatformEngine PlatformEngine { get; private set; }
+        public static PlatformEngine PlatformEngine { get; private set; }
 
 #if !INTERNAL_CONTEXT
         public static GameContext DrawContext { get; private set; }
@@ -46,8 +47,6 @@
                 typeof(ExportRendererAttribute),
                 typeof(ExportImageSourceHandlerAttribute),
             });
-
-            Ticker.Default = new ContextTicker(platformServices.DrawContext);
 
             EmbeddedContent = new EmbeddedContent(Assembly.GetExecutingAssembly(), game.Services);
 

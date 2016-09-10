@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using Xamarin.Forms;
+    using Xamarin.Forms.Internals;
     using Xamarin.Forms.Platforms.Xna.Context;
 
     class ContextTicker : Ticker

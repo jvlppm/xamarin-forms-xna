@@ -10,9 +10,12 @@ namespace VisualRenderersPreview
 {
     public partial class XamlPage : ContentPage
     {
+        public string MainText => "Teste";
+        
         public XamlPage()
         {
             InitializeComponent();
+            BindingContext = this;
         }
     }
 }

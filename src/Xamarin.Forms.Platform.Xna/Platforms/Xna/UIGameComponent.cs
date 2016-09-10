@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Platforms.Xna
 
         public event EventHandler BindingContextChanged;
 
-        public IPlatformEngine Engine
+        PlatformEngine Engine
         {
             get { return Forms.PlatformEngine; }
         }
@@ -144,9 +144,10 @@ namespace Xamarin.Forms.Platforms.Xna
             _renderer = VisualElementRenderer.Create(Application.MainPage);
         }
 
-        public SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
+        public SizeRequest GetNativeSize (VisualElement view, double widthConstraint, double heightConstraint)
         {
-            return Application.MainPage.GetSizeRequest(widthConstraint, heightConstraint);
+            var renderer = VisualElementRenderer.GetRenderer (view);
+            return renderer.Measure (new Xamarin.Forms.Size (widthConstraint, heightConstraint));
         }
     }
 

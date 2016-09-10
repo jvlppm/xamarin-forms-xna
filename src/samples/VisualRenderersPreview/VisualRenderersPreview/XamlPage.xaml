@@ -2,5 +2,25 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="VisualRenderersPreview.XamlPage">
-	<Label Text="{Binding MainText}" VerticalOptions="Center" HorizontalOptions="Center" />
+               <StackLayout>
+    <Label Text="ROTATION"
+           BindingContext="{x:Reference Name=slider}"
+           RotationY="{Binding Path=Value}"
+           FontAttributes="Bold"
+           FontSize="Large"
+           HorizontalOptions="Center"
+           VerticalOptions="CenterAndExpand" />
+
+    <Slider x:Name="slider"
+            Maximum="360"
+            VerticalOptions="CenterAndExpand" />
+
+    <Label BindingContext="{x:Reference slider}"
+          Text="{Binding Value,
+                          StringFormat='The angle is {0:F0} degrees'}"
+          FontAttributes="Bold"
+          FontSize="Large"
+          HorizontalOptions="Center"
+          VerticalOptions="CenterAndExpand" />
+  </StackLayout>
 </ContentPage>
